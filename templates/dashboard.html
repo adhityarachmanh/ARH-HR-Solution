@@ -1,0 +1,53 @@
+{% extends "layout_app.html" %}
+
+{% block title %}Dashboard{% endblock title %}
+{% block header_title %}Welcome, {{ username }}!{% endblock header_title %}
+
+{% block content %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-indigo-100 text-indigo-600 mr-4">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292m0 0v5.292m0-5.292a4 4 0 110 5.292m0 0v5.292"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 17H5a2 2 0 01-2-2v-5a2 2 0 012-2h14a2 2 0 012 2v5a2 2 0 01-2 2h-5"></path></svg>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Total Users</p>
+                    <p class="text-2xl font-bold text-gray-900">N/A</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-green-100 text-green-600 mr-4">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20h-2m2 0h-2M13 15h2m-2 0V9a2 2 0 012-2h2a2 2 0 012 2v6m-4 0v6m-4-6a2 2 0 002 2h2v4m-2 0h-2M4 16h4m0 0v-6a2 2 0 114 0v6m-4 0v6m-4-6a2 2 0 00-2 2v4a2 2 0 002 2h2v-4m-2 0h2"></path></svg>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Total Roles</p>
+                    <p class="text-2xl font-bold text-gray-900">N/A</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-yellow-100 text-yellow-600 mr-4">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Pending Tasks</p>
+                    <p class="text-2xl font-bold text-gray-900">0</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-8 bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+        <h4 class="text-lg font-semibold text-gray-800 border-b pb-3 mb-4">Quick Links</h4>
+        <ul class="space-y-2">
+            <li><a href="/users/list" class="text-indigo-600 hover:text-indigo-800 transition duration-150">Manage User Accounts</a></li>
+            <li><a href="/roles/list" class="text-indigo-600 hover:text-indigo-800 transition duration-150">Manage User Roles and Permissions</a></li>
+            <li><a href="/permissions/list" class="text-indigo-600 hover:text-indigo-800 transition duration-150">View Master Permission List</a></li>
+        </ul>
+    </div>
+{% endblock content %}
