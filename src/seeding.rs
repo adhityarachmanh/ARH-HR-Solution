@@ -4,6 +4,7 @@ use tracing::info;
 
 const ADMIN_USERNAME: &str = "superadmin";
 const ADMIN_PASSWORD: &str = "password123";
+const ADMIN_ROLE_SLUG: &str = "super_admin";
 
 pub async fn seed_admin_user(pool: &PgPool) -> Result<(), sqlx::Error> {
     let exists = sqlx::query_scalar!("SELECT EXISTS(SELECT 1 FROM users WHERE username = $1)", ADMIN_USERNAME)
@@ -24,15 +25,16 @@ pub async fn seed_admin_user(pool: &PgPool) -> Result<(), sqlx::Error> {
         .fetch_one(&mut *tx).await?;
 
         let superadmin_role_id: Option<i32> =
-            sqlx::query_scalar("SELECT id FROM roles WHERE name = 'SuperAdmin'")
+            sqlx::query_scalar("SELECT id FROM roles WHERE name = $1")
+                .bind(ADMIN_ROLE_SLUG)
                 .fetch_optional(&mut *tx).await?;
 
         if let Some(role_id) = superadmin_role_id {
             sqlx::query("INSERT INTO user_roles (user_id, role_id) VALUES ($1, $2)")
                 .bind(new_user_id).bind(role_id).execute(&mut *tx).await?;
-            info!("Successfully linked user '{}' to 'SuperAdmin' role.", ADMIN_USERNAME);
+            info!("Successfully linked user '{}' to '{}' role.", ADMIN_USERNAME, ADMIN_ROLE_SLUG);
         } else {
-            tracing::error!("'SuperAdmin' role not found in database!");
+            tracing::error!("'{}' role not found in database!", ADMIN_ROLE_SLUG);
         }
 
         tx.commit().await?;

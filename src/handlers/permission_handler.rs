@@ -18,7 +18,7 @@ async fn get_username(pool: &PgPool, session: &Session) -> String {
     if let Some(user_id) = session.get::<i64>("user_id").unwrap_or(None) {
         let query_result = sqlx::query_as!(
             User,
-            "SELECT id, username, email, password_hash, created_at FROM users WHERE id = $1",
+            "SELECT id, username, email, password_hash, created_at, is_active, last_login FROM users WHERE id = $1",
             user_id
         )
         .fetch_optional(pool).await;

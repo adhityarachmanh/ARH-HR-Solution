@@ -5,14 +5,13 @@ use tera::Tera;
 use sqlx::PgPool;
 use crate::services::{user_service, role_service}; 
 use crate::errors::AppError;
-use crate::models::{User, Role};
+use crate::models::{User};
 use serde::Deserialize;
 
 #[derive(Deserialize)]
 pub struct AddUserFormData {
     username: String,
     password: String,
-    // Email dihilangkan untuk kesederhanaan form, tapi bisa ditambahkan
     roles: Option<Vec<i32>>, 
 }
 
@@ -25,7 +24,7 @@ pub async fn list_users(
     if let Some(user_id) = session.get::<i64>("user_id").unwrap_or(None) {
         let current_user_result = sqlx::query_as!(
             User, 
-            "SELECT id, username, email, password_hash, created_at FROM users WHERE id = $1", 
+            "SELECT id, username, email, password_hash, created_at, is_active, last_login FROM users WHERE id = $1",
             user_id
         )
         .fetch_optional(pool.get_ref())
@@ -63,7 +62,7 @@ pub async fn show_add_user_form(
     if let Some(user_id) = session.get::<i64>("user_id").unwrap_or(None) {
         let current_user_result = sqlx::query_as!(
             User, 
-            "SELECT id, username, email, password_hash, created_at FROM users WHERE id = $1", 
+            "SELECT id, username, email, password_hash, created_at, is_active, last_login FROM users WHERE id = $1",
             user_id
         )
         .fetch_optional(pool.get_ref())

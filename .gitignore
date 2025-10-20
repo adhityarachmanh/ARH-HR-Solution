@@ -1,0 +1,44 @@
+# File .gitignore untuk Proyek Rust dengan Actix/SQLx
+
+# ----------------------------------------------------
+# 1. Output Kompilasi & Executables
+# ----------------------------------------------------
+# Direktori tempat Cargo menempatkan semua hasil build
+/target/
+
+# Cargo metadata
+/Cargo.lock
+
+# Executables yang dibuat saat running cargo run (untuk Windows)
+# *.exe
+
+# ----------------------------------------------------
+# 2. Dependencies & Cache
+# ----------------------------------------------------
+# Dependencies yang diunduh (jika ada)
+/vendor/
+
+# ----------------------------------------------------
+# 3. Development Environment
+# ----------------------------------------------------
+# Variabel lingkungan sensitif (Kunci DB, Kunci Sesi, dll.)
+.env
+/secrets/
+
+# Log file
+*.log
+
+# ----------------------------------------------------
+# 4. OS/IDE Files
+# ----------------------------------------------------
+# macOS
+.DS_Store
+
+# Visual Studio Code (Jika digunakan)
+.vscode/
+
+# IntelliJ/RustRover/CLion (Jika digunakan)
+.idea/
+
+# Windows thumbnails and caches
+Thumbs.db

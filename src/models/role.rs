@@ -5,4 +5,5 @@ use serde::{Serialize, Deserialize};
 pub struct Role {
     pub id: i32,
     pub name: String,
+    pub display_name: String,
 }

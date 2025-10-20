@@ -11,10 +11,12 @@ pub struct User {
     pub password_hash: String,
     #[serde(with = "time::serde::rfc3339::option")]
     pub created_at: Option<OffsetDateTime>,
+    pub is_active: bool,
+    pub last_login: Option<OffsetDateTime>,
 }
 
 #[derive(Debug, sqlx::FromRow)]
-#[allow(dead_code)] 
+#[allow(dead_code)]
 pub struct NewUser {
     pub username: String,
     pub password_hash: String,

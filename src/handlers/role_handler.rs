@@ -6,7 +6,7 @@ use sqlx::PgPool;
 use serde::Deserialize;
 
 use crate::errors::AppError;
-use crate::models::{User, Role};
+use crate::models::{User};
 use crate::services::{role_service};
 
 #[derive(Deserialize)]
@@ -23,7 +23,7 @@ pub async fn list_roles(
     if let Some(user_id) = session.get::<i64>("user_id").unwrap_or(None) {
         let current_user_result = sqlx::query_as!(
             User, 
-            "SELECT id, username, email, password_hash, created_at FROM users WHERE id = $1", 
+            "SELECT id, username, email, password_hash, created_at, is_active, last_login FROM users WHERE id = $1",
             user_id
         )
         .fetch_optional(pool.get_ref())
@@ -57,7 +57,7 @@ pub async fn show_add_role_form(
     if let Some(user_id) = session.get::<i64>("user_id").unwrap_or(None) {
         let current_user_result = sqlx::query_as!(
             User, 
-            "SELECT id, username, email, password_hash, created_at FROM users WHERE id = $1", 
+            "SELECT id, username, email, password_hash, created_at, is_active, last_login FROM users WHERE id = $1", 
             user_id
         )
         .fetch_optional(pool.get_ref())

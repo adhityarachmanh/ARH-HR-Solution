@@ -1,14 +1,13 @@
 // src/services/user_service.rs
 use sqlx::PgPool;
-use crate::models::{User, Role};
+use crate::models::{User};
 use crate::errors::AppError;
 use tracing::info;
 
 pub async fn get_all_users(pool: &PgPool) -> Result<Vec<User>, AppError> {
     let users = sqlx::query_as!(
         User,
-        // Tambahkan email di query
-        "SELECT id, username, email, password_hash, created_at FROM users ORDER BY id ASC"
+        "SELECT id, username, email, password_hash, created_at, is_active, last_login FROM users ORDER BY id ASC"
     )
     .fetch_all(pool)
     .await
@@ -37,7 +36,7 @@ pub async fn create_user(
 
     let new_user_record = sqlx::query_as!(
         User,
-        "INSERT INTO users (username, password_hash) VALUES ($1, $2) RETURNING id, username, email, password_hash, created_at",
+        "INSERT INTO users (username, password_hash) VALUES ($1, $2) RETURNING id, username, email, password_hash, created_at, is_active, last_login",
         username,
         hashed_password
     )

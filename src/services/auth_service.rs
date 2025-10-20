@@ -11,7 +11,7 @@ pub async fn authenticate_user(
 
     let user = sqlx::query_as!(
         User,
-        "SELECT id, username, email, password_hash, created_at FROM users WHERE username = $1",
+        "SELECT id, username, email, password_hash, created_at, is_active, last_login FROM users WHERE username = $1",
         username
     )
     .fetch_optional(pool)

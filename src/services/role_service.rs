@@ -6,7 +6,7 @@ use tracing::info;
 
 pub async fn get_all_roles(pool: &PgPool) -> Result<Vec<Role>, AppError> {
     let roles = sqlx::query_as!(
-        Role, "SELECT id, name FROM roles ORDER BY id ASC"
+        Role, "SELECT id, name, display_name FROM roles ORDER BY id ASC"
     ).fetch_all(pool).await.map_err(AppError::DatabaseError)?;
     Ok(roles)
 }
@@ -22,7 +22,7 @@ pub async fn create_role(pool: &PgPool, name: &str) -> Result<Role, AppError> {
     }
 
     let new_role = sqlx::query_as!(
-        Role, "INSERT INTO roles (name) VALUES ($1) RETURNING id, name", normalized_name
+        Role, "INSERT INTO roles (name, display_name) VALUES ($1, $1) RETURNING id, name, display_name", normalized_name
     ).fetch_one(pool).await.map_err(AppError::DatabaseError)?;
     
     info!("Role '{}' created with ID: {}", new_role.name, new_role.id);
@@ -31,7 +31,7 @@ pub async fn create_role(pool: &PgPool, name: &str) -> Result<Role, AppError> {
 
 pub async fn get_role_by_id(pool: &PgPool, role_id: i32) -> Result<Role, AppError> {
     let role = sqlx::query_as!(
-        Role, "SELECT id, name FROM roles WHERE id = $1", role_id
+        Role, "SELECT id, name, display_name FROM roles WHERE id = $1", role_id
     ).fetch_one(pool).await.map_err(|e| match e {
         sqlx::Error::RowNotFound => AppError::InternalError("Role not found".to_string()),
         _ => AppError::DatabaseError(e),
@@ -51,7 +51,7 @@ pub async fn update_role(pool: &PgPool, role_id: i32, new_name: &str) -> Result<
     }
 
     let updated_role = sqlx::query_as!(
-        Role, "UPDATE roles SET name = $1 WHERE id = $2 RETURNING id, name", normalized_name, role_id
+        Role, "UPDATE roles SET name = $1, display_name = $1 WHERE id = $2 RETURNING id, name, display_name", normalized_name, role_id
     ).fetch_one(pool).await.map_err(AppError::DatabaseError)?; 
 
     info!("Role ID {} updated to '{}'", updated_role.id, updated_role.name);
