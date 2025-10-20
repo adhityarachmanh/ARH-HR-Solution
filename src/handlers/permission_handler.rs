@@ -14,7 +14,7 @@ pub struct ManagePermissionFormData {
     permissions: Option<Vec<i32>>, 
 }
 
-async fn get_username(pool: &PgPool, session: &Session) -> String {
+pub async fn get_username(pool: &PgPool, session: &Session) -> String {
     if let Some(user_id) = session.get::<i64>("user_id").unwrap_or(None) {
         let query_result = sqlx::query_as!(
             User,
