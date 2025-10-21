@@ -1,0 +1,2 @@
+INSERT INTO "Branches" ("CompId", "TimeZoneId", "BranchName", "CompanyName", "CreatedDate", "CreatedBy", "UpdatedDate", "UpdatedBy")
+VALUES(1, 1, 'ARH', 'PT. ARH Corps', NOW(), 'System', NOW(), 'System');

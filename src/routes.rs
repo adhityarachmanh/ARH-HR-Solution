@@ -77,6 +77,11 @@ pub fn configure_routes(cfg: &mut web::ServiceConfig) {
             // -----------------------------------------------------------
             // Rute Organizations Master Data
             // -----------------------------------------------------------
-            .route("/organizations/list", web::get().to(organization_handler::list_organizations)) 
+            .route("/organizations/list", web::get().to(organization_handler::list_organizations))
+            .route("/organizations/add", web::get().to(organization_handler::show_add_organization_form))
+            .route("/organizations/add", web::post().to(organization_handler::add_organization_action))
+            .route("/organizations/edit/{id}", web::get().to(organization_handler::show_edit_organization_form))
+            .route("/organizations/edit/{id}", web::post().to(organization_handler::edit_organization_action))
+            .route("/organizations/delete/{id}", web::post().to(organization_handler::delete_organization_action))
     );
 }

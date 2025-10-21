@@ -1,0 +1,36 @@
+INSERT INTO "Company" (
+    "CompName", 
+    "CompAddress", 
+    "CompZipCode", 
+    "CompPhoneNumber", 
+    "CompMobileNumber", 
+    "CompEmail", 
+    "CompWebsite", 
+    "CompRetirementAge",
+    "PersentasePendapatanBPJSTKPemberiKerja", 
+    "PersentasePendapatanBPJSKSPemberiKerja",
+    "PersentasePenguranganBPJSTKPemberiKerja", 
+    "PersentasePenguranganBPJSKSPemberiKerja",
+    "PersentasePenguranganBPJSTKPekerja", 
+    "PersentasePenguranganBPJSKSPekerja",
+    "CompanyPrevMonthDayPayroll", 
+    "CompanyCurrentMonthDayPayroll"
+)
+VALUES (
+    'ARH Corps', 
+    'Jl. Prabu Geusan Ulun No.102', 
+    '0000007559', 
+    '0261-201848', 
+    '088808168866',
+    'arhcorps@gmail.com', 
+    'https://arhcorps.com', 
+    57,
+    6.24, 
+    4.0,
+    6.24, 
+    4.0,
+    3.0, 
+    1.0,
+    21,
+    20 
+);

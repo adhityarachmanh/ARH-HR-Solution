@@ -1,0 +1,15 @@
+INSERT INTO "EmploymentStatus" ("EmploymentStatusName", "CreatedDate", "CreatedBy", "UpdatedDate", "UpdatedBy") VALUES
+('Contract', NOW(), 'System', NOW(), 'System'),
+('Permanent', NOW(), 'System', NOW(), 'System'),
+('Freelance', NOW(), 'System', NOW(), 'System'),
+('Internship (Magang)', NOW(), 'System', NOW(), 'System'),
+('Probation (Percobaan)', NOW(), 'System', NOW(), 'System'),
+('Outsourcing', NOW(), 'System', NOW(), 'System'),
+('Resign', NOW(), 'System', NOW(), 'System'),
+('Pension', NOW(), 'System', NOW(), 'System'),
+('Renewal Contract', NOW(), 'System', NOW(), 'System'),
+('Sabbatical (Cuti Panjang)', NOW(), 'System', NOW(), 'System'),
+('Suspensi', NOW(), 'System', NOW(), 'System'),
+('Outplacement', NOW(), 'System', NOW(), 'System'),
+('Harian Lepas', NOW(), 'System', NOW(), 'System'),
+('Mitra', NOW(), 'System', NOW(), 'System');

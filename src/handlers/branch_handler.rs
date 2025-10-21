@@ -6,17 +6,18 @@ use sqlx::PgPool;
 use serde::Deserialize;
 
 use crate::errors::AppError;
-use crate::services::branch_service; 
+use crate::services::{branch_service, company_service, timezone_service}; 
 use crate::handlers::permission_handler::get_username; 
 
 #[derive(Deserialize)]
 pub struct BranchFormData {
-    name: String,
-    comp_id: Option<i32>,
-    timezone_id: Option<i32>,
+    pub name: String,
+    pub company_name: String, 
+    pub comp_id: Option<i32>,
+    pub timezone_id: Option<i32>,
 }
 
-
+// READ All
 pub async fn list_branches(
     pool: web::Data<PgPool>,
     tera: web::Data<Tera>,
@@ -38,6 +39,7 @@ pub async fn list_branches(
 }
 
 
+// CREATE Show Form
 pub async fn show_add_branch_form(
     pool: web::Data<PgPool>,
     tera: web::Data<Tera>,
@@ -47,8 +49,9 @@ pub async fn show_add_branch_form(
         return Ok(HttpResponse::Found().append_header(("Location", "/login")).finish());
     }
     
-    let companies = branch_service::get_companies_for_dropdown(pool.get_ref()).await?;
-    let timezones = branch_service::get_timezones_for_dropdown(pool.get_ref()).await?;
+    // Panggil services yang terpisah
+    let companies = company_service::get_all_companies(pool.get_ref()).await?;
+    let timezones = timezone_service::get_all_timezones(pool.get_ref()).await?;
 
     let username = get_username(pool.get_ref(), &session).await;
     let mut context = tera::Context::new();
@@ -60,7 +63,7 @@ pub async fn show_add_branch_form(
     Ok(HttpResponse::Ok().body(rendered))
 }
 
-
+// CREATE Action
 pub async fn add_branch_action(
     pool: web::Data<PgPool>,
     tera: web::Data<Tera>,
@@ -74,6 +77,7 @@ pub async fn add_branch_action(
     let result = branch_service::create_branch(
         pool.get_ref(), 
         &form.name, 
+        &form.company_name, 
         form.comp_id, 
         form.timezone_id
     ).await;
@@ -83,10 +87,15 @@ pub async fn add_branch_action(
             Ok(HttpResponse::Found().append_header(("Location", "/branches/list")).finish())
         }
         Err(AppError::InternalError(msg)) if msg.contains("Branch name already exists") => {
+            let companies = company_service::get_all_companies(pool.get_ref()).await?;
+            let timezones = timezone_service::get_all_timezones(pool.get_ref()).await?;
             let username = get_username(pool.get_ref(), &session).await;
+            
             let mut context = tera::Context::new();
             context.insert("error", "Branch name already exists.");
             context.insert("username", &username);
+            context.insert("companies", &companies);
+            context.insert("timezones", &timezones);
             
             let rendered = tera.render("branches/add.html", &context).map_err(AppError::TeraError)?;
             Ok(HttpResponse::BadRequest().body(rendered))
@@ -95,7 +104,7 @@ pub async fn add_branch_action(
     }
 }
 
-
+// UPDATE Show Form
 pub async fn show_edit_branch_form(
     pool: web::Data<PgPool>,
     tera: web::Data<Tera>,
@@ -108,8 +117,9 @@ pub async fn show_edit_branch_form(
     let branch_id = path.into_inner();
     let branch = branch_service::get_branch_by_id(pool.get_ref(), branch_id).await?;
     
-    let companies = branch_service::get_companies_for_dropdown(pool.get_ref()).await?;
-    let timezones = branch_service::get_timezones_for_dropdown(pool.get_ref()).await?;
+    // MUAT DATA DROPDOWN
+    let companies = company_service::get_all_companies(pool.get_ref()).await?;
+    let timezones = timezone_service::get_all_timezones(pool.get_ref()).await?;
     
     let username = get_username(pool.get_ref(), &session).await;
     let mut context = tera::Context::new();
@@ -122,10 +132,10 @@ pub async fn show_edit_branch_form(
     Ok(HttpResponse::Ok().body(rendered))
 }
 
-
+// UPDATE Action
 pub async fn edit_branch_action(
     pool: web::Data<PgPool>,
-    tera: web::Data<Tera>,
+    _tera: web::Data<Tera>,
     path: web::Path<i32>,
     form: web::Form<BranchFormData>,
     session: Session,
@@ -139,6 +149,7 @@ pub async fn edit_branch_action(
         pool.get_ref(), 
         branch_id, 
         &form.name, 
+        &form.company_name, 
         form.comp_id, 
         form.timezone_id
     ).await;
@@ -148,22 +159,14 @@ pub async fn edit_branch_action(
             Ok(HttpResponse::Found().append_header(("Location", "/branches/list")).finish())
         }
         Err(AppError::InternalError(msg)) if msg.contains("Branch name already exists") => {
-            let current_branch = branch_service::get_branch_by_id(pool.get_ref(), branch_id).await?;
-            let username = get_username(pool.get_ref(), &session).await;
-            
-            let mut context = tera::Context::new();
-            context.insert("branch", &current_branch);
-            context.insert("error", "Branch name already exists.");
-            context.insert("username", &username);
-            
-            let rendered = tera.render("branches/edit.html", &context).map_err(AppError::TeraError)?;
-            Ok(HttpResponse::BadRequest().body(rendered))
+            // Ini akan memicu ResponseError handling di AppError
+            Err(AppError::InternalError("Branch name already exists.".to_string()))
         }
         Err(e) => Err(e),
     }
 }
 
-
+// DELETE Action
 pub async fn delete_branch_action(
     pool: web::Data<PgPool>,
     session: Session,

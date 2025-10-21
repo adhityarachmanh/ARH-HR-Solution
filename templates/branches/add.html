@@ -18,11 +18,18 @@
         <div>
             <label for="name" class="block text-sm font-medium text-gray-700">Branch Name</label>
             <input id="name" name="name" type="text" required
-                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
         </div>
 
         <div>
-            <label for="comp_id" class="block text-sm font-medium text-gray-700">Company</label>
+            <label for="company_name" class="block text-sm font-medium text-gray-700">Company Name (Required by
+                DB)</label>
+            <input id="company_name" name="company_name" type="text" required
+                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+        </div>
+
+        <div>
+            <label for="comp_id" class="block text-sm font-medium text-gray-700">Company (Link)</label>
             <select id="comp_id" name="comp_id"
                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                 <option value="">-- Pilih Company (Optional) --</option>
@@ -33,7 +40,7 @@
         </div>
 
         <div>
-            <label for="timezone_id" class="block text-sm font-medium text-gray-700">Time Zone</label>
+            <label for="timezone_id" class="block text-sm font-medium text-gray-700">Time Zone (Link)</label>
             <select id="timezone_id" name="timezone_id"
                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                 <option value="">-- Pilih Time Zone (Optional) --</option>

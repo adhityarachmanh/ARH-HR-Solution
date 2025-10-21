@@ -1,16 +1,16 @@
 // src/models/mod.rs
-pub mod user;
-pub mod role; 
-pub mod permission;
 pub mod branch;
+pub mod company;
 pub mod organization;
-pub mod company;  
-pub mod timezone;  
+pub mod permission;
+pub mod role;
+pub mod timezone;
+pub mod user;
 
-pub use user::User;
-pub use role::Role;
-pub use permission::{HardcodedPermission};
-pub use branch::{Branch,BranchDetail, CompanyDropdown, TimeZoneDropdown};
-pub use organization::Organization;
+pub use branch::{Branch, BranchDetail};
 pub use company::Company;
+pub use organization::Organization;
+pub use permission::HardcodedPermission;
+pub use role::Role;
 pub use timezone::TimeZone;
+pub use user::User;

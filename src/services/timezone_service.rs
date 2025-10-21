@@ -4,19 +4,35 @@ use crate::models::TimeZone;
 use crate::errors::AppError;
 use tracing::info;
 
+// const TIMEZONE_FIELDS_SQL: &str = r#""TimeZoneId" as time_zone_id, "TimeZoneName" as time_zone_name, "CreatedDate" as created_date, "CreatedBy" as created_by, "UpdatedDate" as updated_date, "UpdatedBy" as updated_by"#;
+
+const CREATE_QUERY_SQL: &str = r#"
+    INSERT INTO "TimeZones" ("TimeZoneName", "CreatedDate", "CreatedBy", "UpdatedDate", "UpdatedBy") 
+    VALUES ($1, NOW(), $2, NOW(), $2) 
+    RETURNING "TimeZoneId", "TimeZoneName", "CreatedDate", "CreatedBy", "UpdatedDate", "UpdatedBy"
+"#;
+
+const UPDATE_QUERY_SQL: &str = r#"
+    UPDATE "TimeZones" 
+    SET "TimeZoneName" = $1, "UpdatedDate" = NOW(), "UpdatedBy" = $3 
+    WHERE "TimeZoneId" = $2 
+    RETURNING "TimeZoneId", "TimeZoneName", "CreatedDate", "CreatedBy", "UpdatedDate", "UpdatedBy"
+"#;
+
 pub async fn get_all_timezones(pool: &PgPool) -> Result<Vec<TimeZone>, AppError> {
     let timezones = sqlx::query_as!(
         TimeZone,
-        "SELECT \"TimeZoneId\" as time_zone_id, \"TimeZoneName\" as time_zone_name FROM \"TimeZones\" ORDER BY \"TimeZoneName\" ASC"
+        r#"SELECT "TimeZoneId" as time_zone_id, "TimeZoneName" as time_zone_name, "CreatedDate" as created_date, "CreatedBy" as created_by, "UpdatedDate" as updated_date, "UpdatedBy" as updated_by FROM "TimeZones" ORDER BY "TimeZoneName" ASC"#
     )
     .fetch_all(pool).await.map_err(AppError::DatabaseError)?;
+    info!("Fetched {} timezones.", timezones.len());
     Ok(timezones)
 }
 
 pub async fn get_timezone_by_id(pool: &PgPool, timezone_id: i32) -> Result<TimeZone, AppError> {
     let timezone = sqlx::query_as!(
         TimeZone,
-        "SELECT \"TimeZoneId\" as time_zone_id, \"TimeZoneName\" as time_zone_name FROM \"TimeZones\" WHERE \"TimeZoneId\" = $1",
+        r#"SELECT "TimeZoneId" as time_zone_id, "TimeZoneName" as time_zone_name, "CreatedDate" as created_date, "CreatedBy" as created_by, "UpdatedDate" as updated_date, "UpdatedBy" as updated_by FROM "TimeZones" WHERE "TimeZoneId" = $1"#,
         timezone_id
     ).fetch_one(pool).await.map_err(|e| match e {
         sqlx::Error::RowNotFound => AppError::InternalError("TimeZone not found".to_string()),
@@ -32,11 +48,10 @@ pub async fn create_timezone(pool: &PgPool, name: &str) -> Result<TimeZone, AppE
     
     if exists.unwrap_or(false) { return Err(AppError::InternalError("TimeZone already exists".to_string())); }
 
-    let new_timezone = sqlx::query_as!(
-        TimeZone,
-        "INSERT INTO \"TimeZones\" (\"TimeZoneName\") VALUES ($1) RETURNING \"TimeZoneId\" as time_zone_id, \"TimeZoneName\" as time_zone_name",
-        name
-    ).fetch_one(pool).await.map_err(AppError::DatabaseError)?;
+    let new_timezone = sqlx::query_as::<_, TimeZone>(CREATE_QUERY_SQL)
+        .bind(name)
+        .bind("Admin")
+        .fetch_one(pool).await.map_err(AppError::DatabaseError)?;
     
     info!("TimeZone '{}' created with ID: {}", new_timezone.time_zone_name, new_timezone.time_zone_id);
     Ok(new_timezone)
@@ -50,11 +65,11 @@ pub async fn update_timezone(pool: &PgPool, timezone_id: i32, new_name: &str) ->
     
     if exists.unwrap_or(false) { return Err(AppError::InternalError("TimeZone name already exists".to_string())); }
 
-    let updated_timezone = sqlx::query_as!(
-        TimeZone,
-        "UPDATE \"TimeZones\" SET \"TimeZoneName\" = $1 WHERE \"TimeZoneId\" = $2 RETURNING \"TimeZoneId\" as time_zone_id, \"TimeZoneName\" as time_zone_name",
-        new_name, timezone_id
-    ).fetch_one(pool).await.map_err(AppError::DatabaseError)?; 
+    let updated_timezone = sqlx::query_as::<_, TimeZone>(UPDATE_QUERY_SQL)
+        .bind(new_name)
+        .bind(timezone_id)
+        .bind("Admin")
+        .fetch_one(pool).await.map_err(AppError::DatabaseError)?; 
 
     info!("TimeZone ID {} updated to '{}'", updated_timezone.time_zone_id, updated_timezone.time_zone_name);
     Ok(updated_timezone)

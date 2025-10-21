@@ -1,0 +1,50 @@
+{% extends "layout_app.html" %}
+
+{% block title %}Edit Organization{% endblock title %}
+{% block header_title %}Edit Organization{% endblock header_title %}
+
+{% block content %}
+<div class="w-full max-w-lg bg-white p-8 rounded-xl shadow-lg border border-gray-100">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6">Edit Organization (ID: {{ organization.organization_id }})</h2>
+
+    <form action="/organizations/edit/{{ organization.organization_id }}" method="post" class="space-y-6">
+
+        <div>
+            <label for="name" class="block text-sm font-medium text-gray-700">Organization Name</label>
+            <input id="name" name="name" type="text" required value="{{ organization.organization_name }}"
+                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+        </div>
+
+        <div class="flex justify-end space-x-4 pt-4 border-t mt-6">
+            <a href="/organizations/list"
+                class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition duration-150">
+                Cancel
+            </a>
+            <button type="submit"
+                class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150">
+                Save Changes
+            </button>
+        </div>
+    </form>
+
+    <div class="mt-8 pt-6 border-t border-gray-200 space-y-3 text-sm text-gray-600">
+        <h3 class="font-semibold text-gray-700">Audit Information:</h3>
+        <p>
+            <strong>Created By:</strong>
+            {{ organization.created_by | default(value="N/A") }}
+        </p>
+        <p>
+            <strong>Created Date:</strong>
+            {{ organization.created_date | date(format="%Y-%m-%d %H:%M:%S %Z") | default(value="N/A") }}
+        </p>
+        <p>
+            <strong>Last Updated By:</strong>
+            {{ organization.updated_by | default(value="N/A") }}
+        </p>
+        <p>
+            <strong>Last Updated Date:</strong>
+            {{ organization.updated_date | date(format="%Y-%m-%d %H:%M:%S %Z") | default(value="N/A") }}
+        </p>
+    </div>
+</div>
+{% endblock content %}

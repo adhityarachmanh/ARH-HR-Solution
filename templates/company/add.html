@@ -4,44 +4,148 @@
 {% block header_title %}Add New Company{% endblock header_title %}
 
 {% block content %}
-    <div class="w-full max-w-md bg-white p-8 rounded-xl shadow-lg border border-gray-100">
-        <h2 class="text-2xl font-bold text-gray-800 mb-6">Company Details</h2>
-        
-        {% if error %}
-            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4" role="alert">
-                <p class="font-bold">Error</p>
-                <p>{{ error }}</p>
-            </div>
-        {% endif %}
+<div class="w-full max-w-4xl bg-white p-8 rounded-xl shadow-lg border border-gray-100">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6">Company Details (17 Fields)</h2>
 
-        <form action="/companies/add" method="post" class="space-y-6">
-            
+    {% if error %}
+    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4" role="alert">
+        <p class="font-bold">Error</p>
+        <p>{{ error }}</p>
+    </div>
+    {% endif %}
+
+    <form action="/companies/add" method="post" class="space-y-6">
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="md:col-span-2">
+                <h3 class="text-lg font-semibold border-b pb-2 mb-4 text-indigo-600">Core Information & Payroll</h3>
+            </div>
+
             <div>
                 <label for="name" class="block text-sm font-medium text-gray-700">Company Name</label>
-                <input id="name" name="name" type="text" required 
-                       class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                <input id="name" name="name" type="text" required
+                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
             </div>
 
             <div>
-                <label for="prev_day_payroll" class="block text-sm font-medium text-gray-700">Previous Month Payroll Day (e.g., 21)</label>
+                <label for="retirement_age" class="block text-sm font-medium text-gray-700">Retirement Age (Years,
+                    Optional)</label>
+                <input id="retirement_age" name="retirement_age" type="number"
+                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+            </div>
+
+            <div>
+                <label for="prev_day_payroll" class="block text-sm font-medium text-gray-700">Prev Month Payroll Day
+                    (Required)</label>
                 <input id="prev_day_payroll" name="prev_day_payroll" type="number" required value="21"
-                       class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-            </div>
-            
-            <div>
-                <label for="current_day_payroll" class="block text-sm font-medium text-gray-700">Current Month Payroll Day (e.g., 20)</label>
-                <input id="current_day_payroll" name="current_day_payroll" type="number" required value="20"
-                       class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
             </div>
 
-            <div class="flex justify-end space-x-4 pt-4">
-                <a href="/companies/list" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition duration-150">
-                    Cancel
-                </a>
-                <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150">
-                    Create Company
-                </button>
+            <div>
+                <label for="current_day_payroll" class="block text-sm font-medium text-gray-700">Current Month Payroll
+                    Day (Required)</label>
+                <input id="current_day_payroll" name="current_day_payroll" type="number" required value="20"
+                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
             </div>
-        </form>
-    </div>
+
+            <div class="md:col-span-2">
+                <h3 class="text-lg font-semibold border-b pb-2 mb-4 text-indigo-600">Contact & Address Details</h3>
+            </div>
+
+            <div class="md:col-span-2">
+                <label for="address" class="block text-sm font-medium text-gray-700">Address (Optional)</label>
+                <input id="address" name="address" type="text"
+                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+            </div>
+
+            <div>
+                <label for="zip_code" class="block text-sm font-medium text-gray-700">Zip Code (Optional)</label>
+                <input id="zip_code" name="zip_code" type="text"
+                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+            </div>
+
+            <div>
+                <label for="phone_number" class="block text-sm font-medium text-gray-700">Phone Number
+                    (Optional)</label>
+                <input id="phone_number" name="phone_number" type="text"
+                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+            </div>
+
+            <div>
+                <label for="mobile_number" class="block text-sm font-medium text-gray-700">Mobile Number
+                    (Optional)</label>
+                <input id="mobile_number" name="mobile_number" type="text"
+                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+            </div>
+
+            <div>
+                <label for="email" class="block text-sm font-medium text-gray-700">Email (Optional)</label>
+                <input id="email" name="email" type="email"
+                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+            </div>
+
+            <div class="md:col-span-2">
+                <label for="website" class="block text-sm font-medium text-gray-700">Website (Optional)</label>
+                <input id="website" name="website" type="url"
+                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+            </div>
+
+            <div class="md:col-span-2">
+                <h3 class="text-lg font-semibold border-b pb-2 mb-4 text-indigo-600">BPJS Percentage Settings (Float,
+                    Optional)</h3>
+            </div>
+
+            <div>
+                <label for="bpjstk_pendapatan_pk" class="block text-sm font-medium text-gray-700">BPJSTK Pendapatan
+                    PK</label>
+                <input id="bpjstk_pendapatan_pk" name="bpjstk_pendapatan_pk" type="number" step="0.01"
+                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+            </div>
+            <div>
+                <label for="bpjsks_pendapatan_pk" class="block text-sm font-medium text-gray-700">BPJSKS Pendapatan
+                    PK</label>
+                <input id="bpjsks_pendapatan_pk" name="bpjsks_pendapatan_pk" type="number" step="0.01"
+                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+            </div>
+
+            <div>
+                <label for="bpjstk_pengurangan_pk" class="block text-sm font-medium text-gray-700">BPJSTK Pengurangan
+                    PK</label>
+                <input id="bpjstk_pengurangan_pk" name="bpjstk_pengurangan_pk" type="number" step="0.01"
+                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+            </div>
+            <div>
+                <label for="bpjsks_pengurangan_pk" class="block text-sm font-medium text-gray-700">BPJSKS Pengurangan
+                    PK</label>
+                <input id="bpjsks_pengurangan_pk" name="bpjsks_pengurangan_pk" type="number" step="0.01"
+                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+            </div>
+
+            <div>
+                <label for="bpjstk_pengurangan_pekerja" class="block text-sm font-medium text-gray-700">BPJSTK
+                    Pengurangan Pekerja</label>
+                <input id="bpjstk_pengurangan_pekerja" name="bpjstk_pengurangan_pekerja" type="number" step="0.01"
+                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+            </div>
+            <div>
+                <label for="bpjsks_pengurangan_pekerja" class="block text-sm font-medium text-gray-700">BPJSKS
+                    Pengurangan Pekerja</label>
+                <input id="bpjsks_pengurangan_pekerja" name="bpjsks_pengurangan_pekerja" type="number" step="0.01"
+                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+            </div>
+
+        </div>
+
+        <div class="flex justify-end space-x-4 pt-4 border-t mt-6">
+            <a href="/companies/list"
+                class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition duration-150">
+                Cancel
+            </a>
+            <button type="submit"
+                class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150">
+                Create Company
+            </button>
+        </div>
+    </form>
+</div>
 {% endblock content %}
