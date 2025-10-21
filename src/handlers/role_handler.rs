@@ -14,7 +14,6 @@ pub struct AddRoleFormData {
     name: String,
 }
 
-// Handler untuk menampilkan halaman daftar peran (roles).
 pub async fn list_roles(
     pool: web::Data<PgPool>,
     tera: web::Data<Tera>,
@@ -48,7 +47,6 @@ pub async fn list_roles(
 }
 
 
-// Handler untuk menampilkan form tambah peran baru (GET /roles/add)
 pub async fn show_add_role_form(
     pool: web::Data<PgPool>,
     tera: web::Data<Tera>,
@@ -80,7 +78,6 @@ pub async fn show_add_role_form(
 }
 
 
-// Handler untuk memproses form tambah peran (POST /roles/add)
 pub async fn add_role_action(
     pool: web::Data<PgPool>,
     tera: web::Data<Tera>,
@@ -112,7 +109,6 @@ pub async fn add_role_action(
     }
 }
 
-// Handler untuk menampilkan form edit peran (GET /roles/edit/{id})
 pub async fn show_edit_role_form(
     pool: web::Data<PgPool>,
     tera: web::Data<Tera>,
@@ -135,7 +131,6 @@ pub async fn show_edit_role_form(
     Ok(HttpResponse::Ok().body(rendered))
 }
 
-// Handler untuk memproses form edit peran (POST /roles/edit/{id})
 pub async fn edit_role_action(
     pool: web::Data<PgPool>,
     tera: web::Data<Tera>,
@@ -172,7 +167,6 @@ pub async fn edit_role_action(
     }
 }
 
-// Handler untuk menghapus peran (POST /roles/delete/{id})
 pub async fn delete_role_action(
     pool: web::Data<PgPool>,
     session: Session,

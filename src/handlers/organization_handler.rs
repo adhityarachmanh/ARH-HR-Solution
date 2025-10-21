@@ -24,6 +24,6 @@ pub async fn list_organizations(
     context.insert("organizations", &organizations);
     context.insert("username", &username);
 
-    let rendered = tera.render("hris/organizations_list.html", &context).map_err(AppError::TeraError)?;
+    let rendered = tera.render("organizations/list.html", &context).map_err(AppError::TeraError)?;
     Ok(HttpResponse::Ok().body(rendered))
 }

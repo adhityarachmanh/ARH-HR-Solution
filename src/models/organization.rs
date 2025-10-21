@@ -2,7 +2,6 @@
 use serde::{Serialize, Deserialize};
 use sqlx::FromRow;
 
-// Master Data: Organizations (Departemen/Unit)
 #[derive(Debug, Serialize, Deserialize, FromRow, Clone)]
 pub struct Organization {
     pub organization_id: i32,

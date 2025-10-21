@@ -5,3 +5,5 @@ pub mod role_service;
 pub mod permission_service;
 pub mod branch_service;
 pub mod organization_service;
+pub mod company_service;
+pub mod timezone_service;

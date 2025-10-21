@@ -1,15 +1,120 @@
-<header class="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200">
-    <div class="flex items-center">
-        <h1 class="text-xl font-semibold text-gray-800">Admin Panel</h1>
+<header class="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200 shadow-md">
+
+    <div class="flex items-center space-x-6">
+        <a href="/" class="text-2xl font-bold text-indigo-600 hover:text-indigo-800 transition duration-150">
+            CMS Project
+        </a>
+
+        <nav class="hidden md:flex space-x-4">
+
+            <a href="/"
+                class="text-gray-600 hover:text-indigo-600 font-medium transition duration-150 pt-3 pb-3">Dashboard</a>
+
+            <div class="relative dropdown pt-3 pb-3 group">
+                <button
+                    class="text-gray-600 hover:text-indigo-600 font-medium flex items-center transition duration-150">
+                    Company
+                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+
+                <div
+                    class="dropdown-menu hidden absolute z-30 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 py-1">
+
+                    <div class="px-4 py-2">
+                        <span class="font-bold text-xs uppercase text-gray-500 block pb-2">Master Data</span>
+                        <div class="pl-2 space-y-2">
+                            <a href="/companies/list" class="block text-sm text-gray-700 hover:text-indigo-600">Company
+                                Info</a>
+                            <a href="/branches/list"
+                                class="block text-sm text-gray-700 hover:text-indigo-600">Branch</a>
+                            <a href="/organizations/list"
+                                class="block text-sm text-gray-700 hover:text-indigo-600">Organization</a>
+                            <a href="/jobpositions/list" class="block text-sm text-gray-700 hover:text-indigo-600">Job
+                                Position</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="relative dropdown pt-3 pb-3 group">
+                <button
+                    class="text-gray-600 hover:text-indigo-600 font-medium flex items-center transition duration-150">
+                    Attendance
+                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+
+                <div
+                    class="dropdown-menu hidden absolute z-30 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 py-1">
+                    <div class="px-4 py-2">
+                        <span class="font-bold text-xs uppercase text-gray-500 block pb-2">Master Data</span>
+
+                        <div class="pl-2 space-y-2">
+                            <a href="/master/holidays"
+                                class="block text-sm text-gray-700 hover:text-indigo-600">Holidays</a>
+                            <a href="/timezones/list"
+                                class="block text-sm text-gray-700 hover:text-indigo-600">Timezones</a>
+                            <a href="/master/locations"
+                                class="block text-sm text-gray-700 hover:text-indigo-600">Attendance Locations</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="relative dropdown pt-3 pb-3">
+                <button
+                    class="text-gray-600 hover:text-indigo-600 font-medium flex items-center transition duration-150">
+                    User Management
+                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div
+                    class="dropdown-menu hidden absolute z-30 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 py-1">
+                    <a href="/users/list" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Manage
+                        Users</a>
+                    <a href="/roles/list" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Manage
+                        Roles</a>
+                    <a href="/permissions/list"
+                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Permissions Master</a>
+                </div>
+            </div>
+        </nav>
     </div>
 
     <div class="flex items-center">
-        <span class="text-gray-700 mr-4">Hi, **{{ username | default(value="Admin") }}**</span>
-        
-        <form action="/logout" method="post" class="inline">
-            <button type="submit" class="px-3 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 transition duration-150">
-                Logout
+
+        <div class="relative dropdown pt-3 pb-3 group">
+            <button
+                class="flex items-center space-x-2 text-gray-700 hover:text-indigo-600 transition duration-150 focus:outline-none">
+                <svg class="w-8 h-8 rounded-full bg-gray-200 p-1 text-gray-600" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z">
+                    </path>
+                </svg>
+                <span class="font-medium hidden sm:inline">{{ username | default(value="Admin") }}</span>
             </button>
-        </form>
+
+            <div
+                class="dropdown-menu hidden absolute z-40 right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 py-1">
+
+                <a href="/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    Your Profile
+                </a>
+
+                <div class="border-t border-gray-200 my-1"></div>
+
+                <form action="/logout" method="post">
+                    <button type="submit"
+                        class="w-full text-left block px-4 py-2 text-sm text-red-600 hover:bg-red-100 transition duration-150">
+                        Logout
+                    </button>
+                </form>
+            </div>
+        </div>
     </div>
 </header>

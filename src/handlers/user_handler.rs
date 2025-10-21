@@ -15,7 +15,6 @@ pub struct AddUserFormData {
     roles: Option<Vec<i32>>, 
 }
 
-// Handler untuk menampilkan halaman daftar pengguna.
 pub async fn list_users(
     pool: web::Data<PgPool>,
     tera: web::Data<Tera>,
@@ -37,7 +36,7 @@ pub async fn list_users(
             context.insert("users", &all_users);
             context.insert("username", &current_user.username);
 
-            let rendered = tera.render("users/users.html", &context)
+            let rendered = tera.render("users/list.html", &context)
                 .map_err(AppError::TeraError)?;
             
             Ok(HttpResponse::Ok().body(rendered))
@@ -53,7 +52,6 @@ pub async fn list_users(
     }
 }
 
-// Handler untuk menampilkan form tambah pengguna baru.
 pub async fn show_add_user_form(
     pool: web::Data<PgPool>,
     tera: web::Data<Tera>,
@@ -87,7 +85,6 @@ pub async fn show_add_user_form(
     }
 }
 
-// Handler untuk memproses form tambah pengguna (POST).
 pub async fn add_user_action(
     pool: web::Data<PgPool>,
     tera: web::Data<Tera>,
