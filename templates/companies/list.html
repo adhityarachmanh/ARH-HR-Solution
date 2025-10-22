@@ -1,17 +1,23 @@
 {% extends "layout_app.html" %}
 
-{% block title %}Master Branches{% endblock title %}
-{% block header_title %}Company Branches List{% endblock header_title %}
+{% block title %}{{ title }}{% endblock title %}
+{% block header_title %}{{ header_title }}{% endblock header_title %}
 
 {% block content %}
 <div class="flex justify-between items-center mb-6">
-    <h1 class="text-3xl font-bold text-gray-800">Branches (Cabang)</h1>
-    <a href="/branches/add"
-        class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 transition duration-150">Add
-        New Branch</a>
+    <h1 class="text-3xl font-bold text-gray-800">Companies (Perusahaan)</h1>
+    <a href="/companies/add"
+        class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 transition duration-150">
+        <i class="fas fa-plus mr-1"></i> Add New Company
+    </a>
 </div>
 
 <div class="bg-white rounded-xl shadow-lg overflow-x-auto border border-gray-100 p-6">
+    {% if companies | length == 0 %}
+    <div class="px-6 py-8 text-center text-gray-500 italic">
+        No companies found.
+    </div>
+    {% else %}
     <table id="data-table" class="min-w-full border border-gray-300">
         <thead class="bg-gray-50">
             <tr>
@@ -20,59 +26,51 @@
                     ID</th>
                 <th
                     class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-r border-b border-gray-300">
-                    Branch Name</th>
-                <th
-                    class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-r border-b border-gray-300">
                     Company Name</th>
                 <th
                     class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-r border-b border-gray-300">
-                    Time Zone</th>
+                    Email</th>
                 <th
                     class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-r border-b border-gray-300">
-                    Created Date</th>
+                    Phone</th>
+                <th
+                    class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-r border-b border-gray-300">
+                    Payroll Day</th>
                 <th
                     class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-300">
                     Actions</th>
             </tr>
         </thead>
         <tbody class="bg-white">
-            {% for branch in branches %}
+            {% for company in companies %}
             <tr class="hover:bg-gray-50 transition duration-100 border-b border-gray-200">
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-r border-gray-300">{{
-                    branch.branch_id }}</td>
+                    company.comp_id }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 border-r border-gray-300">{{
-                    branch.branch_name }}</td>
-
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 font-medium border-r border-gray-300">{{
-                    branch.company_name |
-                    default(value="[Unassigned]") }}</td>
-
+                    company.comp_name | default(value="N/A") }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 border-r border-gray-300">{{
-                    branch.timezone_name |
-                    default(value="[Unassigned]") }}</td>
-
+                    company.comp_email | default(value="N/A") }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 border-r border-gray-300">{{
-                    branch.created_date |
-                    date(format="%d/%m/%Y") | default(value="N/A") }}</td>
-
+                    company.comp_phone_number | default(value="N/A") }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 border-r border-gray-300">
+                    {{ company.prev_month_day_payroll }}/{{ company.current_month_day_payroll }}
+                </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium flex items-center space-x-2">
-                    <a href="/branches/edit/{{ branch.branch_id }}"
-                        class="text-indigo-600 hover:text-indigo-900 transition duration-150">Edit</a>
+                    <a href="/companies/edit/{{ company.comp_id }}"
+                        class="text-indigo-600 hover:text-indigo-900 transition duration-150"><i
+                            class="fas fa-edit"></i> Edit</a>
 
-                    <form action="/branches/delete/{{ branch.branch_id }}" method="post"
-                        onsubmit="return confirm('Are you sure you want to delete branch {{ branch.branch_name }}?');">
-                        <button type="submit"
-                            class="text-red-600 hover:text-red-900 transition duration-150 ml-4">Delete</button>
+                    <form action="/companies/delete/{{ company.comp_id }}" method="post"
+                        onsubmit="return confirm('Are you sure you want to delete company {{ company.comp_name | default(value="this") }}?');">
+                        <button type="submit" class="text-red-600 hover:text-red-900 transition duration-150 ml-4"><i
+                                class="fas fa-trash-alt"></i> Delete</button>
                     </form>
                 </td>
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="6" class="px-6 py-8 text-center text-gray-500 italic">No branches found.</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
+    {% endif %}
 </div>
 
 {% block script_init %}
@@ -90,8 +88,9 @@
                     { select: 2, sortable: true },
                     { select: 3, sortable: true },
                     { select: 4, sortable: true },
-                    { select: 5, sortable: false }, // Actions
+                    { select: 5, sortable: false },
                 ],
+                sort: [1, "asc"]
             });
         }
     });

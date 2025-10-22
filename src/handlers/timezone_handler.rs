@@ -14,7 +14,6 @@ pub struct TimeZoneFormData {
     pub name: String,
 }
 
-// Handler untuk menampilkan daftar TimeZone (READ ALL)
 pub async fn list_timezones(pool: web::Data<PgPool>, tera: web::Data<Tera>, session: Session) -> Result<HttpResponse, AppError> {
     if session.get::<i64>("user_id").unwrap_or(None).is_none() {
         return Ok(HttpResponse::Found().append_header(("Location", "/login")).finish());
@@ -31,7 +30,6 @@ pub async fn list_timezones(pool: web::Data<PgPool>, tera: web::Data<Tera>, sess
     Ok(HttpResponse::Ok().body(rendered))
 }
 
-// Handler untuk menampilkan form Add (CREATE)
 pub async fn show_add_timezone_form(pool: web::Data<PgPool>, tera: web::Data<Tera>, session: Session) -> Result<HttpResponse, AppError> {
     if session.get::<i64>("user_id").unwrap_or(None).is_none() {
         return Ok(HttpResponse::Found().append_header(("Location", "/login")).finish());
@@ -43,7 +41,6 @@ pub async fn show_add_timezone_form(pool: web::Data<PgPool>, tera: web::Data<Ter
     Ok(HttpResponse::Ok().body(rendered))
 }
 
-// Handler untuk memproses aksi Add (CREATE)
 pub async fn add_timezone_action(pool: web::Data<PgPool>, tera: web::Data<Tera>, form: web::Form<TimeZoneFormData>, session: Session) -> Result<HttpResponse, AppError> {
     if session.get::<i64>("user_id").unwrap_or(None).is_none() {
         return Ok(HttpResponse::Found().append_header(("Location", "/login")).finish());
@@ -65,7 +62,6 @@ pub async fn add_timezone_action(pool: web::Data<PgPool>, tera: web::Data<Tera>,
     }
 }
 
-// Handler untuk menampilkan form Edit (UPDATE)
 pub async fn show_edit_timezone_form(pool: web::Data<PgPool>, tera: web::Data<Tera>, session: Session, path: web::Path<i32>) -> Result<HttpResponse, AppError> {
     if session.get::<i64>("user_id").unwrap_or(None).is_none() {
         return Ok(HttpResponse::Found().append_header(("Location", "/login")).finish());
@@ -82,7 +78,6 @@ pub async fn show_edit_timezone_form(pool: web::Data<PgPool>, tera: web::Data<Te
     Ok(HttpResponse::Ok().body(rendered))
 }
 
-// Handler untuk memproses aksi Edit (UPDATE)
 pub async fn edit_timezone_action(pool: web::Data<PgPool>, _tera: web::Data<Tera>, path: web::Path<i32>, form: web::Form<TimeZoneFormData>, session: Session) -> Result<HttpResponse, AppError> {
     if session.get::<i64>("user_id").unwrap_or(None).is_none() {
         return Ok(HttpResponse::Found().append_header(("Location", "/login")).finish());
@@ -94,7 +89,6 @@ pub async fn edit_timezone_action(pool: web::Data<PgPool>, _tera: web::Data<Tera
     Ok(HttpResponse::Found().append_header(("Location", "/timezones/list")).finish())
 }
 
-// Handler untuk memproses aksi Delete (DELETE)
 pub async fn delete_timezone_action(pool: web::Data<PgPool>, session: Session, path: web::Path<i32>) -> Result<HttpResponse, AppError> {
     if session.get::<i64>("user_id").unwrap_or(None).is_none() {
         return Ok(HttpResponse::Found().append_header(("Location", "/login")).finish());

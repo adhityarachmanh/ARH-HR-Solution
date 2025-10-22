@@ -4,17 +4,14 @@ use crate::models::Organization;
 use crate::errors::AppError;
 use tracing::info;
 
-// Query field helper (digunakan untuk READ)
 const SELECT_BASE_QUERY: &str = r#"SELECT "OrganizationId" as organization_id, "OrganizationName" as organization_name, "CreatedDate" as created_date, "CreatedBy" as created_by, "UpdatedDate" as updated_date, "UpdatedBy" as updated_by FROM "Organizations""#;
 
-// Query CREATE sebagai string literal
 const CREATE_QUERY_SQL: &str = r#"
     INSERT INTO "Organizations" ("OrganizationName", "CreatedDate", "CreatedBy", "UpdatedDate", "UpdatedBy") 
     VALUES ($1, NOW(), $2, NOW(), $2) 
     RETURNING "OrganizationId", "OrganizationName", "CreatedDate", "CreatedBy", "UpdatedDate", "UpdatedBy"
 "#;
 
-// Query UPDATE sebagai string literal
 const UPDATE_QUERY_SQL: &str = r#"
     UPDATE "Organizations" 
     SET "OrganizationName" = $1, "UpdatedDate" = NOW(), "UpdatedBy" = $3 
@@ -22,7 +19,6 @@ const UPDATE_QUERY_SQL: &str = r#"
     RETURNING "OrganizationId", "OrganizationName", "CreatedDate", "CreatedBy", "UpdatedDate", "UpdatedBy"
 "#;
 
-// READ All
 pub async fn get_all_organizations(pool: &PgPool) -> Result<Vec<Organization>, AppError> {
     let sql_query = format!("{} ORDER BY \"OrganizationName\" ASC", SELECT_BASE_QUERY);
     
@@ -34,7 +30,6 @@ pub async fn get_all_organizations(pool: &PgPool) -> Result<Vec<Organization>, A
     Ok(organizations)
 }
 
-// READ By ID
 pub async fn get_organization_by_id(pool: &PgPool, org_id: i32) -> Result<Organization, AppError> {
     let sql_query = format!("{} WHERE \"OrganizationId\" = $1", SELECT_BASE_QUERY);
     
@@ -49,7 +44,6 @@ pub async fn get_organization_by_id(pool: &PgPool, org_id: i32) -> Result<Organi
     Ok(organization)
 }
 
-// CREATE
 pub async fn create_organization(pool: &PgPool, name: &str) -> Result<Organization, AppError> {
     let exists = sqlx::query_scalar!(
         "SELECT EXISTS(SELECT 1 FROM \"Organizations\" WHERE LOWER(\"OrganizationName\") = LOWER($1))", name
@@ -66,7 +60,6 @@ pub async fn create_organization(pool: &PgPool, name: &str) -> Result<Organizati
     Ok(new_organization)
 }
 
-// UPDATE
 pub async fn update_organization(pool: &PgPool, org_id: i32, new_name: &str) -> Result<Organization, AppError> {
     let exists = sqlx::query_scalar!(
         "SELECT EXISTS(SELECT 1 FROM \"Organizations\" WHERE LOWER(\"OrganizationName\") = LOWER($1) AND \"OrganizationId\" != $2)",
@@ -85,7 +78,6 @@ pub async fn update_organization(pool: &PgPool, org_id: i32, new_name: &str) -> 
     Ok(updated_organization)
 }
 
-// DELETE
 pub async fn delete_organization(pool: &PgPool, org_id: i32) -> Result<(), AppError> {
     let result = sqlx::query!("DELETE FROM \"Organizations\" WHERE \"OrganizationId\" = $1", org_id)
         .execute(pool).await.map_err(AppError::DatabaseError)?;

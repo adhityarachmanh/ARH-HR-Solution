@@ -4,40 +4,42 @@
 {% block header_title %}Manage Permissions for Role: {{ role.name }}{% endblock header_title %}
 
 {% block content %}
-    <div class="w-full max-w-4xl bg-white p-8 rounded-xl shadow-lg border border-gray-100">
-        <h2 class="text-2xl font-bold text-gray-800 mb-6">Assign Permissions</h2>
-        <p class="text-sm text-gray-500 mb-6">Pilih izin mana yang akan dimiliki oleh peran **{{ role.name }}**.</p>
-        
-        <form action="/roles/permissions/{{ role.id }}" method="post" class="space-y-6">
-            
-            <div class="space-y-4">
-                {% for perm in all_permissions %}
-                <div class="bg-gray-50 p-4 rounded-md border border-gray-200 hover:bg-gray-100 transition duration-100">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center">
-                            <input id="perm_{{ perm.id }}" name="permissions" type="checkbox" value="{{ perm.id }}"
-                                   class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-                                   {% if owned_ids | contains(value=perm.id) %}checked{% endif %}>
-                            <label for="perm_{{ perm.id }}" class="ml-3 text-base font-medium text-gray-900">
-                                {{ perm.name }} 
-                            </label>
-                        </div>
-                    </div>
-                    <p class="mt-1 ml-7 text-sm text-gray-500">{{ perm.description }}</p>
-                </div>
-                {% else %}
-                <p class="text-sm text-gray-500">No master permissions are defined.</p>
-                {% endfor %}
-            </div>
+<div class="w-full max-w-4xl bg-white p-8 rounded-xl shadow-lg border border-gray-100">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6">Assign Permissions</h2>
+    <p class="text-sm text-gray-500 mb-6">Pilih izin mana yang akan dimiliki oleh peran **{{ role.name }}**.</p>
 
-            <div class="flex justify-end space-x-4 pt-4 border-t pt-6">
-                <a href="/roles/list" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition duration-150">
-                    Cancel
-                </a>
-                <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150">
-                    Save Permissions
-                </button>
+    <form action="/roles/permissions/{{ role.id }}" method="post" class="space-y-6">
+
+        <div class="space-y-4">
+            {% for perm in all_permissions %}
+            <div class="bg-gray-50 p-4 rounded-md border border-gray-200 hover:bg-gray-100 transition duration-100">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <input id="perm_{{ perm.id }}" name="permissions" type="checkbox" value="{{ perm.id }}"
+                            class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" {% if
+                            owned_ids | contains(value=perm.id) %}checked{% endif %}>
+                        <label for="perm_{{ perm.id }}" class="ml-3 text-base font-medium text-gray-900">
+                            {{ perm.name }}
+                        </label>
+                    </div>
+                </div>
+                <p class="mt-1 ml-7 text-sm text-gray-500">{{ perm.description }}</p>
             </div>
-        </form>
-    </div>
+            {% else %}
+            <p class="text-sm text-gray-500">No master permissions are defined.</p>
+            {% endfor %}
+        </div>
+
+        <div class="flex justify-end space-x-4 pt-4 border-t pt-6">
+            <a href="/roles/list"
+                class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition duration-150">
+                Cancel
+            </a>
+            <button type="submit"
+                class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150">
+                Save Permissions
+            </button>
+        </div>
+    </form>
+</div>
 {% endblock content %}

@@ -1,4 +1,3 @@
-// src/handlers/company_handler.rs
 use actix_session::Session;
 use actix_web::{web, HttpResponse};
 use serde::Deserialize;
@@ -8,14 +7,11 @@ use tera::Tera;
 use crate::errors::AppError;
 use crate::handlers::permission_handler::get_username;
 use crate::models::Company;
-use crate::services::company_service; // Asumsi helper function ada
+use crate::services::company_service;
 
-// Struct Form Data untuk menerima input dari form HTML
 #[derive(Deserialize)]
 pub struct CompanyFormData {
     pub name: String,
-
-    // Detail Kontak & Alamat
     pub address: Option<String>,
     pub zip_code: Option<String>,
     pub phone_number: Option<String>,
@@ -23,26 +19,46 @@ pub struct CompanyFormData {
     pub email: Option<String>,
     pub website: Option<String>,
     pub retirement_age: Option<i32>,
-
-    // Field BPJS
     pub bpjstk_pendapatan_pk: Option<f64>,
     pub bpjsks_pendapatan_pk: Option<f64>,
     pub bpjstk_pengurangan_pk: Option<f64>,
     pub bpjsks_pengurangan_pk: Option<f64>,
     pub bpjstk_pengurangan_pekerja: Option<f64>,
     pub bpjsks_pengurangan_pekerja: Option<f64>,
-
-    // Payroll Days (Asumsi NOT NULL)
     pub prev_day_payroll: i32,
     pub current_day_payroll: i32,
 }
 
-// Helper untuk mengekstrak Option<&str> dari Option<String>
-fn as_deref_option(s: &Option<String>) -> Option<&str> {
-    s.as_deref()
+fn map_form_to_company(form: &CompanyFormData) -> Company {
+    Company {
+        comp_id: 0,
+        comp_name: Some(form.name.clone()),
+        comp_address: form.address.clone(),
+        comp_zip_code: form.zip_code.clone(),
+        comp_phone_number: form.phone_number.clone(),
+        comp_mobile_number: form.mobile_number.clone(),
+        comp_email: form.email.clone(),
+        comp_website: form.website.clone(),
+        comp_retirement_age: form.retirement_age,
+
+        prev_month_day_payroll: form.prev_day_payroll,
+        current_month_day_payroll: form.current_day_payroll,
+
+        bpjstk_pendapatan_pk: form.bpjstk_pendapatan_pk,
+        bpjsks_pendapatan_pk: form.bpjsks_pendapatan_pk,
+        bpjstk_pengurangan_pk: form.bpjstk_pengurangan_pk,
+        bpjsks_pengurangan_pk: form.bpjsks_pengurangan_pk,
+        bpjstk_pengurangan_pekerja: form.bpjstk_pengurangan_pekerja,
+        bpjsks_pengurangan_pekerja: form.bpjsks_pengurangan_pekerja,
+
+        created_date: None,
+        created_by: None,
+        updated_date: None,
+        updated_by: None,
+    }
 }
 
-// Handler untuk menampilkan daftar semua perusahaan
+// --- READ All ---
 pub async fn list_companies(
     pool: web::Data<PgPool>,
     tera: web::Data<Tera>,
@@ -56,18 +72,19 @@ pub async fn list_companies(
 
     let companies = company_service::get_all_companies(pool.get_ref()).await?;
     let username = get_username(pool.get_ref(), &session).await;
-
     let mut context = tera::Context::new();
     context.insert("companies", &companies);
     context.insert("username", &username);
+    context.insert("title", "Master Companies");
+    context.insert("header_title", "Company List");
 
     let rendered = tera
-        .render("company/list.html", &context)
+        .render("companies/list.html", &context)
         .map_err(AppError::TeraError)?;
     Ok(HttpResponse::Ok().body(rendered))
 }
 
-// Handler untuk menampilkan form tambah perusahaan
+// --- CREATE Show Form ---
 pub async fn show_add_company_form(
     pool: web::Data<PgPool>,
     tera: web::Data<Tera>,
@@ -78,20 +95,22 @@ pub async fn show_add_company_form(
             .append_header(("Location", "/login"))
             .finish());
     }
+
     let username = get_username(pool.get_ref(), &session).await;
     let mut context = tera::Context::new();
     context.insert("username", &username);
+    context.insert("title", "Add Company");
+    context.insert("header_title", "Add New Company");
+
     let rendered = tera
-        .render("company/add.html", &context)
+        .render("companies/add.html", &context)
         .map_err(AppError::TeraError)?;
     Ok(HttpResponse::Ok().body(rendered))
 }
 
-// Handler untuk memproses data dari form CREATE
-#[allow(clippy::too_many_arguments)]
+// --- CREATE Action ---
 pub async fn add_company_action(
     pool: web::Data<PgPool>,
-    _tera: web::Data<Tera>,
     form: web::Form<CompanyFormData>,
     session: Session,
 ) -> Result<HttpResponse, AppError> {
@@ -101,36 +120,17 @@ pub async fn add_company_action(
             .finish());
     }
 
-    let result = company_service::create_company(
-        pool.get_ref(),
-        &form.name,
-        as_deref_option(&form.address),
-        as_deref_option(&form.zip_code),
-        as_deref_option(&form.phone_number),
-        as_deref_option(&form.mobile_number),
-        as_deref_option(&form.email),
-        as_deref_option(&form.website),
-        form.retirement_age,
-        form.bpjstk_pendapatan_pk,
-        form.bpjsks_pendapatan_pk,
-        form.bpjstk_pengurangan_pk,
-        form.bpjsks_pengurangan_pk,
-        form.bpjstk_pengurangan_pekerja,
-        form.bpjsks_pengurangan_pekerja,
-        form.prev_day_payroll,
-        form.current_day_payroll,
-    )
-    .await;
+    let company_data = map_form_to_company(&form);
+    let created_by = get_username(pool.get_ref(), &session).await;
 
-    match result {
-        Ok(_) => Ok(HttpResponse::Found()
-            .append_header(("Location", "/companies/list"))
-            .finish()),
-        Err(e) => Err(e),
-    }
+    company_service::create_company(pool.get_ref(), company_data, &created_by).await?;
+
+    Ok(HttpResponse::Found()
+        .append_header(("Location", "/companies/list"))
+        .finish())
 }
 
-// Handler untuk menampilkan form edit perusahaan
+// --- UPDATE Show Form ---
 pub async fn show_edit_company_form(
     pool: web::Data<PgPool>,
     tera: web::Data<Tera>,
@@ -142,24 +142,37 @@ pub async fn show_edit_company_form(
             .append_header(("Location", "/login"))
             .finish());
     }
-    let comp_id = path.into_inner();
-    let company = company_service::get_company_by_id(pool.get_ref(), comp_id).await?;
+
+    let id = path.into_inner();
+    let company = company_service::get_company_by_id(pool.get_ref(), id).await?;
 
     let username = get_username(pool.get_ref(), &session).await;
     let mut context = tera::Context::new();
+
+    // --- KOREKSI UNTUK E0308 ---
+    // 1. Buat String judul dan simpan dalam variabel
+    let page_title = format!(
+        "Edit Company: {}",
+        company.comp_name.as_deref().unwrap_or("N/A")
+    );
+
     context.insert("company", &company);
     context.insert("username", &username);
+
+    // 2. Gunakan referensi (&) dari variabel String
+    context.insert("title", &page_title);
+    // Baris ini tidak perlu diubah, karena sudah berupa string literal:
+    context.insert("header_title", "Edit Company Info");
+
     let rendered = tera
-        .render("company/edit.html", &context)
+        .render("companies/edit.html", &context)
         .map_err(AppError::TeraError)?;
     Ok(HttpResponse::Ok().body(rendered))
 }
 
-// Handler untuk memproses data dari form UPDATE
-#[allow(clippy::too_many_arguments)]
+// --- UPDATE Action ---
 pub async fn edit_company_action(
     pool: web::Data<PgPool>,
-    _tera: web::Data<Tera>,
     path: web::Path<i32>,
     form: web::Form<CompanyFormData>,
     session: Session,
@@ -169,52 +182,32 @@ pub async fn edit_company_action(
             .append_header(("Location", "/login"))
             .finish());
     }
-    let comp_id = path.into_inner();
 
-    let result = company_service::update_company(
-        pool.get_ref(),
-        comp_id,
-        &form.name,
-        as_deref_option(&form.address),
-        as_deref_option(&form.zip_code),
-        as_deref_option(&form.phone_number),
-        as_deref_option(&form.mobile_number),
-        as_deref_option(&form.email),
-        as_deref_option(&form.website),
-        form.retirement_age,
-        form.bpjstk_pendapatan_pk,
-        form.bpjsks_pendapatan_pk,
-        form.bpjstk_pengurangan_pk,
-        form.bpjsks_pengurangan_pk,
-        form.bpjstk_pengurangan_pekerja,
-        form.bpjsks_pengurangan_pekerja,
-        form.prev_day_payroll,
-        form.current_day_payroll,
-    )
-    .await;
+    let id = path.into_inner();
+    let company_data = map_form_to_company(&form);
+    let updated_by = get_username(pool.get_ref(), &session).await;
 
-    match result {
-        Ok(_) => Ok(HttpResponse::Found()
-            .append_header(("Location", "/companies/list"))
-            .finish()),
-        Err(e) => Err(e),
-    }
+    company_service::update_company(pool.get_ref(), id, company_data, &updated_by).await?;
+
+    Ok(HttpResponse::Found()
+        .append_header(("Location", "/companies/list"))
+        .finish())
 }
 
-// Handler untuk menghapus perusahaan
+// --- DELETE Action ---
 pub async fn delete_company_action(
     pool: web::Data<PgPool>,
-    _tera: web::Data<Tera>,
-    path: web::Path<i32>,
     session: Session,
+    path: web::Path<i32>,
 ) -> Result<HttpResponse, AppError> {
     if session.get::<i64>("user_id").unwrap_or(None).is_none() {
         return Ok(HttpResponse::Found()
             .append_header(("Location", "/login"))
             .finish());
     }
-    let comp_id = path.into_inner();
-    company_service::delete_company(pool.get_ref(), comp_id).await?;
+
+    let id = path.into_inner();
+    company_service::delete_company(pool.get_ref(), id).await?;
 
     Ok(HttpResponse::Found()
         .append_header(("Location", "/companies/list"))

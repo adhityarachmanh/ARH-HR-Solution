@@ -1,58 +1,97 @@
 {% extends "layout_app.html" %}
 
 {% block title %}Role Management{% endblock title %}
-{% block header_title %}Role Management{% endblock header_title %}
+{% block header_title %}User Role List{% endblock header_title %}
 
 {% block content %}
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold text-gray-800">User Roles</h1>
-        <a href="/roles/add" class="px-4 py-2 font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150">
-            Add New Role
-        </a>
-    </div>
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold text-gray-800">Master User Roles</h1>
+    <a href="/roles/add"
+        class="px-4 py-2 font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150">
+        Add New Role
+    </a>
+</div>
 
-    <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                        ID
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                        Role Name
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                        Actions
-                    </th>
-                </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-100">
-                {% for role in roles %}
-                <tr class="hover:bg-gray-50 transition duration-100">
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {{ role.id }}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {{ role.name }}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium flex items-center space-x-2">
-                        <a href="/roles/permissions/{{ role.id }}" class="text-blue-600 hover:text-blue-900 transition duration-150">Permissions</a>
-                        
-                        <a href="/roles/edit/{{ role.id }}" class="text-indigo-600 hover:text-indigo-900 transition duration-150 ml-4">Edit</a>
-                        
-                        <form action="/roles/delete/{{ role.id }}" method="post" onsubmit="return confirm('Are you sure you want to delete role {{ role.name }}? This will remove all associated permissions and unlink users from this role.');">
-                            <button type="submit" class="text-red-600 hover:text-red-900 transition duration-150 ml-4">Delete</button>
+<div class="bg-white rounded-xl shadow-lg overflow-x-auto border border-gray-100 p-6">
+    <table id="data-table" class="min-w-full border border-gray-300 border-collapse">
+        <thead class="bg-gray-50">
+            <tr>
+                <th
+                    class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-gray-300">
+                    ID</th>
+                <th
+                    class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-gray-300">
+                    Role Name (UI)</th>
+                <th
+                    class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-gray-300">
+                    Role Slug (System)</th>
+                <th
+                    class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-gray-300">
+                    Actions</th>
+            </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-100">
+            {% for role in roles %}
+            <tr class="hover:bg-gray-50 transition duration-100">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border border-gray-300">
+                    {{ role.id }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 font-medium border border-gray-300">
+                    {{ role.display_name }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 border border-gray-300">
+                    {{ role.name }}
+                </td>
+
+
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium border border-gray-300">
+                    <div class="flex items-center space-x-2">
+                        <a href="/roles/permissions/{{ role.id }}"
+                            class="text-blue-600 hover:text-blue-900 transition duration-150">Permissions</a>
+
+                        <a href="/roles/edit/{{ role.id }}"
+                            class="text-indigo-600 hover:text-indigo-900 transition duration-150 ml-4">Edit</a>
+
+                        <form action="/roles/delete/{{ role.id }}" method="post"
+                            onsubmit="return confirm('Are you sure you want to delete role {{ role.display_name }}?');">
+                            <button type="submit"
+                                class="text-red-600 hover:text-red-900 transition duration-150 ml-4">Delete</button>
                         </form>
-                    </td>
-                </tr>
-                {% else %}
-                <tr>
-                    <td colspan="3" class="px-6 py-8 text-center text-gray-500 text-base italic">
-                        No roles found in the database.
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+                    </div>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6" class="px-6 py-8 text-center text-gray-500 text-base italic border border-gray-300">
+                    No roles found in the database.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% block script_init %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const tableElement = document.getElementById('data-table');
+        if (tableElement) {
+            new simpleDatatables.DataTable(tableElement, {
+                searchable: true,
+                fixedHeight: false,
+                perPageSelect: [10, 25, 50, 100],
+                // Konfigurasi kolom: Actions adalah index 5 (dari 0-5)
+                columns: [
+                    { select: 0, sortable: true },
+                    { select: 1, sortable: true },
+                    { select: 2, sortable: true },
+                    { select: 3, sortable: true },
+                    { select: 4, sortable: true },
+                    { select: 5, sortable: false }, // Actions
+                ],
+            });
+        }
+    });
+</script>
+{% endblock script_init %}
 {% endblock content %}
