@@ -8,7 +8,7 @@ use time::OffsetDateTime;
 
 use crate::errors::AppError;
 use crate::handlers::permission_handler::get_username;
-use crate::models::Holiday;
+use crate::models::{Holiday, PaginationParams};
 use crate::services::holiday_service;
 
 #[derive(Deserialize)]
@@ -49,6 +49,7 @@ pub async fn list_holidays(
     pool: web::Data<PgPool>,
     tera: web::Data<Tera>,
     session: Session,
+    params: web::Query<PaginationParams>,
 ) -> Result<HttpResponse, AppError> {
     if session.get::<i64>("user_id").unwrap_or(None).is_none() {
         return Ok(HttpResponse::Found()
@@ -56,12 +57,29 @@ pub async fn list_holidays(
             .finish());
     }
 
-    let holidays = holiday_service::get_all_holidays(pool.get_ref()).await?;
+    let limit = params.limit as i64;
+    let page = params.page.max(1) as i64;
+    let offset = (page - 1) * limit;
+
+    // 1. Fetch data yang sudah di-page
+    let holidays =
+        holiday_service::get_all_holidays_paginated(pool.get_ref(), limit, offset).await?;
+
+    // 2. Hitung total data
+    let total_records = holiday_service::count_holidays(pool.get_ref()).await?;
+    let total_pages = (total_records + limit - 1) / limit;
+
     let username = get_username(pool.get_ref(), &session).await;
 
     let mut context = tera::Context::new();
     context.insert("holidays", &holidays);
     context.insert("username", &username);
+
+    // Tambahkan data pagination ke context
+    context.insert("total_records", &total_records);
+    context.insert("total_pages", &total_pages);
+    context.insert("current_page", &page);
+    context.insert("limit", &limit);
 
     let rendered = tera
         .render("holidays/list.html", &context)

@@ -5,6 +5,35 @@ use tracing::info;
 
 const COMPANY_FIELDS_SQL: &str = r#""CompId" as "comp_id", "CompName" as "comp_name", "CompAddress" as "comp_address", "CompZipCode" as "comp_zip_code", "CompPhoneNumber" as "comp_phone_number", "CompMobileNumber" as "comp_mobile_number", "CompEmail" as "comp_email", "CompWebsite" as "comp_website", "CompRetirementAge" as "comp_retirement_age", "CompanyPrevMonthDayPayroll" as "prev_month_day_payroll", "CompanyCurrentMonthDayPayroll" as "current_month_day_payroll", "PersentasePendapatanBPJSTKPemberiKerja" as "bpjstk_pendapatan_pk", "PersentasePendapatanBPJSKSPemberiKerja" as "bpjsks_pendapatan_pk", "PersentasePenguranganBPJSTKPemberiKerja" as "bpjstk_pengurangan_pk", "PersentasePenguranganBPJSKSPemberiKerja" as "bpjsks_pengurangan_pk", "PersentasePenguranganBPJSTKPekerja" as "bpjstk_pengurangan_pekerja", "PersentasePenguranganBPJSKSPekerja" as "bpjsks_pengurangan_pekerja", "CreatedDate" as "created_date", "CreatedBy" as "created_by", "UpdatedDate" as "updated_date", "UpdatedBy" as "updated_by""#;
 
+pub async fn count_companies(pool: &PgPool) -> Result<i64, AppError> {
+    let count = sqlx::query_scalar!(r#"SELECT COUNT("CompId") FROM "Company""#)
+        .fetch_one(pool)
+        .await
+        .map_err(AppError::DatabaseError)?
+        .unwrap_or(0);
+    Ok(count)
+}
+
+pub async fn get_all_companies_paginated(
+    pool: &PgPool,
+    limit: i64,
+    offset: i64,
+) -> Result<Vec<Company>, AppError> {
+    let sql_query = format!(
+        "SELECT {} FROM \"Company\" ORDER BY \"CompName\" ASC LIMIT $1 OFFSET $2",
+        COMPANY_FIELDS_SQL // Asumsi ini adalah konstanta alias field SQL Anda
+    );
+
+    let companies = sqlx::query_as::<_, Company>(&sql_query)
+        .bind(limit)
+        .bind(offset)
+        .fetch_all(pool)
+        .await
+        .map_err(AppError::DatabaseError)?;
+    
+    Ok(companies)
+}
+
 pub async fn get_all_companies(pool: &PgPool) -> Result<Vec<Company>, AppError> {
     let sql_query = format!(
         "SELECT {} FROM \"Company\" ORDER BY \"CompId\" ASC",

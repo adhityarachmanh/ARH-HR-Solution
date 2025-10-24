@@ -40,7 +40,7 @@ async fn main() -> std::io::Result<()> {
             tracing::error!("Initial holiday sync FAILED: {:?}", e);
         }
 
-        let mut interval = time::interval(Duration::from_secs(24 * 3600));
+        let mut interval: time::Interval = time::interval(Duration::from_secs(24 * 3600));
 
         loop {
             interval.tick().await;

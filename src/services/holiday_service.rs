@@ -136,16 +136,32 @@ pub async fn sync_holidays_for_year(pool: &PgPool, year: i32) -> Result<(), AppE
     Ok(())
 }
 
-pub async fn get_all_holidays(pool: &PgPool) -> Result<Vec<Holiday>, AppError> {
+pub async fn count_holidays(pool: &PgPool) -> Result<i64, AppError> {
+    let count = sqlx::query_scalar!(r#"SELECT COUNT("HolidayId") FROM "Holidays""#)
+        .fetch_one(pool)
+        .await
+        .map_err(AppError::DatabaseError)?
+        .unwrap_or(0);
+    Ok(count)
+}
+
+pub async fn get_all_holidays_paginated(
+    pool: &PgPool,
+    limit: i64,
+    offset: i64,
+) -> Result<Vec<Holiday>, AppError> {
     let sql_query = format!(
-        "SELECT {} FROM \"Holidays\" ORDER BY \"HolidayDate\" ASC",
+        "SELECT {} FROM \"Holidays\" ORDER BY \"HolidayDate\" ASC LIMIT $1 OFFSET $2",
         HOLIDAY_FIELDS_SQL
     );
 
     let holidays = sqlx::query_as::<_, Holiday>(&sql_query)
+        .bind(limit)
+        .bind(offset)
         .fetch_all(pool)
         .await
         .map_err(AppError::DatabaseError)?;
+
     Ok(holidays)
 }
 

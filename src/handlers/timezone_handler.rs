@@ -9,23 +9,62 @@ use crate::errors::AppError;
 use crate::services::timezone_service; 
 use crate::handlers::permission_handler::get_username; 
 
+#[derive(Debug, Deserialize)]
+pub struct PaginationParams {
+    #[serde(default = "default_page")]
+    pub page: u32,
+    #[serde(default = "default_limit")]
+    pub limit: u32,
+}
+
+fn default_page() -> u32 {
+    1
+}
+fn default_limit() -> u32 {
+    25
+}
+
 #[derive(Deserialize)]
 pub struct TimeZoneFormData {
     pub name: String,
 }
 
-pub async fn list_timezones(pool: web::Data<PgPool>, tera: web::Data<Tera>, session: Session) -> Result<HttpResponse, AppError> {
+pub async fn list_timezones(
+    pool: web::Data<PgPool>,
+    tera: web::Data<Tera>,
+    session: Session,
+    params: web::Query<PaginationParams>, // Menggunakan PaginationParams
+) -> Result<HttpResponse, AppError> {
     if session.get::<i64>("user_id").unwrap_or(None).is_none() {
         return Ok(HttpResponse::Found().append_header(("Location", "/login")).finish());
     }
-    
-    let timezones = timezone_service::get_all_timezones(pool.get_ref()).await?;
 
+    let limit = params.limit as i64;
+    let page = params.page.max(1) as i64;
+    let offset = (page - 1) * limit;
+
+    // 1. Fetch data yang sudah di-page
+    let timezones = timezone_service::get_all_timezones_paginated(pool.get_ref(), limit, offset).await?;
+    
+    // 2. Hitung total data
+    let total_records = timezone_service::count_timezones(pool.get_ref()).await?;
+    let total_pages = (total_records + limit - 1) / limit;
+    
     let username = get_username(pool.get_ref(), &session).await;
+
     let mut context = tera::Context::new();
     context.insert("timezones", &timezones);
     context.insert("username", &username);
     
+    // Tambahkan data pagination ke context
+    context.insert("total_records", &total_records);
+    context.insert("total_pages", &total_pages);
+    context.insert("current_page", &page);
+    context.insert("limit", &limit);
+
+    context.insert("title", "Time Zone Management");
+    context.insert("header_title", "Time Zone List");
+
     let rendered = tera.render("timezones/list.html", &context).map_err(AppError::TeraError)?;
     Ok(HttpResponse::Ok().body(rendered))
 }

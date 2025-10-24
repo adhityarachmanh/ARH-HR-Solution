@@ -19,13 +19,32 @@ const UPDATE_QUERY_SQL: &str = r#"
     RETURNING "JobPositionId", "JobPositionName", "CreatedDate", "CreatedBy", "UpdatedDate", "UpdatedBy"
 "#;
 
-pub async fn get_all_job_positions(pool: &PgPool) -> Result<Vec<JobPosition>, AppError> {
-    let positions = sqlx::query_as!(
-        JobPosition,
-        r#"SELECT "JobPositionId" as job_position_id, "JobPositionName" as job_position_name, "CreatedDate" as created_date, "CreatedBy" as created_by, "UpdatedDate" as updated_date, "UpdatedBy" as updated_by FROM "JobPositions" ORDER BY "JobPositionName" ASC"#
-    )
-    .fetch_all(pool).await.map_err(AppError::DatabaseError)?;
-    info!("Fetched {} job positions.", positions.len());
+pub async fn count_job_positions(pool: &PgPool) -> Result<i64, AppError> {
+    let count = sqlx::query_scalar!(r#"SELECT COUNT("JobPositionId") FROM "JobPositions""#)
+        .fetch_one(pool)
+        .await
+        .map_err(AppError::DatabaseError)?
+        .unwrap_or(0);
+    Ok(count)
+}
+
+pub async fn get_all_job_positions_paginated(
+    pool: &PgPool,
+    limit: i64,
+    offset: i64,
+) -> Result<Vec<JobPosition>, AppError> {
+    let sql_query = format!(
+        "SELECT {} FROM \"JobPositions\" ORDER BY \"JobPositionName\" ASC LIMIT $1 OFFSET $2",
+        JOB_POSITION_FIELDS_SQL
+    );
+
+    let positions = sqlx::query_as::<_, JobPosition>(&sql_query)
+        .bind(limit)
+        .bind(offset)
+        .fetch_all(pool)
+        .await
+        .map_err(AppError::DatabaseError)?;
+
     Ok(positions)
 }
 
