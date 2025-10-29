@@ -1,14 +1,12 @@
-// src/services/auth_service.rs
-use sqlx::PgPool;
-use crate::models::User;
 use crate::errors::AppError;
+use crate::models::User;
+use sqlx::PgPool;
 
 pub async fn authenticate_user(
     pool: &PgPool,
     username: &str,
     password: &str,
 ) -> Result<User, AppError> {
-
     let user = sqlx::query_as!(
         User,
         "SELECT id, username, email, password_hash, created_at, is_active, last_login FROM users WHERE username = $1",

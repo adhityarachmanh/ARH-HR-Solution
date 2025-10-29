@@ -21,7 +21,7 @@ pub async fn get_all_companies_paginated(
 ) -> Result<Vec<Company>, AppError> {
     let sql_query = format!(
         "SELECT {} FROM \"Company\" ORDER BY \"CompName\" ASC LIMIT $1 OFFSET $2",
-        COMPANY_FIELDS_SQL // Asumsi ini adalah konstanta alias field SQL Anda
+        COMPANY_FIELDS_SQL
     );
 
     let companies = sqlx::query_as::<_, Company>(&sql_query)
@@ -30,7 +30,7 @@ pub async fn get_all_companies_paginated(
         .fetch_all(pool)
         .await
         .map_err(AppError::DatabaseError)?;
-    
+
     Ok(companies)
 }
 

@@ -1,4 +1,3 @@
-// src/services/job_position_service.rs
 use crate::errors::AppError;
 use crate::models::JobPosition;
 use sqlx::PgPool;
@@ -41,6 +40,20 @@ pub async fn get_all_job_positions_paginated(
     let positions = sqlx::query_as::<_, JobPosition>(&sql_query)
         .bind(limit)
         .bind(offset)
+        .fetch_all(pool)
+        .await
+        .map_err(AppError::DatabaseError)?;
+
+    Ok(positions)
+}
+
+pub async fn get_all_job_positions(pool: &PgPool) -> Result<Vec<JobPosition>, AppError> {
+    let sql_query = format!(
+        "SELECT {} FROM \"JobPositions\" ORDER BY \"JobPositionName\" ASC",
+        JOB_POSITION_FIELDS_SQL
+    );
+
+    let positions = sqlx::query_as::<_, JobPosition>(&sql_query)
         .fetch_all(pool)
         .await
         .map_err(AppError::DatabaseError)?;

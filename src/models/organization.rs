@@ -1,7 +1,6 @@
-// src/models/organization.rs
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
-use time::OffsetDateTime; 
+use time::OffsetDateTime;
 
 #[derive(Debug, Serialize, Deserialize, FromRow, Clone)]
 pub struct Organization {

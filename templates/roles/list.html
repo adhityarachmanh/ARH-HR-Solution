@@ -1,97 +1,119 @@
 {% extends "layout_app.html" %}
 
-{% block title %}Role Management{% endblock title %}
-{% block header_title %}User Role List{% endblock header_title %}
+{% block title %}{{ title }}{% endblock title %}
+{% block header_title %}{{ header_title }}{% endblock header_title %}
 
 {% block content %}
 <div class="flex justify-between items-center mb-6">
-    <h1 class="text-3xl font-bold text-gray-800">Master User Roles</h1>
+    <h1 class="text-3xl font-bold text-gray-800">Master Roles</h1>
     <a href="/roles/add"
-        class="px-4 py-2 font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150">
-        Add New Role
+        class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 transition duration-150">
+        <i class="fas fa-plus mr-1"></i> Add New Role
     </a>
 </div>
 
 <div class="bg-white rounded-xl shadow-lg overflow-x-auto border border-gray-100 p-6">
-    <table id="data-table" class="min-w-full border border-gray-300 border-collapse">
+    
+    {% if roles | length == 0 %}
+    <div class="px-6 py-8 text-center text-gray-500 italic">
+        No roles found in the database.
+    </div>
+    {% else %}
+    
+    <table class="min-w-full border border-gray-300">
         <thead class="bg-gray-50">
             <tr>
                 <th
-                    class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-gray-300">
+                    class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-r border-b border-gray-300">
                     ID</th>
                 <th
-                    class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-gray-300">
-                    Role Name (UI)</th>
+                    class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-r border-b border-gray-300">
+                    Role Name</th>
+                {# KOLOM INI DIHAPUS KARENA TIDAK ADA DI DB: Created Date #}
                 <th
-                    class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-gray-300">
-                    Role Slug (System)</th>
-                <th
-                    class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-gray-300">
+                    class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-300">
                     Actions</th>
             </tr>
         </thead>
-        <tbody class="bg-white divide-y divide-gray-100">
+        <tbody class="bg-white">
             {% for role in roles %}
-            <tr class="hover:bg-gray-50 transition duration-100">
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border border-gray-300">
-                    {{ role.id }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 font-medium border border-gray-300">
-                    {{ role.display_name }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 border border-gray-300">
-                    {{ role.name }}
-                </td>
+            <tr class="hover:bg-gray-50 transition duration-100 border-b border-gray-300">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-r border-gray-300">{{
+                    role.id }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 border-r border-gray-300">{{
+                    role.name }}</td> 
+                
+                {# KOLOM Created Date DIHAPUS DARI BODY #}
 
-
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium border border-gray-300">
-                    <div class="flex items-center space-x-2">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <div class="flex items-center space-x-4">
                         <a href="/roles/permissions/{{ role.id }}"
-                            class="text-blue-600 hover:text-blue-900 transition duration-150">Permissions</a>
+                            class="text-green-600 hover:text-green-900 transition duration-150"><i class="fas fa-lock"></i> Manage</a>
 
                         <a href="/roles/edit/{{ role.id }}"
-                            class="text-indigo-600 hover:text-indigo-900 transition duration-150 ml-4">Edit</a>
+                            class="text-indigo-600 hover:text-indigo-900 transition duration-150"><i class="fas fa-edit"></i> Edit</a>
 
                         <form action="/roles/delete/{{ role.id }}" method="post"
-                            onsubmit="return confirm('Are you sure you want to delete role {{ role.display_name }}?');">
+                            onsubmit="return confirm('Are you sure you want to delete role {{ role.name }}?');" class="inline">
                             <button type="submit"
-                                class="text-red-600 hover:text-red-900 transition duration-150 ml-4">Delete</button>
+                                class="text-red-600 hover:text-red-900 transition duration-150"><i class="fas fa-trash-alt"></i> Delete</button>
                         </form>
                     </div>
-                </td>
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="6" class="px-6 py-8 text-center text-gray-500 text-base italic border border-gray-300">
-                    No roles found in the database.
                 </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
+    {% endif %}
 </div>
 
-{% block script_init %}
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const tableElement = document.getElementById('data-table');
-        if (tableElement) {
-            new simpleDatatables.DataTable(tableElement, {
-                searchable: true,
-                fixedHeight: false,
-                perPageSelect: [10, 25, 50, 100],
-                // Konfigurasi kolom: Actions adalah index 5 (dari 0-5)
-                columns: [
-                    { select: 0, sortable: true },
-                    { select: 1, sortable: true },
-                    { select: 2, sortable: true },
-                    { select: 3, sortable: true },
-                    { select: 4, sortable: true },
-                    { select: 5, sortable: false }, // Actions
-                ],
-            });
-        }
-    });
-</script>
-{% endblock script_init %}
+{# --- PAGINATION CONTROLS --- #}
+{% if total_pages > 1 %}
+<div class="flex justify-between items-center mt-4">
+    <div class="text-sm text-gray-600">
+        Menampilkan {{ (current_page - 1) * limit + 1 }} sampai 
+        
+        {% if current_page * limit > total_records %}
+            {{ total_records }}
+        {% else %}
+            {{ current_page * limit }}
+        {% endif %}
+        
+        dari {{ total_records }} total data
+    </div>
+    <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+        
+        {# Tombol Previous #}
+        {% if current_page > 1 %}
+        <a href="?page={{ current_page - 1 }}&limit={{ limit }}"
+           class="relative inline-flex items-center justify-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 h-10 w-10">
+            <span class="sr-only">Previous</span>
+            <i class="fas fa-chevron-left"></i>
+        </a>
+        {% endif %}
+        
+        {# Link Halaman #}
+        {% for p in range(start=1, end=total_pages + 1) %}
+            <a href="?page={{ p }}&limit={{ limit }}"
+               class="relative inline-flex items-center px-4 py-2 border text-sm font-medium {% if p == current_page %} bg-indigo-600 border-indigo-600 text-white z-10 {% else %} border-gray-300 bg-white text-gray-700 hover:bg-gray-50 {% endif %}">
+                {{ p }}
+            </a>
+        {% endfor %}
+
+        {# Tombol Next #}
+        {% if current_page < total_pages %}
+        <a href="?page={{ current_page + 1 }}&limit={{ limit }}"
+           class="relative inline-flex items-center justify-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 h-10 w-10">
+            <span class="sr-only">Next</span>
+            <i class="fas fa-chevron-right"></i>
+        </a>
+        {% endif %}
+
+    </nav>
+</div>
+{% endif %}
+
+{# HAPUS SCRIPT Simple-DataTables #}
+{% block script_init %}{% endblock script_init %}
+
 {% endblock content %}

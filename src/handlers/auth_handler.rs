@@ -1,4 +1,4 @@
-// src/handlers/auth_handler.rs
+
 use crate::errors::AppError;
 use crate::services::auth_service;
 use actix_session::Session;

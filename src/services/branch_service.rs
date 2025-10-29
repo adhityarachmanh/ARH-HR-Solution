@@ -1,22 +1,52 @@
-// src/services/branch_service.rs
 use crate::errors::AppError;
 use crate::models::{Branch, BranchDetail};
 use sqlx::PgPool;
 use sqlx::Row;
 use tracing::info;
 
+const BRANCH_FIELDS_SQL: &str = r#""BranchId" as branch_id, "CompId" as comp_id, "TimeZoneId" as time_zone_id, "BranchName" as branch_name, "CompanyName" as company_name, "CreatedDate" as created_date, "CreatedBy" as created_by, "UpdatedDate" as updated_date, "UpdatedBy" as updated_by"#;
+
 const CREATE_QUERY_SQL: &str = r#"
     INSERT INTO "Branches" ("BranchName", "CompanyName", "CompId", "TimeZoneId", "CreatedDate", "CreatedBy", "UpdatedDate", "UpdatedBy") 
     VALUES ($1, $2, $3, $4, NOW(), $5, NOW(), $5) 
-    RETURNING "BranchId", "CompId", "TimeZoneId", "BranchName", "CompanyName", "CreatedDate", "CreatedBy", "UpdatedDate", "UpdatedBy"
+    RETURNING "BranchId" as branch_id, "CompId" as comp_id, "TimeZoneId" as time_zone_id, "BranchName" as branch_name, "CompanyName" as company_name, "CreatedDate" as created_date, "CreatedBy" as created_by, "UpdatedDate" as updated_date, "UpdatedBy" as updated_by
 "#;
 
 const UPDATE_QUERY_SQL: &str = r#"
     UPDATE "Branches" 
-    SET "BranchName" = $1, "CompanyName" = $4, "CompId" = $5, "TimeZoneId" = $6, "UpdatedDate" = NOW(), "UpdatedBy" = $7
+    SET "BranchName" = $1, "CompanyName" = $3, "CompId" = $4, "TimeZoneId" = $5, "UpdatedDate" = NOW(), "UpdatedBy" = $6
     WHERE "BranchId" = $2 
-    RETURNING "BranchId", "CompId", "TimeZoneId", "BranchName", "CompanyName", "CreatedDate", "CreatedBy", "UpdatedDate", "UpdatedBy"
+    RETURNING "BranchId" as branch_id, "CompId" as comp_id, "TimeZoneId" as time_zone_id, "BranchName" as branch_name, "CompanyName" as company_name, "CreatedDate" as created_date, "CreatedBy" as created_by, "UpdatedDate" as updated_date, "UpdatedBy" as updated_by
 "#;
+
+pub async fn count_branches(pool: &PgPool) -> Result<i64, AppError> {
+    let count = sqlx::query_scalar!(r#"SELECT COUNT("BranchId") FROM "Branches""#)
+        .fetch_one(pool)
+        .await
+        .map_err(AppError::DatabaseError)?
+        .unwrap_or(0);
+    Ok(count)
+}
+
+pub async fn get_all_branches_paginated(
+    pool: &PgPool,
+    limit: i64,
+    offset: i64,
+) -> Result<Vec<Branch>, AppError> {
+    let sql_query = format!(
+        "SELECT {} FROM \"Branches\" ORDER BY \"BranchName\" ASC LIMIT $1 OFFSET $2",
+        BRANCH_FIELDS_SQL
+    );
+
+    let branches = sqlx::query_as::<_, Branch>(&sql_query)
+        .bind(limit)
+        .bind(offset)
+        .fetch_all(pool)
+        .await
+        .map_err(AppError::DatabaseError)?;
+
+    Ok(branches)
+}
 
 pub async fn get_all_branches(pool: &PgPool) -> Result<Vec<Branch>, AppError> {
     let branches = sqlx::query_as!(

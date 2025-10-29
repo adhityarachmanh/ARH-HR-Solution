@@ -1,0 +1,80 @@
+{% extends "layout_app.html" %}
+
+{% block title %}{{ title }}{% endblock title %}
+{% block header_title %}{{ header_title }}{% endblock header_title %}
+
+{% block content %}
+<div class="flex justify-center">
+    <div class="w-full max-w-4xl">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6">{{ header_title }} (ID: {{ status.employment_status_id }})
+        </h1>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+            {# KOLOM KIRI: FORM UTAMA (2/3 lebar di layar besar) #}
+            <div class="lg:col-span-2 bg-white p-8 rounded-xl shadow-lg border border-gray-100">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-3">Status Details</h2>
+
+                {% if error %}
+                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4" role="alert">
+                    <p class="font-bold">Error</p>
+                    <p>{{ error }}</p>
+                </div>
+                {% endif %}
+
+                <form action="/employmentstatuses/edit/{{ status.employment_status_id }}" method="post"
+                    class="space-y-6">
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700">Status Name</label>
+                        <input id="name" name="name" type="text" required value="{{ status.employment_status_name }}"
+                            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    </div>
+
+                    <div class="flex justify-end space-x-4 pt-4 border-t mt-6">
+                        <a href="javascript:history.back()"
+                            class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition duration-150">
+                            Batal
+                        </a>
+                        <button type="submit"
+                            class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150">
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            {# KOLOM KANAN: INFORMASI AUDIT #}
+            <div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-lg border border-gray-100 h-fit">
+                <h3 class="text-lg font-semibold text-gray-700 mb-4 border-b pb-2">Audit Information</h3>
+                <div class="space-y-3 text-sm text-gray-600">
+                    <p>
+                        <strong>Created By:</strong><br>
+                        {{ status.created_by | default(value="N/A") }}
+                    </p>
+                    <p>
+                        <strong>Created Date:</strong><br>
+                        {% if status.created_date %}
+                        {{ status.created_date | date(format="%Y-%m-%d %H:%M:%S %Z") }}
+                        {% else %}
+                        N/A
+                        {% endif %}
+                    </p>
+                    <p>
+                        <strong>Last Updated By:</strong><br>
+                        {{ status.updated_by | default(value="N/A") }}
+                    </p>
+                    <p>
+                        <strong>Last Updated Date:</strong><br>
+                        {% if status.updated_date %}
+                        {{ status.updated_date | date(format="%Y-%m-%d %H:%M:%S %Z") }}
+                        {% else %}
+                        N/A
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock content %}

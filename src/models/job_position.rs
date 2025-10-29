@@ -1,5 +1,4 @@
-// src/models/job_position.rs
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 use time::OffsetDateTime;
 

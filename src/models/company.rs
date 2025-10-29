@@ -1,12 +1,9 @@
-// src/models/company.rs
-
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 use time::OffsetDateTime;
 
 #[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
 pub struct Company {
-    // Core fields (Diharapkan di-alias ke snake_case di SQL Service)
     pub comp_id: i32,
     pub comp_name: Option<String>,
     pub comp_address: Option<String>,

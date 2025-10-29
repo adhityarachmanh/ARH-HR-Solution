@@ -1,14 +1,13 @@
-// src/handlers/dashboard_handler.rs
-use actix_web::{web, HttpResponse, Responder};
-use actix_session::Session;
-use tera::Tera;
 use crate::models::User;
+use actix_session::Session;
+use actix_web::{web, HttpResponse, Responder};
 use sqlx::PgPool;
+use tera::Tera;
 
 pub async fn show_dashboard(
     session: Session,
     pool: web::Data<PgPool>,
-    tera: web::Data<Tera>
+    tera: web::Data<Tera>,
 ) -> impl Responder {
     if let Some(user_id) = session.get::<i64>("user_id").unwrap_or(None) {
         let user_result = sqlx::query_as!(

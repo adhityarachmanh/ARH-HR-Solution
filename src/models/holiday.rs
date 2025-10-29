@@ -1,4 +1,3 @@
-// src/models/holiday.rs
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 use time::OffsetDateTime;

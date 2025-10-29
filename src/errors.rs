@@ -1,4 +1,4 @@
-// src/errors.rs
+
 use actix_web::{http::StatusCode, HttpResponse, ResponseError};
 use std::fmt;
 use actix_session::{SessionGetError, SessionInsertError};

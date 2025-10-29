@@ -1,4 +1,3 @@
-// src/handlers/holiday_handler.rs
 use actix_session::Session;
 use actix_web::{web, HttpResponse};
 use serde::Deserialize;
@@ -61,11 +60,9 @@ pub async fn list_holidays(
     let page = params.page.max(1) as i64;
     let offset = (page - 1) * limit;
 
-    // 1. Fetch data yang sudah di-page
     let holidays =
         holiday_service::get_all_holidays_paginated(pool.get_ref(), limit, offset).await?;
 
-    // 2. Hitung total data
     let total_records = holiday_service::count_holidays(pool.get_ref()).await?;
     let total_pages = (total_records + limit - 1) / limit;
 
@@ -75,7 +72,6 @@ pub async fn list_holidays(
     context.insert("holidays", &holidays);
     context.insert("username", &username);
 
-    // Tambahkan data pagination ke context
     context.insert("total_records", &total_records);
     context.insert("total_pages", &total_pages);
     context.insert("current_page", &page);
@@ -125,7 +121,7 @@ pub async fn add_holiday_action(
 
     match result {
         Ok(_) => Ok(HttpResponse::Found()
-            .append_header(("Location", "/holidays/list"))
+            .append_header(("Location", "/holidays/list?page=1&limit=10"))
             .finish()),
         Err(e) => Err(e),
     }
@@ -182,7 +178,7 @@ pub async fn edit_holiday_action(
 
     match result {
         Ok(_) => Ok(HttpResponse::Found()
-            .append_header(("Location", "/holidays/list"))
+            .append_header(("Location", "/holidays/list?page=1&limit=10"))
             .finish()),
         Err(e) => Err(e),
     }
@@ -201,7 +197,7 @@ pub async fn delete_holiday_action(
     let id = path.into_inner();
     holiday_service::delete_holiday(pool.get_ref(), id).await?;
     Ok(HttpResponse::Found()
-        .append_header(("Location", "/holidays/list"))
+        .append_header(("Location", "/holidays/list?page=1&limit=10"))
         .finish())
 }
 
@@ -220,7 +216,7 @@ pub async fn sync_holidays_action(
 
     match holiday_service::sync_holidays_for_year(pool.get_ref(), year).await {
         Ok(_) => Ok(HttpResponse::Found()
-            .append_header(("Location", "/holidays/list"))
+            .append_header(("Location", "/holidays/list?page=1&limit=10"))
             .finish()),
         Err(e) => Err(e),
     }

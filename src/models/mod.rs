@@ -1,6 +1,8 @@
-// src/models/mod.rs
+pub mod attendance_location;
 pub mod branch;
 pub mod company;
+// pub mod employee;
+pub mod employment_status;
 pub mod holiday;
 pub mod job_level;
 pub mod job_position;
@@ -11,8 +13,11 @@ pub mod role;
 pub mod timezone;
 pub mod user;
 
+pub use attendance_location::{AttendanceLocation, AttendanceLocationDetail};
 pub use branch::{Branch, BranchDetail};
 pub use company::Company;
+// pub use employee::Employee;
+pub use employment_status::EmploymentStatus;
 pub use holiday::Holiday;
 pub use job_level::JobLevel;
 pub use job_position::JobPosition;

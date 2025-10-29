@@ -1,0 +1,116 @@
+{% extends "layout_app.html" %}
+
+{% block title %}Employee List{% endblock title %}
+{% block header_title %}Employee Master Data{% endblock header_title %}
+
+{% block content %}
+<div class="w-full max-w-7xl mx-auto bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-gray-800">Daftar Karyawan (Total: {{ total_count }})</h2>
+        <a href="{{ add_url }}"
+            class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 transition duration-150">
+            + {{ add_text }}
+        </a>
+    </div>
+
+    {% if employees is empty %}
+    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                    fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd"
+                        d="M8.257 3.34c.52-.907 1.488-.907 2.008 0l7.25 12.65c.52.906-.183 2.01-1.004 2.01H2.01c-.82 0-1.523-1.104-1.004-2.01l7.25-12.65zM9 12a1 1 0 102 0 1 1 0 00-2 0zm-1-4a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"
+                        clip-rule="evenodd" />
+                </svg>
+            </div>
+            <div class="ml-3">
+                <p class="text-sm text-yellow-800">Belum ada data karyawan yang terdaftar.</p>
+            </div>
+        </div>
+    </div>
+    {% else %}
+
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No.</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID / User
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama
+                        Karyawan</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal
+                        Gabung</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status
+                    </th>
+                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for employee in employees %}
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ loop.index + (current_page - 1) *
+                        limit }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium text-gray-900">{{ employee.employee_number }}</div>
+                        <div class="text-xs text-gray-500">User ID: {{ employee.user_id | default(value='N/A') }}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {{ employee.first_name | default(value='') }} {{ employee.last_name | default(value='') }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {{ employee.join_date | date(format="%Y-%m-%d") | default(value='-') }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        {% if employee.is_active | default(value=false) %}
+                        <span
+                            class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Aktif</span>
+                        {% else %}
+                        <span
+                            class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Non-Aktif</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium space-x-2">
+                        <a href="/employees/edit/{{ employee.employee_id }}"
+                            class="text-indigo-600 hover:text-indigo-900">Edit</a>
+                        <a href="/employees/details/{{ employee.employee_id }}"
+                            class="text-blue-600 hover:text-blue-900">Detail</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mt-6 flex justify-between items-center">
+        <p class="text-sm text-gray-700">
+            Menampilkan {{ employees | length }} dari {{ total_count }} total data.
+        </p>
+        <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+            {% if prev_page %}
+            <a href="?page={{ prev_page }}&limit={{ limit }}"
+                class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">Previous</a>
+            {% else %}
+            <span
+                class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-gray-50 text-sm font-medium text-gray-500 cursor-not-allowed">Previous</span>
+            {% endif %}
+
+            <span
+                class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-indigo-600 text-sm font-medium text-white">
+                Page {{ current_page }} of {{ total_pages }}
+            </span>
+
+            {% if next_page %}
+            <a href="?page={{ next_page }}&limit={{ limit }}"
+                class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">Next</a>
+            {% else %}
+            <span
+                class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-gray-50 text-sm font-medium text-gray-500 cursor-not-allowed">Next</span>
+            {% endif %}
+        </nav>
+    </div>
+    {% endif %}
+</div>
+{% endblock content %}

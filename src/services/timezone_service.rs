@@ -1,4 +1,3 @@
-// src/services/timezone_service.rs
 use crate::errors::AppError;
 use crate::models::TimeZone;
 use sqlx::PgPool;

@@ -1,8 +1,7 @@
-// src/routes.rs
 use crate::handlers::{
-    auth_handler, branch_handler, company_handler, dashboard_handler, holiday_handler,
-    job_level_handler, job_position_handler, organization_handler, permission_handler,
-    role_handler, timezone_handler, user_handler,
+    attendance_location_handler, auth_handler, branch_handler, company_handler, dashboard_handler,
+    employment_status_handler, holiday_handler, job_level_handler, job_position_handler,
+    organization_handler, permission_handler, role_handler, timezone_handler, user_handler,
 };
 use actix_web::web;
 
@@ -25,6 +24,14 @@ pub fn configure_routes(cfg: &mut web::ServiceConfig) {
                 web::get().to(user_handler::show_add_user_form),
             )
             .route("/users/add", web::post().to(user_handler::add_user_action))
+            .route(
+                "/users/edit/{id}",
+                web::get().to(user_handler::show_edit_user_form),
+            )
+            .route(
+                "/users/edit/{id}",
+                web::post().to(user_handler::edit_user_action),
+            )
             // -----------------------------------------------------------
             // Rute Role Management (CRUD)
             // -----------------------------------------------------------
@@ -253,6 +260,75 @@ pub fn configure_routes(cfg: &mut web::ServiceConfig) {
             .route(
                 "/joblevels/delete/{id}",
                 web::post().to(job_level_handler::delete_job_level_action),
+            )
+            // -----------------------------------------------------------
+            // Rute Attendance Locations Master Data
+            // -----------------------------------------------------------
+            .route(
+                "/attendancelocations/list",
+                web::get().to(attendance_location_handler::list_attendance_locations),
+            )
+            .route(
+                "/attendancelocations/add",
+                web::get().to(attendance_location_handler::show_add_location_form),
+            )
+            .route(
+                "/attendancelocations/add",
+                web::post().to(attendance_location_handler::add_location_action),
+            )
+            .route(
+                "/attendancelocations/edit/{id}",
+                web::get().to(attendance_location_handler::show_edit_location_form),
+            )
+            .route(
+                "/attendancelocations/edit/{id}",
+                web::post().to(attendance_location_handler::edit_location_action),
+            )
+            .route(
+                "/attendancelocations/delete/{id}",
+                web::post().to(attendance_location_handler::delete_location_action),
+            )
+            // -----------------------------------------------------------
+            // Rute Employees Data
+            // -----------------------------------------------------------
+            // .route(
+            //     "/employees/list",
+            //     web::get().to(employee_handler::list_employees),
+            // )
+            // .route(
+            //     "/employees/add",
+            //     web::get().to(employee_handler::show_add_employee_form),
+            // )
+            // .route(
+            //     "/employees/add",
+            //     web::post().to(employee_handler::add_employee_action),
+            // ),
+            // -----------------------------------------------------------
+            // Rute Employment Status Master Data (BARU)
+            // -----------------------------------------------------------
+            .route(
+                "/employmentstatuses/list",
+                web::get().to(employment_status_handler::list_employment_statuses),
+            )
+            .route(
+                "/employmentstatuses/add",
+                web::get().to(employment_status_handler::show_add_employment_status_form),
+            )
+            .route(
+                "/employmentstatuses/add",
+                web::post().to(employment_status_handler::add_employment_status_action),
+            )
+            .route(
+                "/employmentstatuses/edit/{id}",
+                web::get().to(employment_status_handler::show_edit_employment_status_form),
+            )
+            .route(
+                "/employmentstatuses/edit/{id}",
+                web::post().to(employment_status_handler::edit_employment_status_action),
+            )
+            .route(
+                "/employmentstatuses/delete/{id}",
+                web::post().to(employment_status_handler::delete_employment_status_action),
             ),
     );
 }

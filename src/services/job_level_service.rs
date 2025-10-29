@@ -3,12 +3,42 @@ use crate::models::JobLevel;
 use sqlx::PgPool;
 use tracing::info;
 
-const JOB_LEVEL_FIELDS_SQL: &str = r#""JobLevelId" as "job_level_id", "JobLevelName" as "job_level_name", "JobLevelOrder" as "job_level_order", "CreatedDate" as "created_date", "CreatedBy" as "created_by", "UpdatedDate" as "updated_date", "UpdatedBy" as "updated_by""#;
+
+const JOB_LEVEL_FIELDS_SQL_LIST: &str = r#""JobLevelId" as job_level_id, "JobLevelName" as job_level_name, "JobLevelOrder" as job_level_order, "CreatedDate" as created_date, "CreatedBy" as created_by, "UpdatedDate" as updated_date, "UpdatedBy" as updated_by"#;
+
+pub async fn count_job_levels(pool: &PgPool) -> Result<i64, AppError> {
+    let count = sqlx::query_scalar!(r#"SELECT COUNT("JobLevelId") FROM "JobLevels""#)
+        .fetch_one(pool)
+        .await
+        .map_err(AppError::DatabaseError)?
+        .unwrap_or(0);
+    Ok(count)
+}
+
+pub async fn get_all_job_levels_paginated(
+    pool: &PgPool,
+    limit: i64,
+    offset: i64,
+) -> Result<Vec<JobLevel>, AppError> {
+    let sql_query = format!(
+        "SELECT {} FROM \"JobLevels\" ORDER BY \"JobLevelOrder\" ASC, \"JobLevelId\" ASC LIMIT $1 OFFSET $2",
+        JOB_LEVEL_FIELDS_SQL_LIST 
+    );
+
+    let levels = sqlx::query_as::<_, JobLevel>(&sql_query)
+        .bind(limit)
+        .bind(offset)
+        .fetch_all(pool)
+        .await
+        .map_err(AppError::DatabaseError)?;
+    
+    Ok(levels)
+}
 
 pub async fn get_all_job_levels(pool: &PgPool) -> Result<Vec<JobLevel>, AppError> {
     let sql_query = format!(
         "SELECT {} FROM \"JobLevels\" ORDER BY \"JobLevelOrder\" ASC, \"JobLevelId\" ASC",
-        JOB_LEVEL_FIELDS_SQL
+        JOB_LEVEL_FIELDS_SQL_LIST
     );
 
     let levels = sqlx::query_as::<_, JobLevel>(&sql_query)
@@ -22,7 +52,7 @@ pub async fn get_all_job_levels(pool: &PgPool) -> Result<Vec<JobLevel>, AppError
 pub async fn get_job_level_by_id(pool: &PgPool, id: i32) -> Result<JobLevel, AppError> {
     let sql_query = format!(
         "SELECT {} FROM \"JobLevels\" WHERE \"JobLevelId\" = $1",
-        JOB_LEVEL_FIELDS_SQL
+        JOB_LEVEL_FIELDS_SQL_LIST
     );
 
     let level = sqlx::query_as::<_, JobLevel>(&sql_query)
@@ -49,7 +79,7 @@ pub async fn create_job_level(
         VALUES ($1, $2, $3, $3)
         RETURNING {}
         "#,
-        JOB_LEVEL_FIELDS_SQL
+        JOB_LEVEL_FIELDS_SQL_LIST
     ))
     .bind(name)
     .bind(order)
@@ -79,7 +109,7 @@ pub async fn update_job_level(
         WHERE "JobLevelId" = $4
         RETURNING {}
         "#,
-        JOB_LEVEL_FIELDS_SQL
+        JOB_LEVEL_FIELDS_SQL_LIST
     ))
     .bind(name)
     .bind(order)

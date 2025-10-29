@@ -1,4 +1,3 @@
-// src/main.rs
 use crate::services::holiday_service;
 use actix_session::{storage::CookieSessionStore, SessionMiddleware};
 use actix_web::{cookie::Key, web, App, HttpServer};

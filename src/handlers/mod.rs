@@ -1,13 +1,15 @@
-// src/handlers/mod.rs
+pub mod attendance_location_handler;
 pub mod auth_handler;
 pub mod branch_handler;
 pub mod company_handler;
 pub mod dashboard_handler;
+pub mod employment_status_handler;
+pub mod holiday_handler;
+pub mod job_level_handler;
 pub mod job_position_handler;
 pub mod organization_handler;
 pub mod permission_handler;
 pub mod role_handler;
 pub mod timezone_handler;
 pub mod user_handler;
-pub mod holiday_handler;
-pub mod job_level_handler;
+// pub mod employee_handler;

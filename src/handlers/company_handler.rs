@@ -58,13 +58,11 @@ fn map_form_to_company(form: &CompanyFormData) -> Company {
     }
 }
 
-// --- READ All ---
-
 pub async fn list_companies(
     pool: web::Data<PgPool>,
     tera: web::Data<Tera>,
     session: Session,
-    params: web::Query<PaginationParams>, 
+    params: web::Query<PaginationParams>,
 ) -> Result<HttpResponse, AppError> {
     if session.get::<i64>("user_id").unwrap_or(None).is_none() {
         return Ok(HttpResponse::Found()
@@ -76,11 +74,9 @@ pub async fn list_companies(
     let page = params.page.max(1) as i64;
     let offset = (page - 1) * limit;
 
-    // 1. Fetch data yang sudah di-page
     let companies =
         company_service::get_all_companies_paginated(pool.get_ref(), limit, offset).await?;
 
-    // 2. Hitung total data
     let total_records = company_service::count_companies(pool.get_ref()).await?;
     let total_pages = (total_records + limit - 1) / limit;
 
@@ -90,7 +86,6 @@ pub async fn list_companies(
     context.insert("companies", &companies);
     context.insert("username", &username);
 
-    // Tambahkan data pagination ke context
     context.insert("total_records", &total_records);
     context.insert("total_pages", &total_pages);
     context.insert("current_page", &page);
@@ -105,7 +100,6 @@ pub async fn list_companies(
     Ok(HttpResponse::Ok().body(rendered))
 }
 
-// --- CREATE Show Form ---
 pub async fn show_add_company_form(
     pool: web::Data<PgPool>,
     tera: web::Data<Tera>,
@@ -129,7 +123,6 @@ pub async fn show_add_company_form(
     Ok(HttpResponse::Ok().body(rendered))
 }
 
-// --- CREATE Action ---
 pub async fn add_company_action(
     pool: web::Data<PgPool>,
     form: web::Form<CompanyFormData>,
@@ -147,11 +140,10 @@ pub async fn add_company_action(
     company_service::create_company(pool.get_ref(), company_data, &created_by).await?;
 
     Ok(HttpResponse::Found()
-        .append_header(("Location", "/companies/list"))
+        .append_header(("Location", "/companies/list?page=1&limit=10"))
         .finish())
 }
 
-// --- UPDATE Show Form ---
 pub async fn show_edit_company_form(
     pool: web::Data<PgPool>,
     tera: web::Data<Tera>,
@@ -170,8 +162,6 @@ pub async fn show_edit_company_form(
     let username = get_username(pool.get_ref(), &session).await;
     let mut context = tera::Context::new();
 
-    // --- KOREKSI UNTUK E0308 ---
-    // 1. Buat String judul dan simpan dalam variabel
     let page_title = format!(
         "Edit Company: {}",
         company.comp_name.as_deref().unwrap_or("N/A")
@@ -180,9 +170,7 @@ pub async fn show_edit_company_form(
     context.insert("company", &company);
     context.insert("username", &username);
 
-    // 2. Gunakan referensi (&) dari variabel String
     context.insert("title", &page_title);
-    // Baris ini tidak perlu diubah, karena sudah berupa string literal:
     context.insert("header_title", "Edit Company Info");
 
     let rendered = tera
@@ -191,7 +179,6 @@ pub async fn show_edit_company_form(
     Ok(HttpResponse::Ok().body(rendered))
 }
 
-// --- UPDATE Action ---
 pub async fn edit_company_action(
     pool: web::Data<PgPool>,
     path: web::Path<i32>,
@@ -211,11 +198,10 @@ pub async fn edit_company_action(
     company_service::update_company(pool.get_ref(), id, company_data, &updated_by).await?;
 
     Ok(HttpResponse::Found()
-        .append_header(("Location", "/companies/list"))
+        .append_header(("Location", "/companies/list?page=1&limit=10"))
         .finish())
 }
 
-// --- DELETE Action ---
 pub async fn delete_company_action(
     pool: web::Data<PgPool>,
     session: Session,
@@ -231,6 +217,6 @@ pub async fn delete_company_action(
     company_service::delete_company(pool.get_ref(), id).await?;
 
     Ok(HttpResponse::Found()
-        .append_header(("Location", "/companies/list"))
+        .append_header(("Location", "/companies/list?page=1&limit=10"))
         .finish())
 }
