@@ -12,6 +12,7 @@ pub mod permission;
 pub mod role;
 pub mod timezone;
 pub mod user;
+pub mod zip_code;
 
 pub use attendance_location::{AttendanceLocation, AttendanceLocationDetail};
 pub use branch::{Branch, BranchDetail};
@@ -26,4 +27,5 @@ pub use paginations::PaginationParams;
 pub use permission::HardcodedPermission;
 pub use role::Role;
 pub use timezone::TimeZone;
-pub use user::User;
+pub use user::{User, UserListDetail};
+pub use zip_code::ZipCode;

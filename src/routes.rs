@@ -1,7 +1,7 @@
 use crate::handlers::{
     attendance_location_handler, auth_handler, branch_handler, company_handler, dashboard_handler,
     employment_status_handler, holiday_handler, job_level_handler, job_position_handler,
-    organization_handler, permission_handler, role_handler, timezone_handler, user_handler,
+    organization_handler, permission_handler, role_handler, timezone_handler, user_handler,zip_code_handler
 };
 use actix_web::web;
 
@@ -329,6 +329,33 @@ pub fn configure_routes(cfg: &mut web::ServiceConfig) {
             .route(
                 "/employmentstatuses/delete/{id}",
                 web::post().to(employment_status_handler::delete_employment_status_action),
+            )
+            // -----------------------------------------------------------
+            // Rute Zip Code Master Data
+            // -----------------------------------------------------------
+            .route(
+                "/zipcodes/list",
+                web::get().to(zip_code_handler::list_zip_codes),
+            )
+            .route(
+                "/zipcodes/add",
+                web::get().to(zip_code_handler::show_add_zip_code_form),
+            )
+            .route(
+                "/zipcodes/add",
+                web::post().to(zip_code_handler::add_zip_code_action),
+            )
+            .route(
+                "/zipcodes/edit/{id}", // PK adalah string
+                web::get().to(zip_code_handler::show_edit_zip_code_form),
+            )
+            .route(
+                "/zipcodes/edit/{id}", // PK adalah string
+                web::post().to(zip_code_handler::edit_zip_code_action),
+            )
+            .route(
+                "/zipcodes/delete/{id}", // PK adalah string
+                web::post().to(zip_code_handler::delete_zip_code_action),
             ),
     );
 }

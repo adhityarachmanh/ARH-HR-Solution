@@ -12,4 +12,5 @@ pub mod role_service;
 pub mod timezone_service;
 pub mod user_service;
 pub mod employment_status_service;
+pub mod zip_code_service;
 // pub mod employee_service;

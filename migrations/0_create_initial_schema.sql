@@ -182,10 +182,17 @@ CREATE TABLE "OvertimeSettings" (
 );
 
 CREATE TABLE "ZipCodes" (
-  "ZipCodeId" VARCHAR(10) PRIMARY KEY,
-  "District" VARCHAR(50) NOT NULL,
-  "County" VARCHAR(50) NOT NULL,
-  "City" VARCHAR(50) NOT NULL
+    "ZipCodeId" VARCHAR(10) NOT NULL PRIMARY KEY,
+    "StreetName" VARCHAR(100),
+    "District" VARCHAR(50) NOT NULL,
+    "County" VARCHAR(50) NOT NULL,
+    "City" VARCHAR(50) NOT NULL,
+    "SRProvince" VARCHAR(20),
+    "Latitude" DOUBLE PRECISION DEFAULT 0.0,
+    "Longitude" DOUBLE PRECISION DEFAULT 0.0,
+    "LastUpdateDateTime" TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    "LastUpdateByUserID" VARCHAR(40),
+    "ZipPostalCode" VARCHAR(10) NOT NULL
 );
 
 CREATE TABLE "Shifts" (

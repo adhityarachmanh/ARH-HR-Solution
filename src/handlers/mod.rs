@@ -12,4 +12,5 @@ pub mod permission_handler;
 pub mod role_handler;
 pub mod timezone_handler;
 pub mod user_handler;
+pub mod zip_code_handler;
 // pub mod employee_handler;

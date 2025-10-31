@@ -1,0 +1,96 @@
+{% extends "layout_app.html" %}
+
+{% block title %}Add Zip Code{% endblock title %}
+{% block header_title %}Add New Zip Code{% endblock header_title %}
+
+{% block content %}
+<div class="flex justify-center">
+    <div class="w-full max-w-lg bg-white p-8 rounded-xl shadow-lg border border-gray-100">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">Zip Code Details</h2>
+
+        {% if error %}
+        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4" role="alert">
+            <p class="font-bold">Error</p>
+            <p>{{ error }}</p>
+        </div>
+        {% endif %}
+
+        <form action="/zipcodes/add" method="post" class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                <div class="md:col-span-2">
+                    <label for="zip_code_id" class="block text-sm font-medium text-gray-700">Zip Code ID (Primary
+                        Key)</label>
+                    <input id="zip_code_id" name="zip_code_id" type="text" required
+                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                </div>
+
+                <div class="md:col-span-2">
+                    <label for="zip_postal_code" class="block text-sm font-medium text-gray-700">Postal Code (Actual
+                        Code)</label>
+                    <input id="zip_postal_code" name="zip_postal_code" type="text" required
+                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                </div>
+
+                <div>
+                    <label for="city" class="block text-sm font-medium text-gray-700">City</label>
+                    <input id="city" name="city" type="text" required
+                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                </div>
+                <div>
+                    <label for="district" class="block text-sm font-medium text-gray-700">District</label>
+                    <input id="district" name="district" type="text" required
+                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                </div>
+
+                <div>
+                    <label for="county" class="block text-sm font-medium text-gray-700">County</label>
+                    <input id="county" name="county" type="text" required
+                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                </div>
+                <div>
+                    <label for="sr_province" class="block text-sm font-medium text-gray-700">SR Province
+                        (Optional)</label>
+                    <input id="sr_province" name="sr_province" type="text"
+                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                </div>
+
+                <div class="md:col-span-2">
+                    <label for="street_name" class="block text-sm font-medium text-gray-700">Street Name
+                        (Optional)</label>
+                    <input id="street_name" name="street_name" type="text"
+                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                </div>
+
+                <div class="md:col-span-2 border-t pt-4">
+                    <h3 class="text-lg font-semibold text-indigo-600 mb-4">Geospatial Data</h3>
+                </div>
+
+                <div>
+                    <label for="latitude" class="block text-sm font-medium text-gray-700">Latitude</label>
+                    <input id="latitude" name="latitude" type="number" step="0.00000001" value="0.00000000" required
+                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                </div>
+
+                <div>
+                    <label for="longitude" class="block text-sm font-medium text-gray-700">Longitude</label>
+                    <input id="longitude" name="longitude" type="number" step="0.00000001" value="0.00000000" required
+                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                </div>
+
+            </div>
+
+            <div class="flex justify-end space-x-4 pt-4">
+                <a href="javascript:history.back()"
+                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition duration-150">
+                    Batal
+                </a>
+                <button type="submit"
+                    class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150">
+                    Create Zip Code
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock content %}
