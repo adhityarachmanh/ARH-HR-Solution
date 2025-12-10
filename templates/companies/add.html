@@ -60,10 +60,12 @@
                         class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
                 </div>
 
-                <div>
-                    <label for="zip_code" class="block text-sm font-medium text-gray-700">Zip Code (Optional)</label>
-                    <input id="zip_code" name="zip_code" type="text"
-                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                
+                <div class="md:col-span-1">
+                    <label class="block text-sm font-medium text-gray-700">Zip Code (Optional)</label>
+
+                    {% include "partials/_zipcode_select.html" field_id="zip_code", initial_display=initial_zip_display,
+                    initial_id=company.comp_zip_code|default(value=""), required=false %}
                 </div>
 
                 <div>

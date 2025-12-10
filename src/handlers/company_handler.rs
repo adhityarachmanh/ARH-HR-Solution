@@ -7,7 +7,7 @@ use tera::Tera;
 use crate::errors::AppError;
 use crate::handlers::permission_handler::get_username;
 use crate::models::{Company, PaginationParams};
-use crate::services::company_service;
+use crate::services::{company_service, zip_code_service};
 
 #[derive(Deserialize)]
 pub struct CompanyFormData {
@@ -110,9 +110,9 @@ pub async fn show_add_company_form(
             .append_header(("Location", "/login"))
             .finish());
     }
-
     let username = get_username(pool.get_ref(), &session).await;
     let mut context = tera::Context::new();
+
     context.insert("username", &username);
     context.insert("title", "Add Company");
     context.insert("header_title", "Add New Company");
@@ -166,7 +166,6 @@ pub async fn show_edit_company_form(
         "Edit Company: {}",
         company.comp_name.as_deref().unwrap_or("N/A")
     );
-
     context.insert("company", &company);
     context.insert("username", &username);
 
