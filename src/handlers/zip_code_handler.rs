@@ -2,9 +2,9 @@ use actix_session::Session;
 use actix_web::{web, HttpResponse};
 use serde::Deserialize;
 use sqlx::PgPool;
-use tera::Tera;
 use std::env;
 use std::str::FromStr;
+use tera::Tera;
 
 use crate::errors::AppError;
 use crate::handlers::permission_handler::get_username;
@@ -14,8 +14,9 @@ use crate::services::zip_code_service;
 #[derive(Deserialize)]
 pub struct SearchQuery {
     pub q: String,
+    pub limit: Option<i64>,
+    pub offset: Option<i64>,
 }
-// --- Form Data Structure ---
 #[derive(Deserialize)]
 pub struct ZipCodeFormData {
     pub zip_code_id: String,
@@ -29,9 +30,7 @@ pub struct ZipCodeFormData {
     pub zip_postal_code: Option<String>,
 }
 
-// Helper: Mapping Form Data (f64) ke Model (f64)
 fn map_form_to_zip_code(form: &ZipCodeFormData) -> Result<ZipCode, AppError> {
-    
     Ok(ZipCode {
         zip_code_id: form.zip_code_id.clone(),
         street_name: form.street_name.clone(),
@@ -39,26 +38,28 @@ fn map_form_to_zip_code(form: &ZipCodeFormData) -> Result<ZipCode, AppError> {
         county: form.county.clone(),
         city: form.city.clone(),
         sr_province: form.sr_province.clone(),
-        
+
         latitude: Some(form.latitude),
         longitude: Some(form.longitude),
-        
+
         zip_postal_code: form.zip_postal_code.clone(),
         last_update_date_time: None,
         last_update_by_user_id: None,
     })
 }
 
-// FIX: Ganti search_zip_codes_json (API) menjadi nama fungsi yang benar untuk handler
 pub async fn search_zip_codes_json(
     pool: web::Data<PgPool>,
     query: web::Query<SearchQuery>,
 ) -> Result<HttpResponse, AppError> {
-    let results = zip_code_service::search_zip_codes(pool.get_ref(), &query.q).await?;
+    let limit = query.limit.unwrap_or(30); 
+    let offset = query.offset.unwrap_or(0);
+    
+    let results = zip_code_service::search_zip_codes(pool.get_ref(), &query.q, limit, offset).await?;
+    
     Ok(HttpResponse::Ok().json(results))
 }
 
-// --- READ All (Paginated) ---
 pub async fn list_zip_codes(
     pool: web::Data<PgPool>,
     tera: web::Data<Tera>,
@@ -99,7 +100,6 @@ pub async fn list_zip_codes(
     Ok(HttpResponse::Ok().body(rendered))
 }
 
-// --- CREATE Show Form ---
 pub async fn show_add_zip_code_form(
     pool: web::Data<PgPool>,
     tera: web::Data<Tera>,
@@ -125,7 +125,6 @@ pub async fn show_add_zip_code_form(
     Ok(HttpResponse::Ok().body(rendered))
 }
 
-// --- CREATE Action ---
 pub async fn add_zip_code_action(
     pool: web::Data<PgPool>,
     tera: web::Data<Tera>,
@@ -163,7 +162,6 @@ pub async fn add_zip_code_action(
         .finish())
 }
 
-// --- UPDATE Show Form ---
 pub async fn show_edit_zip_code_form(
     pool: web::Data<PgPool>,
     tera: web::Data<Tera>,
@@ -200,7 +198,6 @@ pub async fn show_edit_zip_code_form(
     Ok(HttpResponse::Ok().body(rendered))
 }
 
-// --- UPDATE Action ---
 pub async fn edit_zip_code_action(
     pool: web::Data<PgPool>,
     _tera: web::Data<Tera>,
@@ -226,7 +223,6 @@ pub async fn edit_zip_code_action(
         .finish())
 }
 
-// --- DELETE Action ---
 pub async fn delete_zip_code_action(
     pool: web::Data<PgPool>,
     session: Session,

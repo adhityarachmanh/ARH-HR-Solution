@@ -16,7 +16,6 @@ pub struct ZipCode {
     pub latitude: Option<f64>,
     pub longitude: Option<f64>,
     
-    // FIX: Menggunakan PrimitiveDateTime dan serializer iso8601 yang kompatibel
     #[serde(with = "time::serde::rfc3339::option")]
     pub last_update_date_time: Option<OffsetDateTime>,
     

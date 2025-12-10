@@ -28,7 +28,7 @@ pub async fn count_zip_codes(pool: &PgPool) -> Result<i64, AppError> {
     Ok(count)
 }
 
-pub async fn search_zip_codes(pool: &PgPool, query: &str) -> Result<Vec<ZipCode>, AppError> {
+pub async fn search_zip_codes(pool: &PgPool, query: &str, limit: i64, offset: i64) -> Result<Vec<ZipCode>, AppError> {
     let q = query.trim();
     if q.is_empty() {
         return Ok(vec![]);
@@ -47,11 +47,13 @@ pub async fn search_zip_codes(pool: &PgPool, query: &str) -> Result<Vec<ZipCode>
         ORDER BY
             CASE WHEN "ZipPostalCode" ILIKE $2 THEN 0 ELSE 1 END,
             "City" ASC
-        LIMIT 30
+        LIMIT $3 OFFSET $4
         "#
     ))
     .bind(&pattern)
     .bind(&exact)
+    .bind(limit) // Binding baru
+    .bind(offset) // Binding baru
     .fetch_all(pool)
     .await
     .map_err(AppError::DatabaseError)?;

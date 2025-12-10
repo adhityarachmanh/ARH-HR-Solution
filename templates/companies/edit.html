@@ -65,11 +65,61 @@
                         class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
                 </div>
 
-                <div>
-                    <label for="zip_code" class="block text-sm font-medium text-gray-700">Zip Code (Optional)</label>
-                    <input id="zip_code" name="zip_code" type="text"
-                        value="{{ company.comp_zip_code | default(value='') }}"
-                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                
+                <div class="md:col-span-1">
+                    <label class="block text-sm font-medium text-gray-700">Zip Code (Optional)</label>
+
+                    {# --- START: INLINE ZIP CODE SEARCH COMPONENT (EDIT MODE) --- #}
+                    {% set field_id = "zip_code" %}
+                    {% set input_id = field_id ~ "_search_display" %}
+                    {% set hidden_id = field_id %}
+                    {% set required_attr = "" %}
+                    
+                    {# Nilai yang disiapkan handler (dari company_handler.rs) #}
+                    {% set initial_display_val = initial_zip_display | default(value="") %}
+                    {% set initial_id_val = company.comp_zip_code | default(value="") %}
+                    
+                    <div class="relative w-full" id="{{ field_id }}-container">
+                        
+                        {# 1. INPUT DISPLAY (Tempat User Mengetik) #}
+                        <input type="text" id="{{ input_id }}" 
+                               placeholder="Ketik Kota, Distrik, atau Kode Pos..."
+                               value="{{ initial_display_val }}"
+                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                               autocomplete="off" {{ required_attr }}>
+                               
+                        {# 2. HIDDEN INPUT (Menyimpan ZipCodeId yang akan dikirim ke backend) #}
+                        <input type="hidden" id="{{ hidden_id }}" name="{{ hidden_id }}" value="{{ initial_id_val }}">
+                        
+                        {# 3. CONTAINER LOADING DAN HASIL PENCARIAN #}
+                        
+                        {# Loading Spinner #}
+                        <div id="{{ field_id }}-loading" class="hidden absolute inset-x-0 top-full mt-1 p-2 bg-white border border-gray-300 rounded-b shadow-lg z-20">
+                            <div class="flex items-center justify-center text-sm text-gray-500">
+                                <svg class="animate-spin h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Mencari...
+                            </div>
+                        </div>
+                        
+                        {# Results Container #}
+                        <div id="{{ field_id }}-results"
+                             class="absolute z-20 w-full bg-white border border-gray-300 rounded-b shadow-lg mt-1 max-h-48 overflow-y-auto hidden text-sm">
+                            <!-- Hasil AJAX muncul di sini -->
+                        </div>
+                        
+                        {# 4. INDIKATOR SELEKSI AWAL (Mode Edit) #}
+                        {% if initial_display_val and initial_id_val != "" %}
+                        <div class="mt-1 text-xs text-gray-600" id="{{ field_id }}-initial-display">
+                            Terpilih: <span class="font-medium">{{ initial_display_val }}</span>
+                            <button type="button" onclick="clearSelection('{{ field_id }}')" class="ml-1 text-red-600 hover:underline">ubah</button>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {# --- END: INLINE ZIP CODE SEARCH COMPONENT (EDIT MODE) --- #}
+
                 </div>
 
                 <div>
@@ -168,4 +218,174 @@
         </form>
     </div>
 </div>
+
+{# --- START: INLINE JAVASCRIPT FOR LAZY LOADING SEARCH --- #}
+<script>
+    window.clearSelection = function(id) {
+        const inp = document.getElementById(id + '_search_display');
+        const hid = document.getElementById(id);
+        const initialDisplay = document.getElementById(id + '-initial-display');
+        
+        inp.value = ''; 
+        hid.value = '';
+        inp.focus();
+        if (initialDisplay) initialDisplay.classList.add('hidden');
+    };
+
+    const fieldId = 'zip_code';
+    const inputDisplay = document.getElementById(fieldId + '_search_display');
+    const hiddenInput = document.getElementById(fieldId);
+    const resultsContainer = document.getElementById(fieldId + '-results');
+    const loadingContainer = document.getElementById(fieldId + '-loading');
+    
+    let debounceTimer;
+    let currentPage = 0;
+    let isLoading = false;
+    let hasMore = true;
+    const LIMIT = 30; // Harus sesuai dengan LIMIT di service Rust
+
+    function showLoading() {
+        isLoading = true;
+        
+        if (currentPage === 0) {
+             loadingContainer.classList.remove('hidden');
+             resultsContainer.innerHTML = '';
+        } else {
+             resultsContainer.insertAdjacentHTML('beforeend', '<div id="scroll-loader" class="p-2 text-center text-gray-500 text-xs flex justify-center items-center"><svg class="animate-spin h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Memuat...</div>');
+        }
+    }
+
+    function hideLoading() {
+        isLoading = false;
+        const scrollLoader = document.getElementById('scroll-loader');
+        if (scrollLoader) scrollLoader.remove();
+        loadingContainer.classList.add('hidden');
+    }
+    
+    function handleScroll() {
+        if (isLoading || !hasMore) return;
+
+        const scrollHeight = resultsContainer.scrollHeight;
+        const scrollTop = resultsContainer.scrollTop;
+        const clientHeight = resultsContainer.clientHeight;
+        
+        if (scrollTop + clientHeight >= scrollHeight * 0.9) {
+            currentPage++;
+            fetchResults(inputDisplay.value.trim(), true);
+        }
+    }
+
+    resultsContainer.addEventListener('scroll', handleScroll);
+
+
+    inputDisplay.addEventListener('input', function() {
+        clearTimeout(debounceTimer);
+        const query = inputDisplay.value.trim();
+
+        hiddenInput.value = '';
+        
+        const initialDisplay = document.getElementById(fieldId + '-initial-display');
+        if (initialDisplay) initialDisplay.classList.add('hidden');
+
+        if (query.length < 2) {
+            resultsContainer.classList.add('hidden');
+            hideLoading();
+            return;
+        }
+
+        currentPage = 0;
+        hasMore = true;
+
+        debounceTimer = setTimeout(() => {
+            fetchResults(query, false);
+        }, 300);
+    });
+    
+    resultsContainer.addEventListener('click', function(e) {
+        const resultItem = e.target.closest('.search-result-item');
+        if (resultItem) {
+            const selectedId = resultItem.dataset.id;
+            
+            const postalCodeText = resultItem.querySelector('.postal-code').textContent.trim();
+            const cityDistrictText = resultItem.querySelector('.city-district').textContent.trim();
+            const selectedText = `${postalCodeText} ${cityDistrictText}`;
+
+            inputDisplay.value = selectedText;
+            hiddenInput.value = selectedId;
+            resultsContainer.classList.add('hidden');
+            hideLoading();
+        }
+    });
+    
+    document.addEventListener('click', function(e) {
+        const container = document.getElementById(fieldId + '-container');
+        if (!container.contains(e.target)) {
+             resultsContainer.classList.add('hidden');
+             hideLoading();
+        }
+    });
+
+    async function fetchResults(query, isAppend = false) {
+        if (isLoading && isAppend) return;
+        
+        const offset = currentPage * LIMIT;
+        const apiUrl = `/api/zipcodes/search?q=${encodeURIComponent(query)}&limit=${LIMIT}&offset=${offset}`; 
+        
+        showLoading();
+        
+        try {
+            const response = await fetch(apiUrl);
+            if (!response.ok) {
+                throw new Error('Network response was not ok.');
+            }
+            
+            const results = await response.json();
+            hideLoading();
+            
+            if (results.length < LIMIT) {
+                hasMore = false;
+            }
+            
+            if (results.length === 0 && !isAppend) {
+                resultsContainer.innerHTML = '<div class="p-2 text-gray-500 text-xs">Tidak ditemukan.</div>';
+                resultsContainer.classList.remove('hidden');
+                return;
+            }
+            
+            let html = results.map(zip => {
+                const postalCode = zip.zip_postal_code || 'N/A';
+                const city = zip.city || '';
+                const district = zip.district || '';
+                
+                return `
+                    <div class="search-result-item p-2 hover:bg-indigo-50 cursor-pointer border-b border-gray-100 last:border-0 text-xs" 
+                         data-id="${zip.zip_code_id}">
+                        <div class="font-medium text-indigo-700 postal-code">(${postalCode})</div>
+                        <div class="text-gray-700 city-district">${city}, ${district}</div>
+                    </div>
+                `;
+            }).join('');
+            
+            if (isAppend) {
+                resultsContainer.insertAdjacentHTML('beforeend', html);
+            } else {
+                resultsContainer.innerHTML = html;
+            }
+            
+            if (!hasMore && resultsContainer.querySelector('.search-result-item')) {
+                resultsContainer.insertAdjacentHTML('beforeend', `
+                    <div class="p-2 text-gray-500 text-xs text-center border-t border-gray-200">Semua hasil dimuat.</div>
+                `);
+            }
+
+            resultsContainer.classList.remove('hidden');
+
+        } catch (error) {
+            console.error('Fetch error:', error);
+            hideLoading();
+            resultsContainer.innerHTML = '<div class="p-2 text-red-600 text-xs">Gagal memuat data.</div>';
+            resultsContainer.classList.remove('hidden');
+        }
+    }
+</script>
 {% endblock content %}

@@ -162,13 +162,37 @@ pub async fn show_edit_company_form(
     let username = get_username(pool.get_ref(), &session).await;
     let mut context = tera::Context::new();
 
+    let mut initial_zip_id: Option<String> = None;
+    let mut initial_zip_display: Option<String> = None;
+
+    if let Some(zip_id) = company.comp_zip_code.as_ref() {
+        match zip_code_service::get_zip_code_by_id(pool.get_ref(), zip_id).await {
+            Ok(zip_info) => {
+                let postal = zip_info.zip_postal_code.unwrap_or_else(|| "N/A".to_string());
+                let city = zip_info.city;
+                let district = zip_info.district;
+                
+                initial_zip_display = Some(format!("({}) {}, {}", postal, city, district));
+                initial_zip_id = Some(zip_id.clone());
+            },
+            Err(e) => {
+                tracing::error!("Failed to fetch zip code details for ID {}: {:?}", zip_id, e);
+                initial_zip_id = Some(zip_id.clone()); 
+                initial_zip_display = None; 
+            }
+        }
+    }
+
     let page_title = format!(
         "Edit Company: {}",
         company.comp_name.as_deref().unwrap_or("N/A")
     );
     context.insert("company", &company);
     context.insert("username", &username);
-
+    
+    context.insert("initial_zip_id", &initial_zip_id);
+    context.insert("initial_zip_display", &initial_zip_display);
+    
     context.insert("title", &page_title);
     context.insert("header_title", "Edit Company Info");
 
