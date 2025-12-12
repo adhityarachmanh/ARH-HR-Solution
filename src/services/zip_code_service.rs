@@ -52,8 +52,8 @@ pub async fn search_zip_codes(pool: &PgPool, query: &str, limit: i64, offset: i6
     ))
     .bind(&pattern)
     .bind(&exact)
-    .bind(limit) // Binding baru
-    .bind(offset) // Binding baru
+    .bind(limit) 
+    .bind(offset) 
     .fetch_all(pool)
     .await
     .map_err(AppError::DatabaseError)?;

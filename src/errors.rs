@@ -1,5 +1,3 @@
-// src/errors.rs
-
 use actix_web::{http::StatusCode, HttpResponse, ResponseError};
 use std::fmt;
 use actix_session::{SessionGetError, SessionInsertError};
@@ -68,7 +66,6 @@ impl ResponseError for AppError {
     }
 
     fn error_response(&self) -> HttpResponse {
-        // Log semua error
         match self {
             AppError::DatabaseError(e) => tracing::error!("Database error: {:?}", e),
             AppError::SessionInsertError(e) => tracing::error!("Session Insert error: {:?}", e),

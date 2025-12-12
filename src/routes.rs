@@ -347,15 +347,15 @@ pub fn configure_routes(cfg: &mut web::ServiceConfig) {
                 web::post().to(zip_code_handler::add_zip_code_action),
             )
             .route(
-                "/zipcodes/edit/{id}", // PK adalah string
+                "/zipcodes/edit/{id}",
                 web::get().to(zip_code_handler::show_edit_zip_code_form),
             )
             .route(
-                "/zipcodes/edit/{id}", // PK adalah string
+                "/zipcodes/edit/{id}",
                 web::post().to(zip_code_handler::edit_zip_code_action),
             )
             .route(
-                "/zipcodes/delete/{id}", // PK adalah string
+                "/zipcodes/delete/{id}",
                 web::post().to(zip_code_handler::delete_zip_code_action),
             )
             .route(
