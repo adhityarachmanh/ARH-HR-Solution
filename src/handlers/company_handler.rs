@@ -37,30 +37,30 @@ fn map_form_to_company(form: &CompanyFormData) -> Company {
     }
 }
 
-pub async fn redirect_to_first_company(
-    pool: web::Data<PgPool>,
-    session: Session,
-) -> Result<HttpResponse, AppError> {
-    if session.get::<i64>("user_id").unwrap_or(None).is_none() {
-        return Ok(HttpResponse::Found()
-            .append_header(("Location", "/login"))
-            .finish());
-    }
+// pub async fn redirect_to_first_company(
+//     pool: web::Data<PgPool>,
+//     session: Session,
+// ) -> Result<HttpResponse, AppError> {
+//     if session.get::<i64>("user_id").unwrap_or(None).is_none() {
+//         return Ok(HttpResponse::Found()
+//             .append_header(("Location", "/login"))
+//             .finish());
+//     }
 
-    match company_service::get_first_company_id(pool.get_ref()).await {
-        Ok(id) => {
-            Ok(HttpResponse::Found()
-                .append_header(("Location", "/companies/detail"))
-                .finish())
-        }
-        Err(AppError::NotFound(_)) => {
-            Ok(HttpResponse::Found()
-                .append_header(("Location", "/companies/add"))
-                .finish())
-        }
-        Err(e) => Err(e),
-    }
-}
+//     match company_service::get_first_company_id(pool.get_ref()).await {
+//         Ok(id) => {
+//             Ok(HttpResponse::Found()
+//                 .append_header(("Location", "/companies/detail"))
+//                 .finish())
+//         }
+//         Err(AppError::NotFound(_)) => {
+//             Ok(HttpResponse::Found()
+//                 .append_header(("Location", "/companies/add"))
+//                 .finish())
+//         }
+//         Err(e) => Err(e),
+//     }
+// }
 
 pub async fn show_detail_company(
     pool: web::Data<PgPool>,
@@ -120,50 +120,50 @@ pub async fn show_detail_company(
     Ok(HttpResponse::Ok().body(rendered))
 }
 
-pub async fn show_add_company_form(
-    pool: web::Data<PgPool>,
-    tera: web::Data<Tera>,
-    session: Session,
-) -> Result<HttpResponse, AppError> {
-    if session.get::<i64>("user_id").unwrap_or(None).is_none() {
-        return Ok(HttpResponse::Found()
-            .append_header(("Location", "/login"))
-            .finish());
-    }
-    let username = get_username(pool.get_ref(), &session).await;
-    let mut context = tera::Context::new();
+// pub async fn show_add_company_form(
+//     pool: web::Data<PgPool>,
+//     tera: web::Data<Tera>,
+//     session: Session,
+// ) -> Result<HttpResponse, AppError> {
+//     if session.get::<i64>("user_id").unwrap_or(None).is_none() {
+//         return Ok(HttpResponse::Found()
+//             .append_header(("Location", "/login"))
+//             .finish());
+//     }
+//     let username = get_username(pool.get_ref(), &session).await;
+//     let mut context = tera::Context::new();
 
-    context.insert("username", &username);
-    context.insert("title", "Add Company");
-    context.insert("header_title", "Add New Company");
+//     context.insert("username", &username);
+//     context.insert("title", "Add Company");
+//     context.insert("header_title", "Add New Company");
 
-    let rendered = tera
-        .render("companies/add.html", &context)
-        .map_err(AppError::TeraError)?;
-    Ok(HttpResponse::Ok().body(rendered))
-}
+//     let rendered = tera
+//         .render("companies/add.html", &context)
+//         .map_err(AppError::TeraError)?;
+//     Ok(HttpResponse::Ok().body(rendered))
+// }
 
-pub async fn add_company_action(
-    pool: web::Data<PgPool>,
-    form: web::Form<CompanyFormData>,
-    session: Session,
-) -> Result<HttpResponse, AppError> {
-    if session.get::<i64>("user_id").unwrap_or(None).is_none() {
-        return Ok(HttpResponse::Found()
-            .append_header(("Location", "/login"))
-            .finish());
-    }
+// pub async fn add_company_action(
+//     // pool: web::Data<PgPool>,
+//     // form: web::Form<CompanyFormData>,
+//     session: Session,
+// ) -> Result<HttpResponse, AppError> {
+//     if session.get::<i64>("user_id").unwrap_or(None).is_none() {
+//         return Ok(HttpResponse::Found()
+//             .append_header(("Location", "/login"))
+//             .finish());
+//     }
 
-    let company_data = map_form_to_company(&form);
-    let created_by = get_username(pool.get_ref(), &session).await;
+//     // let company_data = map_form_to_company(&form);
+//     // let created_by = get_username(pool.get_ref(), &session).await;
 
-    // let new_company =
-    //     company_service::create_company(pool.get_ref(), company_data, &created_by).await?;
+//     // let new_company =
+//     //     company_service::create_company(pool.get_ref(), company_data, &created_by).await?;
 
-    Ok(HttpResponse::Found()
-        .append_header(("Location", "/companies/detail"))
-        .finish())
-}
+//     Ok(HttpResponse::Found()
+//         .append_header(("Location", "/companies/detail"))
+//         .finish())
+// }
 
 pub async fn show_edit_company_form(
     pool: web::Data<PgPool>,
@@ -250,20 +250,20 @@ pub async fn edit_company_action(
         .finish())
 }
 
-pub async fn delete_company_action(
-    pool: web::Data<PgPool>,
-    session: Session,
-) -> Result<HttpResponse, AppError> {
-    if session.get::<i64>("user_id").unwrap_or(None).is_none() {
-        return Ok(HttpResponse::Found()
-            .append_header(("Location", "/login"))
-            .finish());
-    }
+// pub async fn delete_company_action(
+//     pool: web::Data<PgPool>,
+//     session: Session,
+// ) -> Result<HttpResponse, AppError> {
+//     if session.get::<i64>("user_id").unwrap_or(None).is_none() {
+//         return Ok(HttpResponse::Found()
+//             .append_header(("Location", "/login"))
+//             .finish());
+//     }
 
-    let id = 1;
-    company_service::delete_company(pool.get_ref(), id).await?;
+//     let id = 1;
+//     company_service::delete_company(pool.get_ref(), id).await?;
 
-    Ok(HttpResponse::Found()
-        .append_header(("Location", "/companies"))
-        .finish())
-}
+//     Ok(HttpResponse::Found()
+//         .append_header(("Location", "/companies"))
+//         .finish())
+// }

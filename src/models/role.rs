@@ -6,3 +6,9 @@ pub struct Role {
     pub name: String,
     pub display_name: String,
 }
+
+
+#[derive(Deserialize)]
+pub struct AddRoleFormData {
+    pub name: String,
+}

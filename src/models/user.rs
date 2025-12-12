@@ -30,3 +30,19 @@ pub struct UserListDetail {
 
     pub role_names: Option<String>,
 }
+
+
+
+#[derive(Deserialize)]
+pub struct AddUserFormData {
+    pub username: String,
+    pub password: String,
+    pub roles: Option<Vec<i32>>,
+}
+
+#[derive(Deserialize)]
+pub struct EditUserFormData {
+    pub username: String,
+    pub email: Option<String>,
+    pub roles: Option<Vec<i32>>,
+}

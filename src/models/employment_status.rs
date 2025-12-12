@@ -13,3 +13,9 @@ pub struct EmploymentStatus {
     pub updated_date: Option<OffsetDateTime>,
     pub updated_by: Option<String>,
 }
+
+
+#[derive(Deserialize)]
+pub struct EmploymentStatusFormData {
+    pub name: String,
+}

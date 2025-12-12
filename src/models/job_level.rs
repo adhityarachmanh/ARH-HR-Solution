@@ -17,3 +17,10 @@ pub struct JobLevel {
 
     pub updated_by: Option<String>,
 }
+
+
+#[derive(Deserialize)]
+pub struct JobLevelFormData {
+    pub name: String,
+    pub order: Option<i32>,
+}

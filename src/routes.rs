@@ -103,14 +103,14 @@ pub fn configure_routes(cfg: &mut web::ServiceConfig) {
                 "/companies/detail",
                 web::get().to(company_handler::show_detail_company),
             )
-            .route(
-                "/companies/add",
-                web::get().to(company_handler::show_add_company_form),
-            )
-            .route(
-                "/companies/add",
-                web::post().to(company_handler::add_company_action),
-            )
+            // .route(
+            //     "/companies/add",
+            //     web::get().to(company_handler::show_add_company_form),
+            // )
+            // .route(
+            //     "/companies/add",
+            //     web::post().to(company_handler::add_company_action),
+            // )
             .route(
                 "/companies/edit",
                 web::get().to(company_handler::show_edit_company_form),

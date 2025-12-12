@@ -1,27 +1,12 @@
 use crate::errors::AppError;
 use crate::handlers::permission_handler::get_username;
-use crate::models::PaginationParams;
+use crate::models::{AddUserFormData, EditUserFormData, PaginationParams};
 use crate::services::{role_service, user_service};
 
 use actix_session::Session;
 use actix_web::{web, HttpResponse};
-use serde::Deserialize;
 use sqlx::PgPool;
 use tera::Tera;
-
-#[derive(Deserialize)]
-pub struct AddUserFormData {
-    pub username: String,
-    pub password: String,
-    pub roles: Option<Vec<i32>>,
-}
-
-#[derive(Deserialize)]
-pub struct EditUserFormData {
-    pub username: String,
-    pub email: Option<String>,
-    pub roles: Option<Vec<i32>>,
-}
 
 pub async fn list_users(
     pool: web::Data<PgPool>,

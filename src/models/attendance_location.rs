@@ -37,3 +37,13 @@ pub struct AttendanceLocationDetail {
     #[serde(with = "time::serde::rfc3339::option")]
     pub updated_date: Option<OffsetDateTime>,
 }
+
+#[derive(Deserialize)]
+pub struct AttendanceLocationFormData {
+    pub location_name: String,
+    pub time_zone_id: Option<i32>,
+    pub is_flexible: Option<bool>,
+    pub latitude: f64,
+    pub longitude: f64,
+    pub radius_tolerance_in_meter: i32,
+}

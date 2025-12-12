@@ -1,18 +1,12 @@
 use actix_session::Session;
 use actix_web::{web, HttpResponse};
-use serde::Deserialize;
 use sqlx::PgPool;
 use tera::Tera;
 
 use crate::errors::AppError;
 use crate::handlers::permission_handler::get_username;
-use crate::models::PaginationParams;
+use crate::models::{OrganizationFormData, PaginationParams};
 use crate::services::organization_service;
-
-#[derive(Deserialize)]
-pub struct OrganizationFormData {
-    pub name: String,
-}
 
 pub async fn list_organizations(
     pool: web::Data<PgPool>,

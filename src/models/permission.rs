@@ -14,3 +14,8 @@ pub struct RolePermission {
     pub role_id: i32,
     pub permission_id: i32,
 }
+
+#[derive(Deserialize)]
+pub struct ManagePermissionFormData {
+    pub permissions: Option<Vec<i32>>,
+}

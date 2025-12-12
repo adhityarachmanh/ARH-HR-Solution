@@ -1,6 +1,5 @@
 use actix_session::Session;
 use actix_web::{web, HttpResponse};
-use serde::Deserialize;
 use sqlx::types::BigDecimal;
 use sqlx::PgPool;
 use std::env;
@@ -9,18 +8,8 @@ use tera::Tera;
 
 use crate::errors::AppError;
 use crate::handlers::permission_handler::get_username;
-use crate::models::{AttendanceLocation, PaginationParams};
+use crate::models::{AttendanceLocation, AttendanceLocationFormData, PaginationParams};
 use crate::services::{attendance_location_service, timezone_service};
-
-#[derive(Deserialize)]
-pub struct AttendanceLocationFormData {
-    pub location_name: String,
-    pub time_zone_id: Option<i32>,
-    pub is_flexible: Option<bool>,
-    pub latitude: f64,
-    pub longitude: f64,
-    pub radius_tolerance_in_meter: i32,
-}
 
 fn map_form_to_location(form: web::Form<AttendanceLocationFormData>) -> AttendanceLocation {
     let lat_decimal = BigDecimal::from_str(&form.latitude.to_string()).ok();

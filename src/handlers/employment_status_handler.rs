@@ -2,19 +2,13 @@
 
 use actix_session::Session;
 use actix_web::{web, HttpResponse};
-use serde::Deserialize;
 use sqlx::PgPool;
 use tera::Tera;
 
 use crate::errors::AppError;
 use crate::handlers::permission_handler::get_username;
-use crate::models::PaginationParams;
+use crate::models::{EmploymentStatusFormData, PaginationParams};
 use crate::services::employment_status_service;
-
-#[derive(Deserialize)]
-pub struct EmploymentStatusFormData {
-    pub name: String,
-}
 
 pub async fn list_employment_statuses(
     pool: web::Data<PgPool>,

@@ -1,17 +1,11 @@
 use actix_session::Session;
 use actix_web::{web, HttpResponse};
-use serde::Deserialize;
 use sqlx::PgPool;
 use tera::Tera;
 
 use crate::errors::AppError;
-use crate::models::{HardcodedPermission, Role, User};
+use crate::models::{HardcodedPermission, ManagePermissionFormData, Role, User};
 use crate::services::{permission_service, role_service};
-
-#[derive(Deserialize)]
-pub struct ManagePermissionFormData {
-    permissions: Option<Vec<i32>>,
-}
 
 pub async fn get_username(pool: &PgPool, session: &Session) -> String {
     if let Some(user_id) = session.get::<i64>("user_id").unwrap_or(None) {

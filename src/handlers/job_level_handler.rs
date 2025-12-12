@@ -1,19 +1,12 @@
 use actix_session::Session;
 use actix_web::{web, HttpResponse};
-use serde::Deserialize;
 use sqlx::PgPool;
 use tera::Tera;
 
 use crate::errors::AppError;
 use crate::handlers::permission_handler::get_username;
-use crate::models::PaginationParams;
+use crate::models::{JobLevelFormData, PaginationParams};
 use crate::services::job_level_service;
-
-#[derive(Deserialize)]
-pub struct JobLevelFormData {
-    pub name: String,
-    pub order: Option<i32>,
-}
 
 pub async fn list_job_levels(
     pool: web::Data<PgPool>,

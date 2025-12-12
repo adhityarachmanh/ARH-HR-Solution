@@ -13,3 +13,9 @@ pub struct Organization {
     pub updated_date: Option<OffsetDateTime>,
     pub updated_by: Option<String>,
 }
+
+#[derive(Deserialize)]
+pub struct OrganizationFormData {
+    pub name: String,
+}
+
