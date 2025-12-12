@@ -1,8 +1,8 @@
 use crate::handlers::{
     attendance_location_handler, auth_handler, branch_handler, class_handler, company_handler,
-    dashboard_handler, employment_status_handler, holiday_handler, job_level_handler,
-    job_position_handler, organization_handler, permission_handler, role_handler, timezone_handler,
-    user_handler, zip_code_handler,
+    dashboard_handler, employment_status_handler, grade_handler, holiday_handler,
+    job_level_handler, job_position_handler, organization_handler, permission_handler,
+    role_handler, timezone_handler, user_handler, zip_code_handler,
 };
 use actix_web::web;
 
@@ -385,6 +385,30 @@ pub fn configure_routes(cfg: &mut web::ServiceConfig) {
             .route(
                 "/classes/delete/{id}",
                 web::post().to(class_handler::delete_class_action),
+            )
+            // -----------------------------------------------------------
+            // Rute grades Master Data
+            // -----------------------------------------------------------
+            .route("/grades/list", web::get().to(grade_handler::list_grades))
+            .route(
+                "/grades/add",
+                web::get().to(grade_handler::show_add_grade_form),
+            )
+            .route(
+                "/grades/add",
+                web::post().to(grade_handler::add_grade_action),
+            )
+            .route(
+                "/grades/edit/{id}",
+                web::get().to(grade_handler::show_edit_grade_form),
+            )
+            .route(
+                "/grades/edit/{id}",
+                web::post().to(grade_handler::edit_grade_action),
+            )
+            .route(
+                "/grades/delete/{id}",
+                web::post().to(grade_handler::delete_grade_action),
             ),
     );
 }
