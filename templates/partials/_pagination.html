@@ -1,19 +1,8 @@
-{# 
-    KOMPONEN PAGINATION REUSABLE (TAMPILAN KOMPAK)
-    
-    EXPECTED CONTEXT VARIABLES:
-    - current_page: Nomor halaman saat ini (i64)
-    - total_pages: Total halaman (i64)
-    - total_records: Total record (i64)
-    - limit: Record per halaman (i64)
-#}
-
 {% if total_pages > 1 %}
 <div class="flex justify-between items-center mt-4">
     <div class="text-sm text-gray-600">
         Menampilkan {{ (current_page - 1) * limit + 1 }} sampai 
         
-        {# Hitung batas atas (menggunakan logic if eksplisit) #}
         {% if current_page * limit > total_records %}
             {{ total_records }}
         {% else %}
@@ -25,7 +14,6 @@
     
     <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
         
-        {# --- TOMBOL LOMPAT KE AWAL (FIRST PAGE) --- #}
         {% if current_page > 3 %}
         <a href="?page=1&limit={{ limit }}"
            class="relative inline-flex items-center justify-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 h-10 w-12">
@@ -34,7 +22,6 @@
         </a>
         {% endif %}
         
-        {# Tombol Previous #}
         {% if current_page > 1 %}
         <a href="?page={{ current_page - 1 }}&limit={{ limit }}"
            class="relative inline-flex items-center justify-center px-2 py-2 {% if current_page == 2 and total_pages > 3 %}rounded-l-md{% endif %} border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 h-10 w-10">
@@ -43,16 +30,14 @@
         </a>
         {% endif %}
         
-        {# --- LOGIC PAGE NUMBERS --- #}
         
-        {# KOREKSI CRITICAL FIX: Mengganti filter max/min dengan logic if #}
         {% set start_page = current_page - 2 %}
         {% if start_page < 1 %}{% set start_page = 1 %}{% endif %}
 
         {% set end_page = current_page + 3 %}
         {% if end_page > total_pages + 1 %}{% set end_page = total_pages + 1 %}{% endif %}
         
-        {# Link Halaman #}
+        
         {% for p in range(start=start_page, end=end_page) %}
             <a href="?page={{ p }}&limit={{ limit }}"
                class="relative inline-flex items-center px-4 py-2 border text-sm font-medium 
@@ -62,7 +47,7 @@
             </a>
         {% endfor %}
 
-        {# Tampilkan Ellipsis dan Link Terakhir #}
+        
         {% if end_page <= total_pages %}
             {% if end_page < total_pages %}
                 <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
@@ -70,7 +55,7 @@
                 </span>
             {% endif %}
             
-            {# Link ke Halaman Terakhir (Jika tidak termasuk dalam rentang) #}
+            
             {% if total_pages >= end_page %}
             <a href="?page={{ total_pages }}&limit={{ limit }}"
                class="relative inline-flex items-center px-4 py-2 border text-sm font-medium border-gray-300 bg-white text-gray-700 hover:bg-gray-50">
@@ -80,7 +65,6 @@
         {% endif %}
 
 
-        {# Tombol Next #}
         {% if current_page < total_pages %}
         <a href="?page={{ current_page + 1 }}&limit={{ limit }}"
            class="relative inline-flex items-center justify-center px-2 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 h-10 w-10">
@@ -89,7 +73,7 @@
         </a>
         {% endif %}
 
-        {# --- TOMBOL LOMPAT KE AKHIR (LAST PAGE) --- #}
+        
         {% if current_page < total_pages - 2 %}
         <a href="?page={{ total_pages }}&limit={{ limit }}"
            class="relative inline-flex items-center justify-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 h-10 w-12">
