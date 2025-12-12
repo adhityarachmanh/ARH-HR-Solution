@@ -30,7 +30,7 @@ pub async fn list_classes(
 
     let limit = params.limit as i64;
     let page = params.page.max(1) as i64;
-    let offset = (page - 1) * limit;
+    // let offset = (page - 1) * limit;
 
     let classes = class_service::get_all_classes(pool.get_ref()).await?;
 

@@ -1,19 +1,10 @@
 use crate::errors::AppError;
-use crate::models::Holiday;
+use crate::models::{ApiHoliday, Holiday};
 use chrono::{NaiveDate, TimeZone as ChronoTimeZone, Utc};
 use reqwest;
-use serde::Deserialize;
 use sqlx::PgPool;
 use time::OffsetDateTime;
 use tracing::info;
-
-#[derive(Debug, Deserialize)]
-struct ApiHoliday {
-    holiday_date: String,
-    holiday_name: String,
-    #[serde(default)]
-    is_national_holiday: bool,
-}
 
 const HOLIDAY_FIELDS_SQL: &str = r#""HolidayId" as holiday_id, "HolidayName" as holiday_name, "HolidayDate" as holiday_date, "HolidayDescription" as holiday_description, "IsNationalHoliday" as is_national_holiday, "IsCompanyHoliday" as is_company_holiday, "IsSpecialHoliday" as is_special_holiday, "CreatedDate" as created_date, "CreatedBy" as created_by, "UpdatedDate" as updated_date, "UpdatedBy" as updated_by, "HolidayYear" as holiday_year, "IsMassLeave" as is_mass_leave"#;
 

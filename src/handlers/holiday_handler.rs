@@ -1,25 +1,13 @@
 use actix_session::Session;
 use actix_web::{web, HttpResponse};
-use serde::Deserialize;
 use sqlx::PgPool;
 use tera::Tera;
 use time::OffsetDateTime;
 
 use crate::errors::AppError;
 use crate::handlers::permission_handler::get_username;
-use crate::models::{Holiday, PaginationParams};
+use crate::models::{Holiday, HolidayFormData, PaginationParams};
 use crate::services::holiday_service;
-
-#[derive(Deserialize)]
-pub struct HolidayFormData {
-    pub holiday_name: String,
-    pub holiday_date: String,
-    pub holiday_description: Option<String>,
-    pub is_national_holiday: Option<bool>,
-    pub is_company_holiday: Option<bool>,
-    pub is_special_holiday: Option<bool>,
-    pub is_mass_leave: Option<bool>,
-}
 
 fn map_form_to_holiday(form: &HolidayFormData) -> Result<Holiday, AppError> {
     let parsed_date = format!("{}T00:00:00Z", form.holiday_date);

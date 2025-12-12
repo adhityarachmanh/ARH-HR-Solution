@@ -13,3 +13,8 @@ pub struct TimeZone {
     pub updated_date: Option<OffsetDateTime>,
     pub updated_by: Option<String>,
 }
+
+#[derive(Deserialize)]
+pub struct TimeZoneFormData {
+    pub name: String,
+}

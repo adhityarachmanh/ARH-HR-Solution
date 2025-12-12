@@ -14,4 +14,5 @@ pub mod user_service;
 pub mod employment_status_service;
 pub mod zip_code_service;
 pub mod class_service;
+pub mod grade_service;
 // pub mod employee_service;

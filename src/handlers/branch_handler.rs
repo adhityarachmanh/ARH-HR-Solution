@@ -1,22 +1,13 @@
 
 use actix_session::Session;
 use actix_web::{web, HttpResponse};
-use serde::Deserialize;
 use sqlx::PgPool;
 use tera::Tera;
 
 use crate::errors::AppError;
 use crate::handlers::permission_handler::get_username;
-use crate::models::PaginationParams;
+use crate::models::{BranchFormData, PaginationParams};
 use crate::services::{branch_service, company_service, timezone_service};
-
-#[derive(Deserialize)]
-pub struct BranchFormData {
-    pub name: String,
-    pub company_name: String,
-    pub comp_id: Option<i32>,
-    pub timezone_id: Option<i32>,
-}
 
 pub async fn list_branches(
     pool: web::Data<PgPool>,

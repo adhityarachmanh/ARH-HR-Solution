@@ -31,3 +31,24 @@ pub struct Company {
     pub updated_date: Option<OffsetDateTime>,
     pub updated_by: Option<String>,
 }
+
+
+#[derive(Deserialize)]
+pub struct CompanyFormData {
+    pub name: String,
+    pub address: Option<String>,
+    pub zip_code: Option<String>,
+    pub phone_number: Option<String>,
+    pub mobile_number: Option<String>,
+    pub email: Option<String>,
+    pub website: Option<String>,
+    pub retirement_age: Option<i32>,
+    pub bpjstk_pendapatan_pk: Option<f64>,
+    pub bpjsks_pendapatan_pk: Option<f64>,
+    pub bpjstk_pengurangan_pk: Option<f64>,
+    pub bpjsks_pengurangan_pk: Option<f64>,
+    pub bpjstk_pengurangan_pekerja: Option<f64>,
+    pub bpjsks_pengurangan_pekerja: Option<f64>,
+    pub prev_day_payroll: i32,
+    pub current_day_payroll: i32,
+}

@@ -21,3 +21,22 @@ pub struct Holiday {
     pub holiday_year: Option<i32>,
     pub is_mass_leave: bool,
 }
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct ApiHoliday {
+    pub holiday_date: String,
+    pub holiday_name: String,
+    #[serde(default)]
+    pub is_national_holiday: bool,
+}
+
+#[derive(Deserialize)]
+pub struct HolidayFormData {
+    pub holiday_name: String,
+    pub holiday_date: String,
+    pub holiday_description: Option<String>,
+    pub is_national_holiday: Option<bool>,
+    pub is_company_holiday: Option<bool>,
+    pub is_special_holiday: Option<bool>,
+    pub is_mass_leave: Option<bool>,
+}

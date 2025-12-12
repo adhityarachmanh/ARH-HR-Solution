@@ -31,3 +31,13 @@ pub struct BranchDetail {
     #[serde(with = "time::serde::rfc3339::option")]
     pub updated_date: Option<OffsetDateTime>,
 }
+
+
+#[derive(Deserialize)]
+pub struct BranchFormData {
+    pub name: String,
+    pub company_name: String,
+    pub comp_id: Option<i32>,
+    pub timezone_id: Option<i32>,
+}
+
