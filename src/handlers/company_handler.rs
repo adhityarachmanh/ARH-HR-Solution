@@ -58,11 +58,10 @@ fn map_form_to_company(form: &CompanyFormData) -> Company {
     }
 }
 
-pub async fn list_companies(
+// HANDLER BARU: Redirect ke detail/edit perusahaan pertama
+pub async fn redirect_to_first_company(
     pool: web::Data<PgPool>,
-    tera: web::Data<Tera>,
     session: Session,
-    params: web::Query<PaginationParams>,
 ) -> Result<HttpResponse, AppError> {
     if session.get::<i64>("user_id").unwrap_or(None).is_none() {
         return Ok(HttpResponse::Found()
@@ -70,32 +69,73 @@ pub async fn list_companies(
             .finish());
     }
 
-    let limit = params.limit as i64;
-    let page = params.page.max(1) as i64;
-    let offset = (page - 1) * limit;
+    match company_service::get_first_company_id(pool.get_ref()).await {
+        Ok(id) => {
+            // Redirect ke halaman detail (bukan edit)
+            Ok(HttpResponse::Found()
+                .append_header(("Location", "/companies/detail"))
+                .finish())
+        }
+        Err(AppError::NotFound(_)) => {
+            // Jika tidak ada perusahaan, redirect ke halaman tambah
+            Ok(HttpResponse::Found()
+                .append_header(("Location", "/companies/add"))
+                .finish())
+        }
+        Err(e) => Err(e),
+    }
+}
 
-    let companies =
-        company_service::get_all_companies_paginated(pool.get_ref(), limit, offset).await?;
+// HANDLER BARU: Menampilkan halaman detail murni
+pub async fn show_detail_company(
+    pool: web::Data<PgPool>,
+    tera: web::Data<Tera>,
+    session: Session,
+) -> Result<HttpResponse, AppError> {
+    if session.get::<i64>("user_id").unwrap_or(None).is_none() {
+        return Ok(HttpResponse::Found()
+            .append_header(("Location", "/login"))
+            .finish());
+    }
 
-    let total_records = company_service::count_companies(pool.get_ref()).await?;
-    let total_pages = (total_records + limit - 1) / limit;
+    let id = 1;
+    let company = company_service::get_company_by_id(pool.get_ref(), id).await?;
 
     let username = get_username(pool.get_ref(), &session).await;
-
     let mut context = tera::Context::new();
-    context.insert("companies", &companies);
+
+    let mut initial_zip_display: Option<String> = None;
+
+    if let Some(zip_id) = company.comp_zip_code.as_ref() {
+        match zip_code_service::get_zip_code_by_id(pool.get_ref(), zip_id).await {
+            Ok(zip_info) => {
+                let postal = zip_info.zip_postal_code.unwrap_or_else(|| "N/A".to_string());
+                let city = zip_info.city;
+                let district = zip_info.district;
+                
+                initial_zip_display = Some(format!("({}) {}, {}", postal, city, district));
+            },
+            Err(e) => {
+                tracing::error!("Failed to fetch zip code details for ID {}: {:?}", zip_id, e);
+            }
+        }
+    }
+
+    let page_title = format!(
+        "Detail Company: {}",
+        company.comp_name.as_deref().unwrap_or("N/A")
+    );
+    context.insert("company", &company);
     context.insert("username", &username);
-
-    context.insert("total_records", &total_records);
-    context.insert("total_pages", &total_pages);
-    context.insert("current_page", &page);
-    context.insert("limit", &limit);
-
-    context.insert("title", "Master Companies");
-    context.insert("header_title", "Company List");
+    
+    // Kirim hanya display string ke template detail
+    context.insert("initial_zip_display", &initial_zip_display);
+    
+    context.insert("title", &page_title);
+    context.insert("header_title", "Detail Perusahaan");
 
     let rendered = tera
-        .render("companies/list.html", &context)
+        .render("companies/detail.html", &context)
         .map_err(AppError::TeraError)?;
     Ok(HttpResponse::Ok().body(rendered))
 }
@@ -137,10 +177,11 @@ pub async fn add_company_action(
     let company_data = map_form_to_company(&form);
     let created_by = get_username(pool.get_ref(), &session).await;
 
-    company_service::create_company(pool.get_ref(), company_data, &created_by).await?;
+    let new_company = company_service::create_company(pool.get_ref(), company_data, &created_by).await?;
 
+    // Redirect ke halaman detail perusahaan yang baru dibuat
     Ok(HttpResponse::Found()
-        .append_header(("Location", "/companies/list?page=1&limit=10"))
+        .append_header(("Location", "/companies/detail"))
         .finish())
 }
 
@@ -148,7 +189,6 @@ pub async fn show_edit_company_form(
     pool: web::Data<PgPool>,
     tera: web::Data<Tera>,
     session: Session,
-    path: web::Path<i32>,
 ) -> Result<HttpResponse, AppError> {
     if session.get::<i64>("user_id").unwrap_or(None).is_none() {
         return Ok(HttpResponse::Found()
@@ -156,7 +196,7 @@ pub async fn show_edit_company_form(
             .finish());
     }
 
-    let id = path.into_inner();
+    let id = 1;
     let company = company_service::get_company_by_id(pool.get_ref(), id).await?;
 
     let username = get_username(pool.get_ref(), &session).await;
@@ -204,7 +244,6 @@ pub async fn show_edit_company_form(
 
 pub async fn edit_company_action(
     pool: web::Data<PgPool>,
-    path: web::Path<i32>,
     form: web::Form<CompanyFormData>,
     session: Session,
 ) -> Result<HttpResponse, AppError> {
@@ -214,21 +253,21 @@ pub async fn edit_company_action(
             .finish());
     }
 
-    let id = path.into_inner();
+    let id = 1;
     let company_data = map_form_to_company(&form);
     let updated_by = get_username(pool.get_ref(), &session).await;
 
     company_service::update_company(pool.get_ref(), id, company_data, &updated_by).await?;
 
+    // Redirect kembali ke halaman detail setelah edit
     Ok(HttpResponse::Found()
-        .append_header(("Location", "/companies/list?page=1&limit=10"))
+        .append_header(("Location", "/companies/detail"))
         .finish())
 }
 
 pub async fn delete_company_action(
     pool: web::Data<PgPool>,
     session: Session,
-    path: web::Path<i32>,
 ) -> Result<HttpResponse, AppError> {
     if session.get::<i64>("user_id").unwrap_or(None).is_none() {
         return Ok(HttpResponse::Found()
@@ -236,10 +275,11 @@ pub async fn delete_company_action(
             .finish());
     }
 
-    let id = path.into_inner();
+    let id = 1;
     company_service::delete_company(pool.get_ref(), id).await?;
 
+    // Setelah hapus, redirect ke halaman utama (yang akan me-redirect ke halaman 'add')
     Ok(HttpResponse::Found()
-        .append_header(("Location", "/companies/list?page=1&limit=10"))
+        .append_header(("Location", "/companies"))
         .finish())
 }

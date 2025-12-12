@@ -1,0 +1,138 @@
+{% extends "layout_app.html" %}
+
+{% block title %}Company Info: {{ company.comp_name | default(value='N/A') }}{% endblock title %}
+{% block header_title %}Detail Perusahaan{% endblock header_title %}
+
+{% block content %}
+<div class="flex justify-center">
+    <div class="w-full max-w-5xl">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">Detail Perusahaan ({{ company.comp_name | default(value='N/A') }})</h1>
+            <a href="/companies/edit"
+                class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 transition duration-150">
+                <i class="fas fa-edit mr-1"></i> Edit Detail
+            </a>
+        </div>
+
+        <div class="bg-white p-8 rounded-xl shadow-lg border border-gray-100 space-y-8">
+            
+            {# 1. INFORMASI INTI & GAJI #}
+            <div class="border-b pb-4">
+                <h3 class="text-xl font-semibold text-indigo-600 mb-4">Informasi Inti & Payroll</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-y-4 gap-x-6 text-gray-700">
+                    <div>
+                        <strong class="text-gray-500">ID Perusahaan:</strong><br>
+                        {{ company.comp_id }}
+                    </div>
+                    <div>
+                        <strong class="text-gray-500">Nama Perusahaan:</strong><br>
+                        {{ company.comp_name | default(value='N/A') }}
+                    </div>
+                    <div>
+                        <strong class="text-gray-500">Usia Pensiun:</strong><br>
+                        {{ company.comp_retirement_age | default(value='N/A') }} tahun
+                    </div>
+                    <div>
+                        <strong class="text-gray-500">Payroll Hari Sebelumnya:</strong><br>
+                        Tanggal {{ company.prev_month_day_payroll }}
+                    </div>
+                    <div>
+                        <strong class="text-gray-500">Payroll Hari Sekarang:</strong><br>
+                        Tanggal {{ company.current_month_day_payroll }}
+                    </div>
+                </div>
+            </div>
+
+            {# 2. KONTAK & ALAMAT #}
+            <div class="border-b pb-4">
+                <h3 class="text-xl font-semibold text-indigo-600 mb-4">Kontak & Alamat</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-6 text-gray-700">
+                    <div class="md:col-span-2">
+                        <strong class="text-gray-500">Alamat Lengkap:</strong><br>
+                        {{ company.comp_address | default(value='N/A') }}
+                        {% if initial_zip_display %}<span class="text-sm text-gray-500">({{ initial_zip_display }})</span>{% endif %}
+                    </div>
+                    <div>
+                        <strong class="text-gray-500">Telepon (Kantor):</strong><br>
+                        {{ company.comp_phone_number | default(value='N/A') }}
+                    </div>
+                    <div>
+                        <strong class="text-gray-500">Mobile:</strong><br>
+                        {{ company.comp_mobile_number | default(value='N/A') }}
+                    </div>
+                    <div>
+                        <strong class="text-gray-500">Email:</strong><br>
+                        {{ company.comp_email | default(value='N/A') }}
+                    </div>
+                    <div>
+                        <strong class="text-gray-500">Website:</strong><br>
+                        <a href="{{ company.comp_website | default(value='#') }}" target="_blank" class="text-indigo-600 hover:underline">{{ company.comp_website | default(value='N/A') }}</a>
+                    </div>
+                </div>
+            </div>
+
+            {# 3. PERSENTASE BPJS #}
+            <div class="border-b pb-4">
+                <h3 class="text-xl font-semibold text-indigo-600 mb-4">Pengaturan Persentase BPJS</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-y-4 gap-x-6 text-gray-700">
+                    <div>
+                        <strong class="text-gray-500">BPJSTK Pendapatan (PK):</strong><br>
+                        {{ company.bpjstk_pendapatan_pk | default(value=0.0) }}%
+                    </div>
+                    <div>
+                        <strong class="text-gray-500">BPJSKS Pendapatan (PK):</strong><br>
+                        {{ company.bpjsks_pendapatan_pk | default(value=0.0) }}%
+                    </div>
+                    <div>
+                        <strong class="text-gray-500">BPJSTK Pengurangan (PK):</strong><br>
+                        {{ company.bpjstk_pengurangan_pk | default(value=0.0) }}%
+                    </div>
+                    <div>
+                        <strong class="text-gray-500">BPJSKS Pengurangan (PK):</strong><br>
+                        {{ company.bpjsks_pengurangan_pk | default(value=0.0) }}%
+                    </div>
+                    <div>
+                        <strong class="text-gray-500">BPJSTK Pengurangan (Pekerja):</strong><br>
+                        {{ company.bpjstk_pengurangan_pekerja | default(value=0.0) }}%
+                    </div>
+                    <div>
+                        <strong class="text-gray-500">BPJSKS Pengurangan (Pekerja):</strong><br>
+                        {{ company.bpjsks_pengurangan_pekerja | default(value=0.0) }}%
+                    </div>
+                </div>
+            </div>
+
+            {# 4. INFORMASI AUDIT #}
+            <div>
+                <h3 class="text-lg font-semibold text-gray-700 mb-4">Informasi Audit</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
+                    <div>
+                        <strong>Dibuat Oleh:</strong><br>
+                        {{ company.created_by | default(value='SYSTEM') }}
+                    </div>
+                    <div>
+                        <strong>Tanggal Dibuat:</strong><br>
+                        {% if company.created_date %}
+                        {{ company.created_date | date(format="%d/%m/%Y %H:%M:%S") }}
+                        {% else %}
+                        N/A
+                        {% endif %}
+                    </div>
+                    <div>
+                        <strong>Terakhir Diperbarui Oleh:</strong><br>
+                        {{ company.updated_by | default(value='-') }}
+                    </div>
+                    <div>
+                        <strong>Tanggal Diperbarui:</strong><br>
+                        {% if company.updated_date %}
+                        {{ company.updated_date | date(format="%d/%m/%Y %H:%M:%S") }}
+                        {% else %}
+                        N/A
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

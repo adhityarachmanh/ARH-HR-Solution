@@ -100,8 +100,8 @@ pub fn configure_routes(cfg: &mut web::ServiceConfig) {
             // Rute Company Master Data
             // -----------------------------------------------------------
             .route(
-                "/companies/list",
-                web::get().to(company_handler::list_companies),
+                "/companies/detail",
+                web::get().to(company_handler::show_detail_company),
             )
             .route(
                 "/companies/add",
@@ -112,17 +112,17 @@ pub fn configure_routes(cfg: &mut web::ServiceConfig) {
                 web::post().to(company_handler::add_company_action),
             )
             .route(
-                "/companies/edit/{id}",
+                "/companies/edit",
                 web::get().to(company_handler::show_edit_company_form),
             )
             .route(
-                "/companies/edit/{id}",
+                "/companies/edit",
                 web::post().to(company_handler::edit_company_action),
             )
-            .route(
-                "/companies/delete/{id}",
-                web::post().to(company_handler::delete_company_action),
-            )
+            // .route(
+            //     "/companies/delete/{id}",
+            //     web::post().to(company_handler::delete_company_action),
+            // )
             // -----------------------------------------------------------
             // Rute Time Zone Master Data
             // -----------------------------------------------------------

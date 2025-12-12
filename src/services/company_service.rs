@@ -14,6 +14,17 @@ pub async fn count_companies(pool: &PgPool) -> Result<i64, AppError> {
     Ok(count)
 }
 
+// FIX BARU: Mendapatkan CompId terkecil (perusahaan pertama)
+pub async fn get_first_company_id(pool: &PgPool) -> Result<i32, AppError> {
+    let id = sqlx::query_scalar!(r#"SELECT "CompId" FROM "Company" ORDER BY "CompId" ASC LIMIT 1"#)
+        .fetch_optional(pool)
+        .await
+        .map_err(AppError::DatabaseError)?;
+    
+    id.ok_or(AppError::NotFound("Tidak ada data Perusahaan ditemukan.".to_string()))
+}
+
+
 pub async fn get_all_companies_paginated(
     pool: &PgPool,
     limit: i64,
