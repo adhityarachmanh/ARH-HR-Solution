@@ -52,7 +52,7 @@ pub async fn get_class_by_id(pool: &PgPool, id: i32) -> Result<Class, AppError> 
     .await
     .map_err(AppError::DatabaseError)?;
 
-    row.ok_or(AppError::NotFound(format!("Class dengan ID {} tidak ditemukan.", id)))
+    row.ok_or(AppError::NotFound(format!("Class with ID {} not found.", id)))
 }
 
 pub async fn get_class_by_code(pool: &PgPool, code: &str) -> Result<Class, AppError> {
@@ -64,7 +64,7 @@ pub async fn get_class_by_code(pool: &PgPool, code: &str) -> Result<Class, AppEr
     .await
     .map_err(AppError::DatabaseError)?;
 
-    row.ok_or(AppError::NotFound(format!("Class dengan Code {} tidak ditemukan.", code)))
+    row.ok_or(AppError::NotFound(format!("Class with Code {} not found.", code)))
 }
 
 pub async fn update_class(
@@ -89,8 +89,8 @@ pub async fn update_class(
     .await
     .map_err(AppError::DatabaseError)?;
 
-    let row = row.ok_or(AppError::NotFound(format!("Class dengan ID {} tidak ditemukan.", id)))?;
-    info!("Class ID {} diperbarui oleh {}", id, updated_by);
+    let row = row.ok_or(AppError::NotFound(format!("Class with ID {} not found.", id)))?;
+    info!("Class ID {} updated by {}", id, updated_by);
     Ok(row)
 }
 
@@ -101,9 +101,9 @@ pub async fn delete_class(pool: &PgPool, id: i32) -> Result<(), AppError> {
         .map_err(AppError::DatabaseError)?;
 
     if result.rows_affected() == 0 {
-        return Err(AppError::NotFound(format!("Class dengan ID {} tidak ditemukan.", id)));
+        return Err(AppError::NotFound(format!("Class with ID {} not found.", id)));
     }
 
-    info!("Class ID {} dihapus", id);
+    info!("Class ID {} deleted", id);
     Ok(())
 }

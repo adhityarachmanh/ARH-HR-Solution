@@ -5,19 +5,21 @@
 
 {% block content %}
 <div class="flex justify-between items-center mb-6">
-    <h1 class="text-3xl font-bold text-gray-800">Job Levels</h1>
-    <a href="/joblevels/add"
+    <h1 class="text-3xl font-bold text-gray-800">Master PTKP Types</h1>
+    <a href="/ptkp_types/add"
         class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 transition duration-150">
-        <i class="fas fa-plus mr-1"></i> Add New Level
+        <i class="fas fa-plus mr-1"></i> Add PTKP Type
     </a>
 </div>
 
 <div class="bg-white rounded-xl shadow-lg overflow-x-auto border border-gray-100 p-6">
-    {% if levels | length == 0 %}
+    
+    {% if ptkp_types | length == 0 %}
     <div class="px-6 py-8 text-center text-gray-500 italic">
-        No job levels found.
+        No PTKP type data recorded.
     </div>
     {% else %}
+    
     <table class="min-w-full border border-gray-300">
         <thead class="bg-gray-50">
             <tr>
@@ -26,35 +28,40 @@
                     ID</th>
                 <th
                     class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-r border-b border-gray-300">
-                    Order</th>
+                    PTKP Code</th>
                 <th
                     class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-r border-b border-gray-300">
-                    Level Name</th>
+                    Type Name</th>
+                <th
+                    class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-r border-b border-gray-300">
+                    Amount (IDR)</th>
                 <th
                     class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-300">
                     Actions</th>
             </tr>
         </thead>
         <tbody class="bg-white">
-            {% for level in levels %}
+            {% for ptkp in ptkp_types %}
             <tr class="hover:bg-gray-50 transition duration-100 border-b border-gray-300">
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-r border-gray-300">{{
-                    level.job_level_id }}</td>
+                    ptkp.ptkp_type_id }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 border-r border-gray-300">{{
-                    level.job_level_order | default(value="N/A") }}</td>
+                    ptkp.ptkp_code | default(value="N/A") }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 border-r border-gray-300">{{
-                    level.job_level_name }}</td>
+                    ptkp.ptkp_name | default(value="N/A") }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 border-r border-gray-300">
+                    IDR {{ ptkp.ptkp_amount | default(value=0.0) | number_format(decimal_places=0, thousands_separator='.', decimal_separator=',') }}
+                </td>
+
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div class="flex items-center space-x-4">
-                        <a href="/joblevels/edit/{{ level.job_level_id }}"
-                            class="text-indigo-600 hover:text-indigo-900 transition duration-150"><i
-                                class="fas fa-edit"></i> Edit</a>
+                        <a href="/ptkp_types/edit/{{ ptkp.ptkp_type_id }}"
+                            class="text-indigo-600 hover:text-indigo-900 transition duration-150"><i class="fas fa-edit"></i> Edit</a>
 
-                        <form action="/joblevels/delete/{{ level.job_level_id }}" method="post"
-                            onsubmit="return confirm('Are you sure you want to delete job level {{ level.job_level_name | default(value='this level') }}?');"
-                            class="inline">
-                            <button type="submit" class="text-red-600 hover:text-red-900 transition duration-150"><i
-                                    class="fas fa-trash-alt"></i> Delete</button>
+                        <form action="/ptkp_types/delete/{{ ptkp.ptkp_type_id }}" method="post"
+                            onsubmit="return confirm('Are you sure you want to delete PTKP Type {{ ptkp.ptkp_code | default(value=`this`) }}?');" class="inline">
+                            <button type="submit"
+                                class="text-red-600 hover:text-red-900 transition duration-150"><i class="fas fa-trash-alt"></i> Delete</button>
                         </form>
                     </div>
                 </td>
@@ -65,10 +72,6 @@
     {% endif %}
 </div>
 
-
 {% include "partials/_pagination.html" %}
-
-{# HAPUS SCRIPT Simple-DataTables #}
-{% block script_init %}{% endblock script_init %}
 
 {% endblock content %}

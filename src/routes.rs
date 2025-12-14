@@ -1,8 +1,9 @@
 use crate::handlers::{
     attendance_location_handler, auth_handler, branch_handler, class_handler, company_handler,
     dashboard_handler, employment_status_handler, grade_handler, holiday_handler,
-    job_level_handler, job_position_handler, organization_handler, permission_handler,
-    role_handler, timezone_handler, user_handler, zip_code_handler,
+    job_level_handler, job_position_handler, organization_handler, overtime_setting_handler,
+    permission_handler, ptkp_type_handler, role_handler, shift_handler, timezone_handler,
+    user_handler, zip_code_handler,
 };
 use actix_web::web;
 
@@ -409,6 +410,84 @@ pub fn configure_routes(cfg: &mut web::ServiceConfig) {
             .route(
                 "/grades/delete/{id}",
                 web::post().to(grade_handler::delete_grade_action),
+            )
+            // -----------------------------------------------------------
+            // Rute ptkp_types Master Data
+            // -----------------------------------------------------------
+            .route(
+                "/ptkp_types/list",
+                web::get().to(ptkp_type_handler::list_ptkp_types),
+            )
+            .route(
+                "/ptkp_types/add",
+                web::get().to(ptkp_type_handler::show_add_ptkp_type_form),
+            )
+            .route(
+                "/ptkp_types/add",
+                web::post().to(ptkp_type_handler::add_ptkp_type_action),
+            )
+            .route(
+                "/ptkp_types/edit/{id}",
+                web::get().to(ptkp_type_handler::show_edit_ptkp_type_form),
+            )
+            .route(
+                "/ptkp_types/edit/{id}",
+                web::post().to(ptkp_type_handler::edit_ptkp_type_action),
+            )
+            .route(
+                "/ptkp_types/delete/{id}",
+                web::post().to(ptkp_type_handler::delete_ptkp_type_action),
+            )
+            // -----------------------------------------------------------
+            // Rute overtime_settings Master Data
+            // -----------------------------------------------------------
+            .route(
+                "/overtime_settings/list",
+                web::get().to(overtime_setting_handler::list_overtime_settings),
+            )
+            .route(
+                "/overtime_settings/add",
+                web::get().to(overtime_setting_handler::show_add_overtime_setting_form),
+            )
+            .route(
+                "/overtime_settings/add",
+                web::post().to(overtime_setting_handler::add_overtime_setting_action),
+            )
+            .route(
+                "/overtime_settings/edit/{id}",
+                web::get().to(overtime_setting_handler::show_edit_overtime_setting_form),
+            )
+            .route(
+                "/overtime_settings/edit/{id}",
+                web::post().to(overtime_setting_handler::edit_overtime_setting_action),
+            )
+            .route(
+                "/overtime_settings/delete/{id}",
+                web::post().to(overtime_setting_handler::delete_overtime_setting_action),
+            )
+            // -----------------------------------------------------------
+            // Rute shifts Master Data
+            // -----------------------------------------------------------
+            .route("/shifts/list", web::get().to(shift_handler::list_shifts))
+            .route(
+                "/shifts/add",
+                web::get().to(shift_handler::show_add_shift_form),
+            )
+            .route(
+                "/shifts/add",
+                web::post().to(shift_handler::add_shift_action),
+            )
+            .route(
+                "/shifts/edit/{id}",
+                web::get().to(shift_handler::show_edit_shift_form),
+            )
+            .route(
+                "/shifts/edit/{id}",
+                web::post().to(shift_handler::edit_shift_action),
+            )
+            .route(
+                "/shifts/delete/{id}",
+                web::post().to(shift_handler::delete_shift_action),
             ),
     );
 }

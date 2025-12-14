@@ -78,7 +78,7 @@ async fn main() -> std::io::Result<()> {
 
     let secret_key = Key::from(secret_key_string.as_bytes());
 
-    println!("🚀 Server started successfully at http://127.0.0.1:9000");
+    println!("🚀 Server started successfully at http://127.0.0.1:2205");
 
     HttpServer::new(move || {
         App::new()
@@ -90,7 +90,7 @@ async fn main() -> std::io::Result<()> {
             .app_data(web::Data::new(pool.clone()))
             .configure(routes::configure_routes)
     })
-    .bind(("127.0.0.1", 9000))?
+    .bind(("127.0.0.1", 2205))?
     .run()
     .await
 }

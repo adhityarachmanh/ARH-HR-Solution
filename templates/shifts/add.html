@@ -1,0 +1,420 @@
+{% extends "layout_app.html" %}
+
+{% block title %}Add Shift{% endblock title %}
+{% block header_title %}Add New Work Shift{% endblock header_title %}
+
+{% block content %}
+<style>
+    input[type="range"] {
+        -webkit-appearance: none;
+        appearance: none;
+        background: transparent;
+        cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-runnable-track {
+        background: #e5e7eb;
+        height: 8px;
+        border-radius: 4px;
+    }
+
+    input[type="range"]::-moz-range-track {
+        background: #e5e7eb;
+        height: 8px;
+        border-radius: 4px;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        margin-top: -4px;
+        height: 16px;
+        width: 16px;
+        border-radius: 50%;
+        background: #4f46e5;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+        height: 16px;
+        width: 16px;
+        border-radius: 50%;
+        background: #4f46e5;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        border: none;
+    }
+
+    .toggle-switch {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .toggle-switch+label {
+        position: relative;
+        display: inline-block;
+        width: 44px;
+        height: 24px;
+        background-color: #ccc;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        flex-shrink: 0;
+    }
+
+    .toggle-switch+label:after {
+        content: '';
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 18px;
+        height: 18px;
+        background-color: white;
+        border-radius: 50%;
+        transition: transform 0.3s;
+    }
+
+    .toggle-switch:checked+label {
+        background-color: #4f46e5;
+    }
+
+    .toggle-switch:checked+label:after {
+        transform: translateX(20px);
+    }
+
+    .range-group {
+        visibility: visible;
+        display: block;
+    }
+
+    .range-group.disabled {
+        display: none;
+        visibility: hidden;
+    }
+</style>
+
+<div class="flex justify-center">
+    <div class="w-full max-w-2xl bg-white p-8 rounded-xl shadow-lg border border-gray-100">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-3">Work Shift Details</h2>
+
+        {% if error %}
+        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded" role="alert">
+            <p class="font-bold">Error</p>
+            <p>{{ error }}</p>
+        </div>
+        {% endif %}
+
+        <form action="/shifts/add" method="post" class="space-y-6">
+
+            {% set default_color = form_data.shift_color_hex | default(value='#007bff') %}
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="shift_code" class="block text-sm font-medium text-gray-700">Shift Code <span
+                            class="text-red-500">*</span></label>
+                    <input id="shift_code" name="shift_code" type="text" required
+                        value="{{ form_data.shift_code | default(value='') }}"
+                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"
+                        placeholder="Shift Code">
+                </div>
+                <div>
+                    <label for="shift_name" class="block text-sm font-medium text-gray-700">Shift Name <span
+                            class="text-red-500">*</span></label>
+                    <input id="shift_name" name="shift_name" type="text" required
+                        value="{{ form_data.shift_name | default(value='') }}"
+                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"
+                        placeholder="Shift Name">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label for="shift_in_hour" class="block text-sm font-medium text-gray-700">Clock In <span
+                            class="text-red-500">*</span></label>
+                    <input id="shift_in_hour" name="shift_in_hour" type="time" required
+                        value="{{ form_data.shift_in_hour | default(value='') }}"
+                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                </div>
+                <div>
+                    <label for="shift_out_hour" class="block text-sm font-medium text-gray-700">Clock Out <span
+                            class="text-red-500">*</span></label>
+                    <input id="shift_out_hour" name="shift_out_hour" type="time" required
+                        value="{{ form_data.shift_out_hour | default(value='') }}"
+                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label for="break_start" class="block text-sm font-medium text-gray-700">Break Start</label>
+                    <input id="break_start" name="break_start" type="time"
+                        value="{{ form_data.break_start | default(value='') }}"
+                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                </div>
+                <div>
+                    <label for="break_end" class="block text-sm font-medium text-gray-700">Break End</label>
+                    <input id="break_end" name="break_end" type="time"
+                        value="{{ form_data.break_end | default(value='') }}"
+                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t">
+
+                <div class="relative flex items-center justify-between p-3 border border-gray-200 rounded-md">
+                    <div class="text-sm">
+                        <label class="font-medium text-gray-700">Is Show In Request</label>
+                        <p class="text-gray-500 text-xs">Allow employees to request this shift.</p>
+                    </div>
+                    <input type="hidden" name="is_show_in_request" value="false">
+                    <input id="is_show_in_request" name="is_show_in_request" type="checkbox" value="true" {% if
+                        form_data.is_show_in_request | default(value=true) %}checked{% endif %} class="toggle-switch">
+                    <label for="is_show_in_request"></label>
+                </div>
+                <div>
+                    <label for="shift_color_hex" class="block text-sm font-medium text-gray-700">Shift Color Hex <span
+                            class="text-red-500">*</span></label>
+                    <div class="flex items-center mt-1 space-x-3">
+                        <div id="color-swatch-display"
+                            class="relative h-10 w-20 rounded-md shadow-inner border border-gray-300 cursor-pointer overflow-hidden transition-colors"
+                            style="background-color: {{ default_color }};">
+                            <input id="shift_color_hex" name="shift_color_hex" type="color" required
+                                value="{{ default_color }}"
+                                class="absolute inset-0 opacity-0 cursor-pointer h-full w-full">
+                        </div>
+
+                        <input id="color-hex-input" type="text" maxlength="7"
+                            pattern="^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$" value="{{ default_color | upper }}"
+                            placeholder="#007BFF"
+                            class="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 font-mono uppercase text-sm">
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">Select the color or type a hex code above.</p>
+                </div>
+            </div>
+
+
+
+            <div class="md:col-span-2">
+                <h3 class="text-lg font-semibold border-b pb-2 mb-4 text-indigo-600 mt-6">Validation & Time Buffers</h3>
+            </div>
+
+            <div class="grid grid-cols-2 gap-6">
+                <div class="flex flex-col w-full gap-6">
+                    <div class="relative flex items-center justify-between p-3 border border-gray-200 rounded-md">
+                        <div class="text-sm">
+                            <label class="font-medium text-gray-700">Enable Attendance Validation</label>
+                            <p class="text-gray-500 text-xs">Validate Clock In/Out times against shift hours.</p>
+                        </div>
+                        <input type="hidden" name="is_enable_attendance_validation" value="false">
+                        <input id="is_enable_attendance_validation" name="is_enable_attendance_validation"
+                            type="checkbox" value="false" {% if form_data.is_enable_attendance_validation |
+                            default(value=false) %}checked{% endif %} class="toggle-switch toggle-validation">
+                        <label for="is_enable_attendance_validation"></label>
+                    </div>
+                    {# Slider Row 2: Max After / Dispensation Out #}
+                    <div class="flex flex-col w-full gap-6">
+                        {# COLUMN 1: Clock In Min Before (Controlled by Validation Toggle) #}
+                        <div id="attendance-in-fields" class="range-group space-y-2">
+                            <label for="clock_in_min_before" class="block text-sm font-medium text-gray-700">
+                                Clock In Min Before* (<span class="font-bold text-indigo-600" id="in-min-value">{{
+                                    form_data.clock_in_min_before | default(value=0) }}</span> Minutes)
+                            </label>
+                            <input id="clock_in_min_before" name="clock_in_min_before" type="range" min="0" max="120"
+                                step="5" required value="{{ form_data.clock_in_min_before | default(value=0) }}"
+                                class="mt-1 block w-full accent-indigo-600">
+                        </div>
+                        {# COLUMN 1: Clock Out Max After (Controlled by Validation Toggle) #}
+                        <div id="attendance-out-fields" class="range-group space-y-2">
+                            <label for="clock_out_max_after" class="block text-sm font-medium text-gray-700">
+                                Clock Out Max After* (<span class="font-bold text-indigo-600" id="out-max-value">{{
+                                    form_data.clock_out_max_after | default(value=0) }}</span> Minutes)
+                            </label>
+                            <input id="clock_out_max_after" name="clock_out_max_after" type="range" min="0" max="120"
+                                step="5" required value="{{ form_data.clock_out_max_after | default(value=0) }}"
+                                class="mt-1 block w-full accent-indigo-600">
+                        </div>
+
+
+                    </div>
+                </div>
+                <div class="flex flex-col w-full gap-6">
+
+                    <div class="relative flex items-center justify-between p-3 border border-gray-200 rounded-md">
+                        <div class="text-sm">
+                            <label class="font-medium text-gray-700">Enable Dispensation</label>
+                            <p class="text-gray-500 text-xs">Allows small tolerance for late clock in/early out.</p>
+                        </div>
+                        <input type="hidden" name="is_enable_dispensation" value="false">
+                        <input id="is_enable_dispensation" name="is_enable_dispensation" type="checkbox" value="false"
+                            {% if form_data.is_enable_dispensation | default(value=false) %}checked{% endif %}
+                            class="toggle-switch toggle-dispensation">
+                        <label for="is_enable_dispensation"></label>
+                    </div>
+                    {# Slider Row 1: Min Before / Dispensation In #}
+                    <div class="flex flex-col w-full gap-6">
+
+
+                        {# COLUMN 2: Clock In Dispensation (Controlled by Dispensation Toggle) #}
+                        <div id="disp-in-fields" class="range-group space-y-2">
+                            <label for="clock_in_dispensation" class="block text-sm font-medium text-gray-700">
+                                Clock In Dispensation* (<span class="font-bold text-indigo-600" id="disp-in-value">{{
+                                    form_data.clock_in_dispensation | default(value=0) }}</span> Minutes)
+                            </label>
+                            <input id="clock_in_dispensation" name="clock_in_dispensation" type="range" min="0"
+                                max="120" step="5" value="{{ form_data.clock_in_dispensation | default(value=0) }}"
+                                class="mt-1 block w-full accent-indigo-600">
+                        </div>
+                        {# COLUMN 2: Clock Out Dispensation (Controlled by Dispensation Toggle) #}
+                        <div id="disp-out-fields" class="range-group space-y-2">
+                            <label for="clock_out_dispensation" class="block text-sm font-medium text-gray-700">
+                                Clock Out Dispensation* (<span class="font-bold text-indigo-600" id="disp-out-value">{{
+                                    form_data.clock_out_dispensation | default(value=0) }}</span> Minutes)
+                            </label>
+                            <input id="clock_out_dispensation" name="clock_out_dispensation" type="range" min="0"
+                                max="120" step="5" value="{{ form_data.clock_out_dispensation | default(value=0) }}"
+                                class="mt-1 block w-full accent-indigo-600">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+
+
+
+
+            <div class="flex justify-end pt-4 border-t mt-6 gap-2">
+                <a href="/shifts/list"
+                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition duration-150">
+                    Cancel
+                </a>
+                <button type="submit"
+                    class="px-4 py-2 text-sm font-medium text-white bg-green-700 rounded-md hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-600 transition duration-150">
+                    Save Shift
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const colorInput = document.getElementById('shift_color_hex');
+        const hexInput = document.getElementById('color-hex-input');
+        const swatchDisplay = document.getElementById('color-swatch-display');
+
+        function isValidHex(hex) {
+            return /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(hex);
+        }
+
+        function updateColor(hex) {
+            hex = hex.toUpperCase();
+
+            if (isValidHex(hex)) {
+                colorInput.value = hex;
+                hexInput.value = hex;
+                swatchDisplay.style.backgroundColor = hex;
+                return true;
+            }
+            return false;
+        }
+
+        colorInput.addEventListener('input', function () {
+            updateColor(colorInput.value);
+        });
+
+        hexInput.addEventListener('input', function () {
+            let hex = hexInput.value.trim().toUpperCase();
+
+            if (hex.length === 6 && hex[0] !== '#') {
+                hex = '#' + hex;
+            }
+
+            if (isValidHex(hex)) {
+                updateColor(hex);
+            }
+        });
+
+        hexInput.addEventListener('blur', function () {
+            let hex = hexInput.value.trim().toUpperCase();
+            if (hex.length > 0 && hex[0] !== '#') {
+                hex = '#' + hex;
+            }
+            if (!updateColor(hex)) {
+                hexInput.value = colorInput.value;
+            }
+        });
+
+        updateColor(colorInput.value);
+
+        function controlRangeState(checkboxId, sliderIds, isHidden) {
+            const checkbox = document.getElementById(checkboxId);
+            const sliders = sliderIds.map(id => document.getElementById(id));
+
+            function toggle() {
+                const isChecked = checkbox.checked;
+
+                sliders.forEach(slider => {
+                    if (slider) {
+                        const displayId = slider.id.includes('dispensation') ? 'disp-' + slider.id.split('_')[2] + '-value' : slider.id.replace(/clock_(in|out)_/, '').replace(/_after|_before/, '') + '-value';
+                        const display = document.getElementById(displayId);
+
+                        if (isHidden) {
+                            const parentGroup = slider.closest('.range-group');
+                            if (parentGroup) {
+                                parentGroup.classList.toggle('hidden', !isChecked);
+                            }
+                        }
+
+                        slider.required = isChecked;
+                        slider.disabled = !isChecked;
+
+                        const parentGroup = slider.closest('.range-group');
+                        if (parentGroup) {
+                            parentGroup.classList.toggle('disabled', !isChecked);
+                        }
+
+                        if (!isChecked) {
+                            slider.value = 0;
+                            if (display) display.textContent = 0;
+                        } else {
+                            if (display) display.textContent = slider.value;
+                        }
+                    }
+                });
+            }
+
+            checkbox.addEventListener('change', toggle);
+            toggle();
+        }
+
+        function syncRangeDisplay(sliderId, displayId) {
+            const slider = document.getElementById(sliderId);
+            const display = document.getElementById(displayId);
+
+            if (slider && display) {
+                function update() {
+                    display.textContent = slider.value;
+                }
+
+                slider.addEventListener('input', update);
+                update();
+            }
+        }
+
+        controlRangeState('is_enable_attendance_validation',
+            ['clock_in_min_before', 'clock_out_max_after'],
+            false);
+
+        controlRangeState('is_enable_dispensation',
+            ['clock_in_dispensation', 'clock_out_dispensation'],
+            false);
+
+        syncRangeDisplay('clock_in_min_before', 'in-min-value');
+        syncRangeDisplay('clock_out_max_after', 'out-max-value');
+        syncRangeDisplay('clock_in_dispensation', 'disp-in-value');
+        syncRangeDisplay('clock_out_dispensation', 'disp-out-value');
+    });
+</script>
+{% endblock content %}

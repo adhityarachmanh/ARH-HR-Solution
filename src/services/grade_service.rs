@@ -72,7 +72,7 @@ pub async fn get_grade_by_id(pool: &PgPool, id: i32) -> Result<Grade, AppError> 
     .map_err(AppError::DatabaseError)?;
 
     row.ok_or(AppError::NotFound(format!(
-        "Grade dengan ID {} tidak ditemukan.",
+        "Grade with ID {} not found.",
         id
     )))
 }
@@ -87,7 +87,7 @@ pub async fn get_grade_by_code(pool: &PgPool, code: &str) -> Result<Grade, AppEr
     .map_err(AppError::DatabaseError)?;
 
     row.ok_or(AppError::NotFound(format!(
-        "Grade dengan Code {} tidak ditemukan.",
+        "Grade with Code {} not found.",
         code
     )))
 }
@@ -115,10 +115,10 @@ pub async fn update_grade(
     .map_err(AppError::DatabaseError)?;
 
     let row = row.ok_or(AppError::NotFound(format!(
-        "Grade dengan ID {} tidak ditemukan.",
+        "Grade with ID {} not found.",
         id
     )))?;
-    info!("Grade ID {} diperbarui oleh {}", id, updated_by);
+    info!("Grade ID {} updated by {}", id, updated_by);
     Ok(row)
 }
 
@@ -130,11 +130,11 @@ pub async fn delete_grade(pool: &PgPool, id: i32) -> Result<(), AppError> {
 
     if result.rows_affected() == 0 {
         return Err(AppError::NotFound(format!(
-            "Grade dengan ID {} tidak ditemukan.",
+            "Grade with ID {} not found.",
             id
         )));
     }
 
-    info!("Grade ID {} dihapus", id);
+    info!("Grade ID {} deleted", id);
     Ok(())
 }

@@ -1,15 +1,15 @@
 {% extends "layout_app.html" %}
 
-{% block title %}Tambah Hari Libur{% endblock title %}
-{% block header_title %}Tambah Hari Libur Baru{% endblock header_title %}
+{% block title %}Add Holiday{% endblock title %}
+{% block header_title %}Add New Holiday{% endblock header_title %}
 
 {% block content %}
-<div class="flex justify-center"> {# Tambahkan pembungkus ini #}
+<div class="flex justify-center">
     <div class="w-full max-w-lg bg-white p-8 rounded-xl shadow-lg border border-gray-100">
-        <h2 class="text-2xl font-bold text-gray-800 mb-6">Detail Hari Libur</h2>
+        <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-3">Holiday Details</h2>
 
         {% if error %}
-        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4" role="alert">
+        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded" role="alert">
             <p class="font-bold">Error</p>
             <p>{{ error }}</p>
         </div>
@@ -18,60 +18,70 @@
         <form action="/holidays/add" method="post" class="space-y-6">
 
             <div>
-                <label for="holiday_name" class="block text-sm font-medium text-gray-700">Nama Hari Libur</label>
+                <label for="holiday_name" class="block text-sm font-medium text-gray-700">Holiday Name <span class="text-red-500">*</span></label>
                 <input id="holiday_name" name="holiday_name" type="text" required
                     class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
             </div>
 
             <div>
-                <label for="holiday_date" class="block text-sm font-medium text-gray-700">Tanggal</label>
+                <label for="holiday_date" class="block text-sm font-medium text-gray-700">Date <span class="text-red-500">*</span></label>
                 <input id="holiday_date" name="holiday_date" type="date" required
                     class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
             </div>
 
             <div>
-                <label for="holiday_description" class="block text-sm font-medium text-gray-700">Deskripsi
-                    (Opsional)</label>
+                <label for="holiday_description" class="block text-sm font-medium text-gray-700">Description
+                    (Optional)</label>
                 <textarea id="holiday_description" name="holiday_description" rows="3"
                     class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"></textarea>
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
-                <div class="flex items-center">
+            <div class="grid grid-cols-2 gap-4 pt-2 border-t">
+                
+                {# National Holiday #}
+                <div class="flex items-center space-x-2">
+                    <input type="hidden" name="is_national_holiday" value="false">
                     <input id="is_national_holiday" name="is_national_holiday" type="checkbox" value="true"
                         class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                    <label for="is_national_holiday" class="ml-2 block text-sm text-gray-900">Hari Libur
-                        Nasional</label>
+                    <label for="is_national_holiday" class="block text-sm text-gray-900">National Holiday</label>
                 </div>
-                <div class="flex items-center">
+                
+                {# Company Holiday #}
+                <div class="flex items-center space-x-2">
+                    <input type="hidden" name="is_company_holiday" value="false">
                     <input id="is_company_holiday" name="is_company_holiday" type="checkbox" value="true"
                         class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                    <label for="is_company_holiday" class="ml-2 block text-sm text-gray-900">Libur Perusahaan</label>
+                    <label for="is_company_holiday" class="block text-sm text-gray-900">Company Holiday</label>
                 </div>
-                <div class="flex items-center">
+                
+                {# Special Holiday #}
+                <div class="flex items-center space-x-2">
+                    <input type="hidden" name="is_special_holiday" value="false">
                     <input id="is_special_holiday" name="is_special_holiday" type="checkbox" value="true"
                         class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                    <label for="is_special_holiday" class="ml-2 block text-sm text-gray-900">Libur Khusus</label>
+                    <label for="is_special_holiday" class="block text-sm text-gray-900">Special Holiday</label>
                 </div>
-                <div class="flex items-center">
+                
+                {# Mass Leave #}
+                <div class="flex items-center space-x-2">
+                    <input type="hidden" name="is_mass_leave" value="false">
                     <input id="is_mass_leave" name="is_mass_leave" type="checkbox" value="true"
                         class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                    <label for="is_mass_leave" class="ml-2 block text-sm text-gray-900">Cuti Bersama (Mass
-                        Leave)</label>
+                    <label for="is_mass_leave" class="block text-sm text-gray-900">Mass Leave (Collective Leave)</label>
                 </div>
             </div>
 
             <div class="flex justify-end space-x-4 pt-4">
-                <a href="javascript:history.back()"
+                <a href="/holidays/list"
                     class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition duration-150">
-                    Batal
+                    Cancel
                 </a>
                 <button type="submit"
                     class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150">
-                    Tambah Hari Libur
+                    Add Holiday
                 </button>
             </div>
         </form>
     </div>
-</div> {# Tutup pembungkus #}
+</div>
 {% endblock content %}

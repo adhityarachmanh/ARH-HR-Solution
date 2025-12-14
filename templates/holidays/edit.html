@@ -1,72 +1,75 @@
 {% extends "layout_app.html" %}
 
-{% block title %}Edit Hari Libur{% endblock title %}
-{% block header_title %}Edit Hari Libur: {{ holiday.holiday_name | default(value="N/A") }}{% endblock header_title %}
+{% block title %}Edit Holiday{% endblock title %}
+{% block header_title %}Edit Holiday: {{ holiday.holiday_name | default(value="N/A") }}{% endblock header_title %}
 
 {% block content %}
 <div class="flex justify-center">
     <div class="w-full max-w-5xl">
-        <h1 class="text-3xl font-bold text-gray-800 mb-6">Edit Hari Libur (ID: {{ holiday.holiday_id }})</h1>
+        <h1 class="text-3xl font-bold text-gray-800 mb-6">Edit Holiday (ID: {{ holiday.holiday_id }})</h1>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
             
             <div class="lg:col-span-2 bg-white p-8 rounded-xl shadow-lg border border-gray-100">
-                <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-3">Data Hari Libur</h2>
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-3">Holiday Data</h2>
 
                 <form action="/holidays/edit/{{ holiday.holiday_id }}" method="post" class="space-y-6">
 
                     <div>
-                        <label for="holiday_name" class="block text-sm font-medium text-gray-700">Nama Hari
-                            Libur</label>
+                        <label for="holiday_name" class="block text-sm font-medium text-gray-700">Holiday Name <span class="text-red-500">*</span></label>
                         <input id="holiday_name" name="holiday_name" type="text" required
                             value="{{ holiday.holiday_name | default(value="") }}"
                             class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
                     </div>
 
                     <div>
-                        <label for="holiday_date" class="block text-sm font-medium text-gray-700">Tanggal</label>
+                        <label for="holiday_date" class="block text-sm font-medium text-gray-700">Date <span class="text-red-500">*</span></label>
                         <input id="holiday_date" name="holiday_date" type="date" required value="{{ holiday_date_str }}"
                             class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
-                        <p class="mt-1 text-xs text-gray-500">Tahun Hari Libur: **{{ holiday.holiday_year |
+                        <p class="mt-1 text-xs text-gray-500">Holiday Year: **{{ holiday.holiday_year |
                             default(value="N/A")
                             }}**</p>
                     </div>
 
                     <div>
-                        <label for="holiday_description" class="block text-sm font-medium text-gray-700">Deskripsi
-                            (Opsional)</label>
+                        <label for="holiday_description" class="block text-sm font-medium text-gray-700">Description
+                            (Optional)</label>
                         <textarea id="holiday_description" name="holiday_description" rows="3"
                             class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">{{ holiday.holiday_description | default(value="") }}</textarea>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-2 gap-4 pt-2 border-t">
+                        
+                        {# Hidden fields for boolean submission #}
+                        <input type="hidden" name="is_national_holiday" value="false">
+                        <input type="hidden" name="is_company_holiday" value="false">
+                        <input type="hidden" name="is_special_holiday" value="false">
+                        <input type="hidden" name="is_mass_leave" value="false">
+
                         <div class="flex items-center">
                             <input id="is_national_holiday" name="is_national_holiday" type="checkbox" value="true"
                                 class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" {% if
                                 holiday.is_national_holiday %}checked{% endif %}>
-                            <label for="is_national_holiday" class="ml-2 block text-sm text-gray-900">Hari Libur
-                                Nasional</label>
+                            <label for="is_national_holiday" class="ml-2 block text-sm text-gray-900">National Holiday</label>
                         </div>
                         <div class="flex items-center">
                             <input id="is_company_holiday" name="is_company_holiday" type="checkbox" value="true"
                                 class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" {% if
                                 holiday.is_company_holiday %}checked{% endif %}>
-                            <label for="is_company_holiday" class="ml-2 block text-sm text-gray-900">Libur
-                                Perusahaan</label>
+                            <label for="is_company_holiday" class="ml-2 block text-sm text-gray-900">Company Holiday</label>
                         </div>
                         <div class="flex items-center">
                             <input id="is_special_holiday" name="is_special_holiday" type="checkbox" value="true"
                                 class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" {% if
                                 holiday.is_special_holiday %}checked{% endif %}>
-                            <label for="is_special_holiday" class="ml-2 block text-sm text-gray-900">Libur
-                                Khusus</label>
+                            <label for="is_special_holiday" class="ml-2 block text-sm text-gray-900">Special Holiday</label>
                         </div>
                         <div class="flex items-center">
                             <input id="is_mass_leave" name="is_mass_leave" type="checkbox" value="true"
                                 class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" {% if
                                 holiday.is_mass_leave %}checked{% endif %}>
-                            <label for="is_mass_leave" class="ml-2 block text-sm text-gray-900">Cuti Bersama (Mass
+                            <label for="is_mass_leave" class="ml-2 block text-sm text-gray-900">Mass Leave (Collective
                                 Leave)</label>
                         </div>
                     </div>
@@ -74,11 +77,11 @@
                     <div class="flex justify-end space-x-4 pt-4 border-t mt-6">
                         <a href="javascript:history.back()"
                             class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition duration-150">
-                            Batal
+                            Cancel
                         </a>
                         <button type="submit"
                             class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150">
-                            Simpan Perubahan
+                            Save Changes
                         </button>
                     </div>
                 </form>
@@ -86,14 +89,14 @@
 
             
             <div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-lg border border-gray-100 h-fit">
-                <h3 class="text-lg font-semibold text-gray-700 mb-4 border-b pb-2">Informasi Audit</h3>
+                <h3 class="text-lg font-semibold text-gray-700 mb-4 border-b pb-2">Audit Information</h3>
                 <div class="space-y-3 text-sm text-gray-600">
                     <p>
-                        <strong>Dibuat Oleh:</strong><br>
+                        <strong>Created By:</strong><br>
                         {{ holiday.created_by | default(value="N/A") }}
                     </p>
                     <p>
-                        <strong>Tanggal Dibuat:</strong><br>
+                        <strong>Creation Date:</strong><br>
                         {% if holiday.created_date %}
                         {{ holiday.created_date | date(format="%d/%m/%Y %H:%M:%S") }}
                         {% else %}
@@ -101,11 +104,11 @@
                         {% endif %}
                     </p>
                     <p>
-                        <strong>Terakhir Diperbarui Oleh:</strong><br>
+                        <strong>Last Updated By:</strong><br>
                         {{ holiday.updated_by | default(value="N/A") }}
                     </p>
                     <p>
-                        <strong>Tanggal Terakhir Diperbarui:</strong><br>
+                        <strong>Last Updated Date:</strong><br>
                         {% if holiday.updated_date %}
                         {{ holiday.updated_date | date(format="%d/%m/%Y %H:%M:%S") }}
                         {% else %}

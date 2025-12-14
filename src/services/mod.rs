@@ -15,4 +15,7 @@ pub mod employment_status_service;
 pub mod zip_code_service;
 pub mod class_service;
 pub mod grade_service;
+pub mod ptkp_type_service;
+pub mod overtime_setting_service;
+pub mod shift_service;
 // pub mod employee_service;

@@ -15,4 +15,7 @@ pub mod user_handler;
 pub mod zip_code_handler;
 pub mod class_handler;
 pub mod grade_handler;
+pub mod ptkp_type_handler;
+pub mod overtime_setting_handler;
+pub mod shift_handler;
 // pub mod employee_handler;

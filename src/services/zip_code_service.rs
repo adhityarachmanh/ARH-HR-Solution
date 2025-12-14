@@ -87,7 +87,7 @@ pub async fn get_zip_code_by_id(pool: &PgPool, id: &str) -> Result<ZipCode, AppE
     .await
     .map_err(AppError::DatabaseError)?;
 
-    row.ok_or(AppError::NotFound("Zip Code tidak ditemukan".into()))
+    row.ok_or(AppError::NotFound("Zip Code not found".into()))
 }
 
 pub async fn create_zip_code(
@@ -118,7 +118,7 @@ pub async fn create_zip_code(
     .await
     .map_err(AppError::DatabaseError)?;
 
-    info!("Zip Code '{}' dibuat oleh {}", row.zip_code_id, created_by);
+    info!("Zip Code '{}' created by {}", row.zip_code_id, created_by);
     Ok(row)
 }
 
@@ -153,8 +153,8 @@ pub async fn update_zip_code(
     .await
     .map_err(AppError::DatabaseError)?;
 
-    let row = row.ok_or(AppError::NotFound("Zip Code tidak ditemukan".into()))?;
-    info!("Zip Code '{}' diperbarui oleh {}", id, updated_by);
+    let row = row.ok_or(AppError::NotFound("Zip Code not found".into()))?;
+    info!("Zip Code '{}' updated by {}", id, updated_by);
     Ok(row)
 }
 
@@ -165,9 +165,9 @@ pub async fn delete_zip_code(pool: &PgPool, id: &str) -> Result<(), AppError> {
         .map_err(AppError::DatabaseError)?;
 
     if result.rows_affected() == 0 {
-        return Err(AppError::NotFound("Zip Code tidak ditemukan".into()));
+        return Err(AppError::NotFound("Zip Code not found".into()));
     }
 
-    info!("Zip Code '{}' dihapus", id);
+    info!("Zip Code '{}' deleted", id);
     Ok(())
 }

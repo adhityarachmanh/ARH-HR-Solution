@@ -1,18 +1,18 @@
 {% extends "layout_app.html" %}
 
-{% block title %}Edit Grade{% endblock title %}
-{% block header_title %}Edit Grade: {{ grade.grade_code | default(value='N/A') }}{% endblock header_title %}
+{% block title %}Edit PTKP Type{% endblock title %}
+{% block header_title %}Edit PTKP Type: {{ ptkp_type.ptkp_code | default(value='N/A') }}{% endblock header_title %}
 
 {% block content %}
 <div class="flex justify-center">
     <div class="w-full max-w-5xl">
-        <h1 class="text-3xl font-bold text-gray-800 mb-6">Edit Job Grade (ID: {{ grade.grade_id }})</h1>
+        <h1 class="text-3xl font-bold text-gray-800 mb-6">Edit PTKP Type (ID: {{ ptkp_type.ptkp_type_id }})</h1>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
             {# LEFT COLUMN: MAIN FORM (2/3 width on large screens) #}
             <div class="lg:col-span-2 bg-white p-8 rounded-xl shadow-lg border border-gray-100">
-                <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-3">Grade Details</h2>
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-3">PTKP Details</h2>
 
                 {% if error %}
                 <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded" role="alert">
@@ -21,27 +21,35 @@
                 </div>
                 {% endif %}
 
-                <form action="/grades/edit/{{ grade.grade_id }}" method="post" class="space-y-6">
+                <form action="/ptkp_types/edit/{{ ptkp_type.ptkp_type_id }}" method="post" class="space-y-6">
                     
-                    {% set current_code = form_data.grade_code | default(value=grade.grade_code | default(value='')) %}
-                    {% set current_description = form_data.grade_description | default(value=grade.grade_description | default(value='')) %}
+                    {% set current_code = form_data.ptkp_code | default(value=ptkp_type.ptkp_code | default(value='')) %}
+                    {% set current_name = form_data.ptkp_name | default(value=ptkp_type.ptkp_name | default(value='')) %}
+                    {% set current_amount = form_data.ptkp_amount | default(value=ptkp_type.ptkp_amount | default(value='')) %}
 
                     <div>
-                        <label for="grade_code" class="block text-sm font-medium text-gray-700">Grade Code <span class="text-red-500">*</span></label>
-                        <input id="grade_code" name="grade_code" type="text" required
+                        <label for="ptkp_code" class="block text-sm font-medium text-gray-700">PTKP Code <span class="text-red-500">*</span></label>
+                        <input id="ptkp_code" name="ptkp_code" type="text" required
                             value="{{ current_code }}"
                             class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500">
                     </div>
 
                     <div>
-                        <label for="grade_description" class="block text-sm font-medium text-gray-700">Grade Description <span class="text-red-500">*</span> (Max 100 Characters)</label>
-                        <input id="grade_description" name="grade_description" type="text" required
-                            value="{{ current_description }}"
+                        <label for="ptkp_name" class="block text-sm font-medium text-gray-700">PTKP Type Name <span class="text-red-500">*</span></label>
+                        <input id="ptkp_name" name="ptkp_name" type="text" required
+                            value="{{ current_name }}"
+                            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    
+                    <div>
+                        <label for="ptkp_amount" class="block text-sm font-medium text-gray-700">PTKP Amount (IDR) <span class="text-red-500">*</span></label>
+                        <input id="ptkp_amount" name="ptkp_amount" type="number" step="0.01" required
+                            value="{{ current_amount }}"
                             class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500">
                     </div>
 
                     <div class="flex justify-end space-x-4 pt-4 border-t mt-6">
-                        <a href="/grades/list"
+                        <a href="/ptkp_types/list"
                             class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition duration-150">
                             Cancel
                         </a>
@@ -59,24 +67,24 @@
                 <div class="space-y-3 text-sm text-gray-600">
                     <p>
                         <strong>Created By:</strong><br>
-                        {{ grade.created_by | default(value="N/A") }}
+                        {{ ptkp_type.created_by | default(value="N/A") }}
                     </p>
                     <p>
                         <strong>Creation Date:</strong><br>
-                        {% if grade.created_date %}
-                        {{ grade.created_date | date(format="%d/%m/%Y %H:%M:%S") }}
+                        {% if ptkp_type.created_date %}
+                        {{ ptkp_type.created_date | date(format="%d/%m/%Y %H:%M:%S") }}
                         {% else %}
                         N/A
                         {% endif %}
                     </p>
                     <p>
                         <strong>Last Updated By:</strong><br>
-                        {{ grade.updated_by | default(value="N/A") }}
+                        {{ ptkp_type.updated_by | default(value="N/A") }}
                     </p>
                     <p>
                         <strong>Last Updated Date:</strong><br>
-                        {% if grade.updated_date %}
-                        {{ grade.updated_date | date(format="%d/%m/%Y %H:%M:%S") }}
+                        {% if ptkp_type.updated_date %}
+                        {{ ptkp_type.updated_date | date(format="%d/%m/%Y %H:%M:%S") }}
                         {% else %}
                         N/A
                         {% endif %}
