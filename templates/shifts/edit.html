@@ -1,14 +1,91 @@
 {% extends "layout_app.html" %}
 {% block title %}Edit Shift{% endblock title %}
-{% block header_title %}Edit Work Shift: {{ shift.shift_name | default(value='N/A') }}{% endblock header_title %}
+{% block header_title %}Edit Work Shift: {{ shift.shift_name | default(value = "N/A") }}{% endblock header_title %}
 {% block content %}
+<style>
+    input[type="range"] {
+        -webkit-appearance: none;
+        appearance: none;
+        background: transparent;
+        cursor: pointer;
+    }
+    input[type="range"]::-webkit-slider-runnable-track {
+        background: #e5e7eb;
+        height: 8px;
+        border-radius: 4px;
+    }
+    input[type="range"]::-moz-range-track {
+        background: #e5e7eb;
+        height: 8px;
+        border-radius: 4px;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        margin-top: -4px;
+        height: 16px;
+        width: 16px;
+        border-radius: 50%;
+        background: #4f46e5;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    }
+    input[type="range"]::-moz-range-thumb {
+        height: 16px;
+        width: 16px;
+        border-radius: 50%;
+        background: #4f46e5;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        border: none;
+    }
+    .toggle-switch {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    .toggle-switch+label {
+        position: relative;
+        display: inline-block;
+        width: 44px;
+        height: 24px;
+        background-color: #ccc;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        flex-shrink: 0;
+    }
+    .toggle-switch+label:after {
+        content: '';
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 18px;
+        height: 18px;
+        background-color: white;
+        border-radius: 50%;
+        transition: transform 0.3s;
+    }
+    .toggle-switch:checked+label {
+        background-color: #4f46e5;
+    }
+    .toggle-switch:checked+label:after {
+        transform: translateX(20px);
+    }
+    .range-group {
+        transition: opacity 0.3s ease;
+        overflow: hidden;
+    }
+    .range-group.disabled {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+</style>
+
 <div class="flex justify-center">
     <div class="w-full max-w-5xl">
-        <h1 class="text-3xl font-bold text-gray-800 mb-6">Edit Work Shift (ID: {{ shift.shift_id }})</h1>
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {# LEFT COLUMN: MAIN FORM #}
+            <!-- MAIN FORM -->
             <div class="lg:col-span-2 bg-white p-8 rounded-xl shadow-lg border border-gray-100">
-                <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-3">Shift Details</h2>
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-3">Edit Shift Details (ID: {{ shift.shift_id }})</h2>
 
                 {% if error %}
                 <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded" role="alert">
@@ -18,189 +95,195 @@
                 {% endif %}
 
                 <form action="/shifts/edit/{{ shift.shift_id }}" method="post" class="space-y-6">
-
-                    {% set current_code = form_data.shift_code | default(value=shift.shift_code | default(value='')) %}
-                    {% set current_name = form_data.shift_name | default(value=shift.shift_name | default(value='')) %}
-                    {% set current_in = form_data.shift_in_hour | default(value=shift.shift_in_hour | default(value='')) %}
-                    {% set current_out = form_data.shift_out_hour | default(value=shift.shift_out_hour | default(value='')) %}
-                    {% set current_break_start = form_data.break_start | default(value=shift.break_start | default(value='')) %}
-                    {% set current_break_end = form_data.break_end | default(value=shift.break_end | default(value='')) %}
-                    {% set current_min_before = form_data.clock_in_min_before | default(value=shift.clock_in_min_before | default(value=0)) %}
-                    {% set current_max_after = form_data.clock_out_max_after | default(value=shift.clock_out_max_after | default(value=0)) %}
-                    {% set current_disp_in = form_data.clock_in_dispensation | default(value=shift.clock_in_dispensation | default(value=0)) %}
-                    {% set current_disp_out = form_data.clock_out_dispensation | default(value=shift.clock_out_dispensation | default(value=0)) %}
-                    {% set current_color = form_data.shift_color_hex | default(value=shift.shift_color_hex | default(value='#007bff')) %}
-
-                    {% set current_show_request = form_data.is_show_in_request | default(value=shift.is_show_in_request | default(value=true)) %}
-                    {% set current_enable_validation = form_data.is_enable_attendance_validation | default(value=shift.is_enable_attendance_validation | default(value=true)) %}
-                    {% set current_enable_disp = form_data.is_enable_dispensation | default(value=shift.is_enable_dispensation | default(value=false)) %}
-                    {% set current_work_shift = form_data.is_work_shift | default(value=shift.is_work_shift | default(value=true)) %}
-                    {% set current_overlap = form_data.is_shift_out_hour_overlap_day | default(value=shift.is_shift_out_hour_overlap_day | default(value=false)) %}
-
+                    <!-- Basic Info -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label for="shift_code" class="block text-sm font-medium text-gray-700">Shift Code <span class="text-red-500">*</span></label>
-                            <input id="shift_code" name="shift_code" type="text" required value="{{ current_code }}"
-                                   class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                            <input id="shift_code" name="shift_code" type="text" required
+                                value="{{ form_data.shift_code | default(value = shift.shift_code | default(value = "")) }}"
+                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
                         </div>
                         <div>
                             <label for="shift_name" class="block text-sm font-medium text-gray-700">Shift Name <span class="text-red-500">*</span></label>
-                            <input id="shift_name" name="shift_name" type="text" required value="{{ current_name }}"
-                                   class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                            <input id="shift_name" name="shift_name" type="text" required
+                                value="{{ form_data.shift_name | default(value = shift.shift_name | default(value = "")) }}"
+                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <div>
-                            <label for="shift_in_hour" class="block text-sm font-medium text-gray-700">Shift In <span class="text-red-500">*</span></label>
-                            <input id="shift_in_hour" name="shift_in_hour" type="time" required value="{{ current_in }}"
-                                   class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                            <label for="shift_in_hour" class="block text-sm font-medium text-gray-700">Clock In <span class="text-red-500">*</span></label>
+                            <input id="shift_in_hour" name="shift_in_hour" type="time" required
+                                value="{{ form_data.shift_in_hour | default(value = shift.shift_in_hour | default(value = "")) }}"
+                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
                         </div>
                         <div>
-                            <label for="shift_out_hour" class="block text-sm font-medium text-gray-700">Shift Out <span class="text-red-500">*</span></label>
-                            <input id="shift_out_hour" name="shift_out_hour" type="time" required value="{{ current_out }}"
-                                   class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                            <label for="shift_out_hour" class="block text-sm font-medium text-gray-700">Clock Out <span class="text-red-500">*</span></label>
+                            <input id="shift_out_hour" name="shift_out_hour" type="time" required
+                                value="{{ form_data.shift_out_hour | default(value = shift.shift_out_hour | default(value = "")) }}"
+                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
                         </div>
                         <div>
                             <label for="break_start" class="block text-sm font-medium text-gray-700">Break Start</label>
-                            <input id="break_start" name="break_start" type="time" value="{{ current_break_start }}"
-                                   class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                            <input id="break_start" name="break_start" type="time"
+                                value="{{ form_data.break_start | default(value = shift.break_start | default(value = "")) }}"
+                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
                         </div>
                         <div>
                             <label for="break_end" class="block text-sm font-medium text-gray-700">Break End</label>
-                            <input id="break_end" name="break_end" type="time" value="{{ current_break_end }}"
-                                   class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                            <input id="break_end" name="break_end" type="time"
+                                value="{{ form_data.break_end | default(value = shift.break_end | default(value = "")) }}"
+                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
                         </div>
                     </div>
 
+                    <!-- Toggles -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t">
-                        <div class="relative flex items-start">
-                            <input type="hidden" name="is_shift_out_hour_overlap_day" value="false">
-                            <div class="flex items-center h-5">
-                                <input id="is_shift_out_hour_overlap_day" name="is_shift_out_hour_overlap_day" type="checkbox" value="true"
-                                       {% if current_overlap %}checked{% endif %}
-                                       class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                        <div class="relative flex items-center justify-between p-3 border border-gray-200 rounded-md">
+                            <div class="text-sm">
+                                <label class="font-medium text-gray-700">Shift Out Overlaps Day?</label>
+                                <p class="text-gray-500 text-xs">For shifts spanning midnight (e.g., 22:00 to 06:00).</p>
                             </div>
-                            <div class="ml-3 text-sm">
-                                <label for="is_shift_out_hour_overlap_day" class="font-medium text-gray-700">Shift Out Overlaps Next Day?</label>
-                                <p class="text-gray-500">Check if Shift Out occurs on the next day (e.g., 22:00 to 06:00).</p>
-                            </div>
+                            <input id="is_shift_out_hour_overlap_day" name="is_shift_out_hour_overlap_day" type="checkbox" value="true"
+                                {% if form_data.is_shift_out_hour_overlap_day | default(value = shift.is_shift_out_hour_overlap_day | default(value = false)) %}checked{% endif %}
+                                class="toggle-switch">
+                            <label for="is_shift_out_hour_overlap_day"></label>
                         </div>
 
-                        <div class="relative flex items-start">
-                            <input type="hidden" name="is_work_shift" value="false">
-                            <div class="flex items-center h-5">
-                                <input id="is_work_shift" name="is_work_shift" type="checkbox" value="true"
-                                       {% if current_work_shift %}checked{% endif %}
-                                       class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                        <div class="relative flex items-center justify-between p-3 border border-gray-200 rounded-md">
+                            <div class="text-sm">
+                                <label class="font-medium text-gray-700">Is this a Work Shift?</label>
+                                <p class="text-gray-500 text-xs">Uncheck for off-days used in schedules.</p>
                             </div>
-                            <div class="ml-3 text-sm">
-                                <label for="is_work_shift" class="font-medium text-gray-700">Is this a Work Shift?</label>
-                                <p class="text-gray-500">Uncheck for holidays/off days used in schedules.</p>
-                            </div>
+                            <input id="is_work_shift" name="is_work_shift" type="checkbox" value="true"
+                                {% if form_data.is_work_shift | default(value = shift.is_work_shift | default(value = true)) %}checked{% endif %}
+                                class="toggle-switch">
+                            <label for="is_work_shift"></label>
                         </div>
                     </div>
 
-                    <div class="md:col-span-2">
-                        <h3 class="text-lg font-semibold border-b pb-2 mb-4 text-indigo-600 mt-6">Attendance and Dispensation</h3>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
+                    <!-- Color Picker -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label for="clock_in_min_before" class="block text-sm font-medium text-gray-700">Clock In Min Before (Minutes) <span class="text-red-500">*</span></label>
-                            <input id="clock_in_min_before" name="clock_in_min_before" type="number" required value="{{ current_min_before }}"
-                                   class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
-                        </div>
-                        <div>
-                            <label for="clock_out_max_after" class="block text-sm font-medium text-gray-700">Clock Out Max After (Minutes) <span class="text-red-500">*</span></label>
-                            <input id="clock_out_max_after" name="clock_out_max_after" type="number" required value="{{ current_max_after }}"
-                                   class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="relative flex items-start">
-                            <input type="hidden" name="is_enable_dispensation" value="false">
-                            <div class="flex items-center h-5">
-                                <input id="is_enable_dispensation" name="is_enable_dispensation" type="checkbox" value="true"
-                                       {% if current_enable_disp %}checked{% endif %}
-                                       class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
-                            </div>
-                            <div class="ml-3 text-sm">
-                                <label for="is_enable_dispensation" class="font-medium text-gray-700">Enable Clock In/Out Dispensation?</label>
-                                <p class="text-gray-500">Allows small tolerance before marking late/early exit.</p>
-                            </div>
-                        </div>
-
-                        <div class="relative flex items-start">
-                            <input type="hidden" name="is_show_in_request" value="false">
-                            <div class="flex items-center h-5">
-                                <input id="is_show_in_request" name="is_show_in_request" type="checkbox" value="true"
-                                       {% if current_show_request %}checked{% endif %}
-                                       class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
-                            </div>
-                            <div class="ml-3 text-sm">
-                                <label for="is_show_in_request" class="font-medium text-gray-700">Show in Request Forms?</label>
-                                <p class="text-gray-500">Make this shift available in shift change request forms.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label for="clock_in_dispensation" class="block text-sm font-medium text-gray-700">Clock In Dispensation (Minutes)</label>
-                            <input id="clock_in_dispensation" name="clock_in_dispensation" type="number" value="{{ current_disp_in }}"
-                                   class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
-                        </div>
-                        <div>
-                            <label for="clock_out_dispensation" class="block text-sm font-medium text-gray-700">Clock Out Dispensation (Minutes)</label>
-                            <input id="clock_out_dispensation" name="clock_out_dispensation" type="number" value="{{ current_disp_out }}"
-                                   class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
-                        </div>
-                    </div>
-
-                    <div class="md:col-span-2">
-                        <h3 class="text-lg font-semibold border-b pb-2 mb-4 text-indigo-600 mt-6">Validation & Display</h3>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label for="shift_color_hex" class="block text-sm font-medium text-gray-700">Display Color (Hex Code) <span class="text-red-500">*</span></label>
-                            <input id="shift_color_hex" name="shift_color_hex" type="text" required value="{{ current_color }}"
-                                   class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Enable Attendance Validation? <span class="text-red-500">*</span></label>
-                            <div class="relative flex items-start pt-3">
-                                <input type="hidden" name="is_enable_attendance_validation" value="false">
-                                <div class="flex items-center h-5">
-                                    <input id="is_enable_attendance_validation" name="is_enable_attendance_validation" type="checkbox" value="true"
-                                           {% if current_enable_validation %}checked{% endif %}
-                                           class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                            <label for="shift_color_hex" class="block text-sm font-medium text-gray-700">Shift Color Hex <span class="text-red-500">*</span></label>
+                            <div class="flex items-center mt-1 space-x-3">
+                                <div id="color-swatch-display"
+                                    class="relative h-10 w-20 rounded-md shadow-inner border border-gray-300 cursor-pointer overflow-hidden transition-colors"
+                                    style="background-color: {{ form_data.shift_color_hex | default(value = shift.shift_color_hex | default(value = '#007bff')) }};">
+                                    <input id="shift_color_hex" name="shift_color_hex" type="color" required
+                                        value="{{ form_data.shift_color_hex | default(value = shift.shift_color_hex | default(value = '#007bff')) }}"
+                                        class="absolute inset-0 opacity-0 cursor-pointer h-full w-full">
                                 </div>
-                                <div class="ml-3 text-sm">
-                                    <label for="is_enable_attendance_validation" class="font-medium text-gray-700">Validate Clock In/Out times.</label>
-                                </div>
+                                <input id="color-hex-input" type="text" maxlength="7"
+                                    pattern="^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$"
+                                    value="{{ form_data.shift_color_hex | default(value = shift.shift_color_hex | default(value = '#007bff')) | upper }}"
+                                    placeholder="#007BFF"
+                                    class="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 font-mono uppercase text-sm">
                             </div>
+                            <p class="text-xs text-gray-500 mt-1">Select color or type hex code.</p>
+                        </div>
+
+                        <div class="relative flex items-center justify-between p-3 border border-gray-200 rounded-md h-20">
+                            <div class="text-sm">
+                                <label class="font-medium text-gray-700">Show in Request Forms?</label>
+                                <p class="text-gray-500 text-xs">Allow employees to request this shift.</p>
+                            </div>
+                            <input id="is_show_in_request" name="is_show_in_request" type="checkbox" value="true"
+                                {% if form_data.is_show_in_request | default(value = shift.is_show_in_request | default(value = true)) %}checked{% endif %}
+                                class="toggle-switch">
+                            <label for="is_show_in_request"></label>
                         </div>
                     </div>
 
-                    <div class="flex justify-end space-x-4 pt-4 border-t mt-6">
-                        <a href="/shifts/list" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition duration-150">
+                    <!-- Validation & Buffers -->
+                    <div class="md:col-span-2">
+                        <h3 class="text-lg font-semibold border-b pb-2 mb-4 text-indigo-600 mt-6">Validation & Time Buffers</h3>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="relative flex items-center justify-between p-3 border border-gray-200 rounded-md">
+                            <div class="text-sm">
+                                <label class="font-medium text-gray-700">Enable Attendance Validation</label>
+                                <p class="text-gray-500 text-xs">Validate Clock In/Out against shift hours.</p>
+                            </div>
+                            <input id="is_enable_attendance_validation" name="is_enable_attendance_validation" type="checkbox" value="true"
+                                {% if form_data.is_enable_attendance_validation | default(value = shift.is_enable_attendance_validation | default(value = false)) %}checked{% endif %}
+                                class="toggle-switch toggle-validation">
+                            <label for="is_enable_attendance_validation"></label>
+                        </div>
+
+                        <div class="relative flex items-center justify-between p-3 border border-gray-200 rounded-md">
+                            <div class="text-sm">
+                                <label class="font-medium text-gray-700">Enable Dispensation</label>
+                                <p class="text-gray-500 text-xs">Small tolerance for late/early clocking.</p>
+                            </div>
+                            <input id="is_enable_dispensation" name="is_enable_dispensation" type="checkbox" value="true"
+                                {% if form_data.is_enable_dispensation | default(value = shift.is_enable_dispensation | default(value = false)) %}checked{% endif %}
+                                class="toggle-switch toggle-dispensation">
+                            <label for="is_enable_dispensation"></label>
+                        </div>
+                    </div>
+
+                    <!-- Sliders -->
+                    <div class="grid grid-cols-2 gap-6">
+                        <div id="attendance-in-fields" class="range-group space-y-2">
+                            <label for="clock_in_min_before" class="block text-sm font-medium text-gray-700">
+                                Clock In Min Before* (<span class="font-bold text-indigo-600" id="in-min-value">{{ form_data.clock_in_min_before | default(value = shift.clock_in_min_before | default(value = 0)) }}</span> Minutes)
+                            </label>
+                            <input id="clock_in_min_before" name="clock_in_min_before" type="range" min="0" max="120" step="5"
+                                value="{{ form_data.clock_in_min_before | default(value = shift.clock_in_min_before | default(value = 0)) }}"
+                                class="mt-1 block w-full accent-indigo-600">
+                        </div>
+
+                        <div id="disp-in-fields" class="range-group space-y-2">
+                            <label for="clock_in_dispensation" class="block text-sm font-medium text-gray-700">
+                                Clock In Dispensation* (<span class="font-bold text-indigo-600" id="disp-in-value">{{ form_data.clock_in_dispensation | default(value = shift.clock_in_dispensation | default(value = 0)) }}</span> Minutes)
+                            </label>
+                            <input id="clock_in_dispensation" name="clock_in_dispensation" type="range" min="0" max="120" step="5"
+                                value="{{ form_data.clock_in_dispensation | default(value = shift.clock_in_dispensation | default(value = 0)) }}"
+                                class="mt-1 block w-full accent-indigo-600">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-6">
+                        <div id="attendance-out-fields" class="range-group space-y-2">
+                            <label for="clock_out_max_after" class="block text-sm font-medium text-gray-700">
+                                Clock Out Max After* (<span class="font-bold text-indigo-600" id="out-max-value">{{ form_data.clock_out_max_after | default(value = shift.clock_out_max_after | default(value = 0)) }}</span> Minutes)
+                            </label>
+                            <input id="clock_out_max_after" name="clock_out_max_after" type="range" min="0" max="120" step="5"
+                                value="{{ form_data.clock_out_max_after | default(value = shift.clock_out_max_after | default(value = 0)) }}"
+                                class="mt-1 block w-full accent-indigo-600">
+                        </div>
+
+                        <div id="disp-out-fields" class="range-group space-y-2">
+                            <label for="clock_out_dispensation" class="block text-sm font-medium text-gray-700">
+                                Clock Out Dispensation* (<span class="font-bold text-indigo-600" id="disp-out-value">{{ form_data.clock_out_dispensation | default(value = shift.clock_out_dispensation | default(value = 0)) }}</span> Minutes)
+                            </label>
+                            <input id="clock_out_dispensation" name="clock_out_dispensation" type="range" min="0" max="120" step="5"
+                                value="{{ form_data.clock_out_dispensation | default(value = shift.clock_out_dispensation | default(value = 0)) }}"
+                                class="mt-1 block w-full accent-indigo-600">
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end pt-4 border-t mt-6">
+                        <a href="/shifts/list"
+                            class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition duration-150">
                             Cancel
                         </a>
-                        <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150">
+                        <button type="submit"
+                            class="ml-3 px-4 py-2 text-sm font-medium text-white bg-green-700 rounded-md hover:bg-green-800 transition duration-150">
                             Save Changes
                         </button>
                     </div>
                 </form>
             </div>
 
-            {# RIGHT COLUMN: AUDIT INFORMATION #}
-            <div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-lg border border-gray-100 h-fit">
+            <!-- AUDIT COLUMN -->
+            <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100 h-fit">
                 <h3 class="text-lg font-semibold text-gray-700 mb-4 border-b pb-2">Audit Information</h3>
                 <div class="space-y-3 text-sm text-gray-600">
-                    <p><strong>Created By:</strong><br>{{ shift.created_by | default(value="N/A") }}</p>
+                    <p><strong>Created By:</strong><br>{{ shift.created_by | default(value = "N/A") }}</p>
                     <p><strong>Creation Date:</strong><br>
                         {% if shift.created_date %}
                             {{ shift.created_date | date(format="%d/%m/%Y %H:%M:%S") }}
@@ -208,7 +291,7 @@
                             N/A
                         {% endif %}
                     </p>
-                    <p><strong>Last Updated By:</strong><br>{{ shift.updated_by | default(value="N/A") }}</p>
+                    <p><strong>Last Updated By:</strong><br>{{ shift.updated_by | default(value = "N/A") }}</p>
                     <p><strong>Last Updated Date:</strong><br>
                         {% if shift.updated_date %}
                             {{ shift.updated_date | date(format="%d/%m/%Y %H:%M:%S") }}
@@ -221,4 +304,88 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Color picker sync
+        const colorInput = document.getElementById('shift_color_hex');
+        const hexInput = document.getElementById('color-hex-input');
+        const swatchDisplay = document.getElementById('color-swatch-display');
+
+        function isValidHex(hex) {
+            return /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(hex);
+        }
+
+        function updateColor(hex) {
+            hex = hex.toUpperCase();
+            if (isValidHex(hex)) {
+                colorInput.value = hex;
+                hexInput.value = hex;
+                swatchDisplay.style.backgroundColor = hex;
+                return true;
+            }
+            return false;
+        }
+
+        colorInput.addEventListener('input', () => updateColor(colorInput.value));
+        hexInput.addEventListener('input', function() {
+            let hex = hexInput.value.trim().toUpperCase();
+            if (hex.length === 6 && hex[0] !== '#') hex = '#' + hex;
+            if (isValidHex(hex)) updateColor(hex);
+        });
+        hexInput.addEventListener('blur', function() {
+            let hex = hexInput.value.trim().toUpperCase();
+            if (hex.length > 0 && hex[0] !== '#') hex = '#' + hex;
+            if (!updateColor(hex)) hexInput.value = colorInput.value;
+        });
+        updateColor(colorInput.value || '#007bff');
+
+        // Range display sync
+        function syncRangeDisplay(sliderId, displayId) {
+            const slider = document.getElementById(sliderId);
+            const display = document.getElementById(displayId);
+            if (slider && display) {
+                const update = () => display.textContent = slider.value;
+                slider.addEventListener('input', update);
+                update();
+            }
+        }
+
+        syncRangeDisplay('clock_in_min_before', 'in-min-value');
+        syncRangeDisplay('clock_out_max_after', 'out-max-value');
+        syncRangeDisplay('clock_in_dispensation', 'disp-in-value');
+        syncRangeDisplay('clock_out_dispensation', 'disp-out-value');
+
+        // Toggle sliders
+        function controlRangeState(checkboxId, sliderIds) {
+            const checkbox = document.getElementById(checkboxId);
+            if (!checkbox) return;
+            const sliders = sliderIds.map(id => document.getElementById(id));
+
+            function toggle() {
+                const isChecked = checkbox.checked;
+                sliders.forEach(slider => {
+                    if (slider) {
+                        const parentGroup = slider.closest('.range-group');
+                        slider.required = isChecked;
+                        slider.disabled = !isChecked;
+                        if (parentGroup) parentGroup.classList.toggle('disabled', !isChecked);
+                        if (!isChecked) {
+                            slider.value = 0;
+                            slider.dispatchEvent(new Event('input'));
+                        } else {
+                            slider.dispatchEvent(new Event('input'));
+                        }
+                    }
+                });
+            }
+
+            checkbox.addEventListener('change', toggle);
+            toggle();
+        }
+
+        controlRangeState('is_enable_attendance_validation', ['clock_in_min_before', 'clock_out_max_after']);
+        controlRangeState('is_enable_dispensation', ['clock_in_dispensation', 'clock_out_dispensation']);
+    });
+</script>
 {% endblock content %}

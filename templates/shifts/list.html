@@ -1,91 +1,125 @@
 {% extends "layout_app.html" %}
-
-{% block title %}{{ title }}{% endblock title %}
-{% block header_title %}{{ header_title }}{% endblock header_title %}
-
+{% block title %}Configuration Shifts{% endblock title %}
+{% block header_title %}Configuration Shifts{% endblock header_title %}
 {% block content %}
 <div class="flex justify-between items-center mb-6">
-    <h1 class="text-3xl font-bold text-gray-800">Master Work Shifts</h1>
+    <h1 class="text-3xl font-bold text-gray-800">Configuration Shifts</h1>
     <a href="/shifts/add"
-        class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 transition duration-150">
+       class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 transition duration-150">
         <i class="fas fa-plus mr-1"></i> Add Shift
     </a>
 </div>
 
-<div class="bg-white rounded-xl shadow-lg overflow-x-auto border border-gray-100 p-6">
-    
+<div class="bg-white rounded-xl shadow-lg overflow-x-auto border border-gray-100">
     {% if shifts | length == 0 %}
     <div class="px-6 py-8 text-center text-gray-500 italic">
         No work shift data recorded in the database.
     </div>
     {% else %}
-    
     <table class="min-w-full border border-gray-300">
         <thead class="bg-gray-50">
             <tr>
-                <th
-                    class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-r border-b border-gray-300">
+                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-r border-b border-gray-300">
+                    Color</th>
+                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-r border-b border-gray-300">
                     Code</th>
-                <th
-                    class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-r border-b border-gray-300">
+                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-r border-b border-gray-300">
                     Shift Name</th>
-                <th
-                    class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-r border-b border-gray-300">
+                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-r border-b border-gray-300">
                     Time In/Out</th>
-                <th
-                    class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-r border-b border-gray-300">
+                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-r border-b border-gray-300">
                     Break Time</th>
-                <th
-                    class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-r border-b border-gray-300">
-                    Validation</th>
-                <th
-                    class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-r border-b border-gray-300">
-                    Work Shift</th>
-                <th
-                    class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-300">
+                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-r border-b border-gray-300">
+                    Validation & Buffers</th>
+                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-r border-b border-gray-300">
+                    Status</th>
+                <th class="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-300">
                     Actions</th>
             </tr>
         </thead>
         <tbody class="bg-white">
             {% for shift in shifts %}
             <tr class="hover:bg-gray-50 transition duration-100 border-b border-gray-300">
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-r border-gray-300">{{
-                    shift.shift_code | default(value="N/A") }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 border-r border-gray-300">{{
-                    shift.shift_name | default(value="N/A") }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 border-r border-gray-300">
-                    {{ shift.shift_in_hour | default(value="--") }} - {{ shift.shift_out_hour | default(value="--") }}
-                    {% if shift.is_shift_out_hour_overlap_day %}
-                    <span class="text-xs text-red-500">(Overlap)</span>
-                    {% endif %}
+                <!-- Color Swatch -->
+                <td class="px-6 py-4 whitespace-nowrap border-r border-gray-300">
+                    <div class="w-10 h-10 rounded-md border border-gray-400 shadow-sm"
+                         style="background-color: {{ shift.shift_color_hex | default(value = '#6b7280') }};">
+                    </div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 border-r border-gray-300">
-                    {{ shift.break_start | default(value="--") }} - {{ shift.break_end | default(value="--") }}
+
+                <!-- Code -->
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-r border-gray-300">
+                    {{ shift.shift_code | default(value = "N/A") }}
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 border-r border-gray-300">
-                    {% if shift.is_enable_attendance_validation %}
-                        <span class="text-green-600 font-medium">Enabled</span>
-                    {% else %}
-                        <span class="text-red-600">Disabled</span>
-                    {% endif %}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 border-r border-gray-300">
-                    {% if shift.is_work_shift %}
-                        <span class="text-green-600 font-medium">Yes</span>
-                    {% else %}
-                        <span class="text-red-600">No</span>
+
+                <!-- Shift Name -->
+                <td class="px-6 py-4 text-sm text-gray-700 border-r border-gray-300">
+                    {{ shift.shift_name | default(value = "N/A") }}
+                    {% if shift.is_show_in_request | default(value = false) %}
+                    <span class="ml-2 inline-block px-2 py-0.5 text-xs bg-blue-100 text-blue-800 rounded">Requestable</span>
                     {% endif %}
                 </td>
 
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <div class="flex items-center space-x-4">
+                <!-- Time In/Out -->
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 border-r border-gray-300">
+                    {{ shift.shift_in_hour | default(value = "--:--") }} - {{ shift.shift_out_hour | default(value = "--:--") }}
+                    {% if shift.is_shift_out_hour_overlap_day | default(value = false) %}
+                    <br><span class="text-xs text-red-600 font-medium">(Next Day)</span>
+                    {% endif %}
+                </td>
+
+                <!-- Break Time -->
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 border-r border-gray-300">
+                    {% if shift.break_start and shift.break_end %}
+                        {{ shift.break_start | default(value = "--:--") }} - {{ shift.break_end | default(value = "--:--") }}
+                    {% else %}
+                        <span class="text-gray-400">-</span>
+                    {% endif %}
+                </td>
+
+                <!-- Validation & Buffers -->
+                <td class="px-6 py-4 text-xs text-gray-700 border-r border-gray-300">
+                    {% if shift.is_enable_attendance_validation | default(value = false) %}
+                        <span class="text-green-700 font-medium">Validation ON</span><br>
+                        <span class="text-gray-600">
+                            In: {{ shift.clock_in_min_before | default(value = 0) }}m before<br>
+                            Out: {{ shift.clock_out_max_after | default(value = 0) }}m after
+                        </span>
+                    {% else %}
+                        <span class="text-red-600">Validation OFF</span>
+                    {% endif %}
+
+                    {% if shift.is_enable_dispensation | default(value = false) %}
+                        <br><span class="text-amber-700 font-medium mt-1 inline-block">Dispensation</span><br>
+                        <span class="text-gray-600">
+                            In: {{ shift.clock_in_dispensation | default(value = 0) }}m  
+                            Out: {{ shift.clock_out_dispensation | default(value = 0) }}m
+                        </span>
+                    {% endif %}
+                </td>
+
+                <!-- Status (Work Shift) -->
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-center border-r border-gray-300">
+                    {% if shift.is_work_shift | default(value = true) %}
+                        <span class="text-green-600 font-medium">Work Day</span>
+                    {% else %}
+                        <span class="text-purple-600 font-medium">Off Day</span>
+                    {% endif %}
+                </td>
+
+                <!-- Actions -->
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                    <div class="flex items-center justify-center space-x-4">
                         <a href="/shifts/edit/{{ shift.shift_id }}"
-                            class="text-indigo-600 hover:text-indigo-900 transition duration-150"><i class="fas fa-edit"></i> Edit</a>
-
-                        <form action="/shifts/delete/{{ shift.shift_id }}" method="post"
-                            onsubmit="return confirm('Are you sure you want to delete shift {{ shift.shift_name | default(value=`this`) }}?');" class="inline">
+                           class="text-indigo-600 hover:text-indigo-900 transition duration-150">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <form action="/shifts/delete/{{ shift.shift_id }}" method="post" class="inline"
+                              onsubmit="return confirm('Are you sure you want to delete shift \"{{ shift.shift_name | default(value = 'this shift') }}\"?');">
                             <button type="submit"
-                                class="text-red-600 hover:text-red-900 transition duration-150"><i class="fas fa-trash-alt"></i> Delete</button>
+                                    class="text-red-600 hover:text-red-900 transition duration-150">
+                                <i class="fas fa-trash-alt"></i> Delete
+                            </button>
                         </form>
                     </div>
                 </td>
@@ -94,8 +128,8 @@
         </tbody>
     </table>
     {% endif %}
+
+    <!-- Pagination -->
+    {% include "partials/_pagination.html" %}
 </div>
-
-{% include "partials/_pagination.html" %}
-
 {% endblock content %}

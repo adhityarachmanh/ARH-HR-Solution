@@ -35,16 +35,40 @@ pub struct ShiftFormData {
     pub shift_name: String,
     pub shift_in_hour: String,
     pub shift_out_hour: String,
+
+    #[serde(default)]
     pub break_start: String,
+
+    #[serde(default)]
     pub break_end: String,
+
+    #[serde(default)]
     pub is_show_in_request: bool,
-    pub is_enable_attendance_validation: bool,
-    pub clock_in_min_before: i32,
-    pub clock_out_max_after: i32,
-    pub is_enable_dispensation: bool,
-    pub clock_in_dispensation: i32,
-    pub clock_out_dispensation: i32,
-    pub is_work_shift: bool,
-    pub shift_color_hex: String,
+
+    #[serde(default)]
     pub is_shift_out_hour_overlap_day: bool,
+
+    #[serde(default)]
+    pub is_work_shift: bool,
+
+    #[serde(default)]
+    pub shift_color_hex: String,
+
+    #[serde(default)]
+    pub is_enable_attendance_validation: bool,
+
+    #[serde(default)]
+    pub clock_in_min_before: i32,
+
+    #[serde(default)]
+    pub clock_out_max_after: i32,
+
+    #[serde(default)]
+    pub is_enable_dispensation: bool,
+
+    #[serde(default)]
+    pub clock_in_dispensation: i32,
+
+    #[serde(default)]
+    pub clock_out_dispensation: i32,
 }
