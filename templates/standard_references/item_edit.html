@@ -1,0 +1,111 @@
+{% extends "layout_app.html" %}
+
+{% block title %}{{ title }}{% endblock title %}
+{% block header_title %}{{ header_title }}{% endblock header_title %}
+
+{% block content %}
+<div class="flex justify-center">
+    <div class="w-full max-w-5xl">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6">Edit Item Reference</h1>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+            
+            <div class="lg:col-span-2 bg-white p-8 rounded-xl shadow-lg border border-gray-100">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-3">Editing Item: {{ item.item_id }} (Ref: {{ reference.standard_reference_name }})</h2>
+
+                {% if error %}
+                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded" role="alert">
+                    <p class="font-bold">Error</p>
+                    <p>{{ error }}</p>
+                </div>
+                {% endif %}
+
+                <form action="/standard_references/items/edit/{{ reference.standard_reference_id }}/{{ item.item_id }}" method="post" class="space-y-6">
+                    
+                    {% set current_name = form_data.item_name | default(value=item.item_name | default(value='')) %}
+                    {% set current_note = form_data.note | default(value=item.note | default(value='')) %}
+                    {% set current_active = form_data.is_active | default(value=item.is_active | default(value=true)) %}
+
+                    <div>
+                        <label for="item_id_display" class="block text-sm font-medium text-gray-700">Item ID</label>
+                        <input id="item_id_display" type="text" disabled readonly
+                               value="{{ item.item_id }}"
+                               class="mt-1 block w-full border border-gray-200 rounded-md shadow-sm py-2 px-3 bg-gray-50 font-mono">
+                    </div>
+
+                    <div>
+                        <label for="item_name" class="block text-sm font-medium text-gray-700">Item Name <span class="text-red-500">*</span></label>
+                        <input id="item_name" name="item_name" type="text" required
+                               value="{{ current_name }}"
+                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    
+                    <div>
+                        <label for="note" class="block text-sm font-medium text-gray-700">Note (Optional)</label>
+                        <input id="note" name="note" type="text"
+                               value="{{ current_note }}"
+                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                    </div>
+
+                    <div class="relative flex items-start pt-2">
+                        <input type="hidden" name="is_active" value="false">
+                        <div class="flex items-center h-5">
+                            <input id="is_active" name="is_active" type="checkbox" value="true"
+                                   {% if current_active %} checked {% endif %}
+                                   class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                        </div>
+                        <div class="ml-3 text-sm">
+                            <label for="is_active" class="font-medium text-gray-700">Is Active</label>
+                            <p class="text-gray-500">Uncheck to disable this item in dropdowns.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end space-x-4 pt-4 border-t mt-6">
+                        <a href="/standard_references/items/{{ reference.standard_reference_id }}"
+                            class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition duration-150">
+                            Cancel
+                        </a>
+                        <button type="submit"
+                            class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150">
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            
+            <div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-lg border border-gray-100 h-fit">
+                <h3 class="text-lg font-semibold text-gray-700 mb-4 border-b pb-2">Audit Information</h3>
+                <div class="space-y-3 text-sm text-gray-600">
+                    <p>
+                        <strong>Created By:</strong><br>
+                        {{ item.created_by | default(value="N/A") }}
+                    </p>
+                    <p>
+                        <strong>Creation Date:</strong><br>
+                        {% if item.created_date %}
+                        {{ item.created_date | date(format="%d/%m/%Y %H:%M:%S") }}
+                        {% else %}
+                        N/A
+                        {% endif %}
+                    </p>
+                    <p>
+                        <strong>Last Updated By:</strong><br>
+                        {{ item.updated_by | default(value="N/A") }}
+                    </p>
+                    <p>
+                        <strong>Last Updated Date:</strong><br>
+                        {% if item.updated_date %}
+                        {{ item.updated_date | date(format="%d/%m/%Y %H:%M:%S") }}
+                        {% else %}
+                        N/A
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock content %}

@@ -18,4 +18,5 @@ pub mod grade_service;
 pub mod ptkp_type_service;
 pub mod overtime_setting_service;
 pub mod shift_service;
+pub mod standard_reference_service;
 // pub mod employee_service;

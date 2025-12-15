@@ -3,7 +3,7 @@ use crate::handlers::{
     dashboard_handler, employment_status_handler, grade_handler, holiday_handler,
     job_level_handler, job_position_handler, organization_handler, overtime_setting_handler,
     permission_handler, ptkp_type_handler, role_handler, shift_handler, timezone_handler,
-    user_handler, zip_code_handler,
+    user_handler, zip_code_handler,standard_reference_handler
 };
 use actix_web::web;
 
@@ -488,6 +488,45 @@ pub fn configure_routes(cfg: &mut web::ServiceConfig) {
             .route(
                 "/shifts/delete/{id}",
                 web::post().to(shift_handler::delete_shift_action),
+            )
+            // -----------------------------------------------------------
+            // Rute Standard References Master Data
+            // -----------------------------------------------------------
+            .route(
+                "/standard_references/list",
+                web::get().to(standard_reference_handler::list_references),
+            )
+            .route(
+                "/standard_references/add",
+                web::get().to(standard_reference_handler::show_add_reference_form),
+            )
+            .route(
+                "/standard_references/add",
+                web::post().to(standard_reference_handler::create_reference_action),
+            )
+            .route(
+                "/standard_references/items/{sr_id}",
+                web::get().to(standard_reference_handler::list_items_by_reference),
+            )
+            .route(
+                "/standard_references/items/add/{sr_id}",
+                web::get().to(standard_reference_handler::show_add_item_form),
+            )
+            .route(
+                "/standard_references/items/add/{sr_id}",
+                web::post().to(standard_reference_handler::add_item_action),
+            )
+            .route(
+                "/standard_references/items/edit/{sr_id}/{item_id}",
+                web::get().to(standard_reference_handler::show_edit_item_form),
+            )
+            .route(
+                "/standard_references/items/edit/{sr_id}/{item_id}",
+                web::post().to(standard_reference_handler::edit_item_action),
+            )
+            .route(
+                "/standard_references/items/delete/{sr_id}/{item_id}",
+                web::post().to(standard_reference_handler::delete_item_action),
             ),
     );
 }

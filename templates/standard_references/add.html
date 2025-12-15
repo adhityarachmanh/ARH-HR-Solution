@@ -1,0 +1,59 @@
+{% extends "layout_app.html" %}
+
+{% block title %}Add Master Reference{% endblock title %}
+{% block header_title %}Tambah Master Reference Baru{% endblock header_title %}
+
+{% block content %}
+<div class="flex justify-center">
+    <div class="w-full max-w-lg bg-white p-8 rounded-xl shadow-lg border border-gray-100">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-3">Input Master Reference</h2>
+
+        {% if error %}
+        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded" role="alert">
+            <p class="font-bold">Error</p>
+            <p>{{ error }}</p>
+        </div>
+        {% endif %}
+
+        <form action="/standard_references/add" method="post" class="space-y-6">
+            
+            {% set current_id = form_data.standard_reference_id | default(value='') %}
+            {% set current_name = form_data.standard_reference_name | default(value='') %}
+            {% set current_active = form_data.is_active | default(value=true) %}
+
+            <div>
+                <label for="standard_reference_id" class="block text-sm font-medium text-gray-700">Reference ID <span class="text-red-500">*</span></label>
+                <input id="standard_reference_id" name="standard_reference_id" type="text" required
+                       value="{{ current_id }}"
+                       class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500" placeholder="Contoh: GenderType">
+                <p class="text-xs text-gray-500 mt-1">Gunakan huruf tanpa spasi atau karakter spesial.</p>
+            </div>
+
+            <div>
+                <label for="standard_reference_name" class="block text-sm font-medium text-gray-700">Reference Name <span class="text-red-500">*</span></label>
+                <input id="standard_reference_name" name="standard_reference_name" type="text" required
+                       value="{{ current_name }}"
+                       class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500" placeholder="Contoh: Gender Type">
+            </div>
+
+            {# START: FIELD IS_ACTIVE DISEMBUNYIKAN DAN SELALU TRUE #}
+            <div style="display: none;">
+                <input type="hidden" name="is_active" value="true">
+                <input id="is_active_hidden" name="is_active_hidden" type="checkbox" value="true" checked>
+            </div>
+            {# END: FIELD IS_ACTIVE DISEMBUNYIKAN DAN SELALU TRUE #}
+
+            <div class="flex justify-end space-x-4 pt-4 border-t mt-6">
+                <a href="/standard_references/list"
+                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition duration-150">
+                    Cancel
+                </a>
+                <button type="submit"
+                    class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150">
+                    Save Reference
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock content %}

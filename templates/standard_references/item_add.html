@@ -1,0 +1,68 @@
+{% extends "layout_app.html" %}
+
+{% block title %}{{ title }}{% endblock title %}
+{% block header_title %}{{ header_title }}{% endblock header_title %}
+
+{% block content %}
+<div class="flex justify-center">
+    <div class="w-full max-w-lg bg-white p-8 rounded-xl shadow-lg border border-gray-100">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-3">Reference: {{ reference.standard_reference_name }}</h2>
+
+        {% if error %}
+        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded" role="alert">
+            <p class="font-bold">Error</p>
+            <p>{{ error }}</p>
+        </div>
+        {% endif %}
+
+        <form action="/standard_references/items/add/{{ reference.standard_reference_id }}" method="post" class="space-y-6">
+            
+            <div>
+                <label for="item_id" class="block text-sm font-medium text-gray-700">Item ID (Unique Key) <span class="text-red-500">*</span></label>
+                <input id="item_id" name="item_id" type="text" required
+                       value="{{ form_data.item_id | default(value='') }}"
+                       class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500">
+                <p class="text-xs text-gray-500 mt-1">Example: L, P, TK, S1. Use acronyms without spaces.</p>
+            </div>
+
+            <div>
+                <label for="item_name" class="block text-sm font-medium text-gray-700">Item Name <span class="text-red-500">*</span></label>
+                <input id="item_name" name="item_name" type="text" required
+                       value="{{ form_data.item_name | default(value='') }}"
+                       class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+            
+            <div>
+                <label for="note" class="block text-sm font-medium text-gray-700">Note (Optional)</label>
+                <input id="note" name="note" type="text"
+                       value="{{ form_data.note | default(value='') }}"
+                       class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+            </div>
+
+            <div class="relative flex items-start pt-2">
+                <input type="hidden" name="is_active" value="false">
+                <div class="flex items-center h-5">
+                    <input id="is_active" name="is_active" type="checkbox" value="true"
+                           {% if form_data.is_active | default(value=true) %} checked {% endif %}
+                           class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                </div>
+                <div class="ml-3 text-sm">
+                    <label for="is_active" class="font-medium text-gray-700">Is Active</label>
+                    <p class="text-gray-500">Uncheck to disable this item in dropdowns.</p>
+                </div>
+            </div>
+
+            <div class="flex justify-between space-x-4 pt-4 border-t mt-6">
+                <a href="/standard_references/items/{{ reference.standard_reference_id }}"
+                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition duration-150">
+                    Cancel
+                </a>
+                <button type="submit"
+                    class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150">
+                    Save Item
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock content %}
