@@ -307,7 +307,6 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Color picker sync
         const colorInput = document.getElementById('shift_color_hex');
         const hexInput = document.getElementById('color-hex-input');
         const swatchDisplay = document.getElementById('color-swatch-display');
@@ -340,7 +339,6 @@
         });
         updateColor(colorInput.value || '#007bff');
 
-        // Range display sync
         function syncRangeDisplay(sliderId, displayId) {
             const slider = document.getElementById(sliderId);
             const display = document.getElementById(displayId);
@@ -356,7 +354,6 @@
         syncRangeDisplay('clock_in_dispensation', 'disp-in-value');
         syncRangeDisplay('clock_out_dispensation', 'disp-out-value');
 
-        // Toggle sliders
         function controlRangeState(checkboxId, sliderIds) {
             const checkbox = document.getElementById(checkboxId);
             if (!checkbox) return;

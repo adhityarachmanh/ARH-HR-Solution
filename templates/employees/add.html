@@ -1,12 +1,12 @@
 {% extends "layout_app.html" %}
 
 {% block title %}Add Employee{% endblock title %}
-{% block header_title %}Tambah Data Karyawan Baru{% endblock header_title %}
+{% block header_title %}Add New Employee{% endblock header_title %}
 
 {% block content %}
 <div class="flex justify-center">
     <div class="w-full max-w-5xl bg-white p-8 rounded-xl shadow-lg border border-gray-100">
-        <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-3">Input Data Karyawan (3 Langkah)</h2>
+        <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-3">Input Employee Data (3 Steps)</h2>
 
         {% if error %}
         <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded" role="alert">
@@ -21,31 +21,31 @@
             <div class="border-b border-gray-200">
                 <nav class="-mb-px flex space-x-8" aria-label="Tabs">
                     <button type="button" data-tab="personal" class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-indigo-500 text-indigo-600 focus:outline-none">
-                        1. Data Pribadi
+                        1. Personal Data
                     </button>
                     <button type="button" data-tab="employment" class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none">
-                        2. Data Pekerjaan
+                        2. Employment Data
                     </button>
                     <button type="button" data-tab="payroll" class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none">
-                        3. Gaji & Finansial
+                        3. Payroll & Financial
                     </button>
                 </nav>
             </div>
             
             {# --- TAB 1: PERSONAL DATA --- #}
             <div id="tab-personal" class="tab-content space-y-6">
-                <h3 class="text-lg font-semibold border-b pb-2 mb-4 text-indigo-600">Identitas & Kontak</h3>
+                <h3 class="text-lg font-semibold border-b pb-2 mb-4 text-indigo-600">Identity & Contact</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {# Employee Number #}
                     <div>
-                        <label for="employee_number" class="block text-sm font-medium text-gray-700">Nomor Karyawan <span class="text-red-500">*</span></label>
+                        <label for="employee_number" class="block text-sm font-medium text-gray-700">Employee Number <span class="text-red-500">*</span></label>
                         <input id="employee_number" name="employee_number" type="text" required
                             value="{{ form_data.employee_number | default(value='') }}"
                             class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
                     </div>
                     {# Employee Number Barcode #}
                     <div>
-                        <label for="employee_number_barcode" class="block text-sm font-medium text-gray-700">Barcode/NIK Absensi (Opsional)</label>
+                        <label for="employee_number_barcode" class="block text-sm font-medium text-gray-700">Barcode/Attendance ID (Optional)</label>
                         <input id="employee_number_barcode" name="employee_number_barcode" type="text"
                             value="{{ form_data.employee_number_barcode | default(value='') }}"
                             class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
@@ -53,14 +53,14 @@
 
                     {# First Name #}
                     <div>
-                        <label for="first_name" class="block text-sm font-medium text-gray-700">Nama Depan <span class="text-red-500">*</span></label>
+                        <label for="first_name" class="block text-sm font-medium text-gray-700">First Name <span class="text-red-500">*</span></label>
                         <input id="first_name" name="first_name" type="text" required
                             value="{{ form_data.first_name | default(value='') }}"
                             class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
                     </div>
                     {# Last Name #}
                     <div>
-                        <label for="last_name" class="block text-sm font-medium text-gray-700">Nama Belakang <span class="text-red-500">*</span></label>
+                        <label for="last_name" class="block text-sm font-medium text-gray-700">Last Name <span class="text-red-500">*</span></label>
                         <input id="last_name" name="last_name" type="text" required
                             value="{{ form_data.last_name | default(value='') }}"
                             class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
@@ -68,7 +68,7 @@
                     
                     {# Email #}
                     <div>
-                        <label for="email" class="block text-sm font-medium text-gray-700">Email (Opsional)</label>
+                        <label for="email" class="block text-sm font-medium text-gray-700">Email (Optional)</label>
                         <input id="email" name="email" type="email"
                             value="{{ form_data.email | default(value='') }}"
                             class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
@@ -76,7 +76,7 @@
 
                     {# Work Mobile #}
                     <div>
-                        <label for="work_mobile" class="block text-sm font-medium text-gray-700">No. HP/Mobile Kerja (Opsional)</label>
+                        <label for="work_mobile" class="block text-sm font-medium text-gray-700">Work Mobile Phone (Optional)</label>
                         <input id="work_mobile" name="work_mobile" type="text"
                             value="{{ form_data.work_mobile | default(value='') }}"
                             class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
@@ -84,31 +84,31 @@
 
                     {# Work Phone #}
                     <div>
-                        <label for="work_phone" class="block text-sm font-medium text-gray-700">No. Telepon Kerja (Opsional)</label>
+                        <label for="work_phone" class="block text-sm font-medium text-gray-700">Work Phone (Optional)</label>
                         <input id="work_phone" name="work_phone" type="text"
                             value="{{ form_data.work_phone | default(value='') }}"
                             class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
                     </div>
                 </div>
 
-                <h3 class="text-lg font-semibold border-b pb-2 mb-4 text-indigo-600 mt-6">Kewarganegaraan & Detail Lain</h3>
+                <h3 class="text-lg font-semibold border-b pb-2 mb-4 text-indigo-600 mt-6">Citizenship & Details</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
                     {# Gender #}
                     <div>
-                        <label for="gender" class="block text-sm font-medium text-gray-700">Jenis Kelamin</label>
+                        <label for="gender" class="block text-sm font-medium text-gray-700">Gender</label>
                         <select id="gender" name="gender" 
                                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
-                            <option value="">-- Pilih Jenis Kelamin --</option>
+                            <option value="">-- Select Gender --</option>
                             {% for g in genders %}
-                                <option value="{{ g.item_id }}" {% if form_data.gender == g.item_id %} selected {% endif %}>{{ g.item_name }}</option>
+                                <option value="{{ g.item_id }}" {% if form_data.gender | default(value='') == g.item_id %} selected {% endif %}>{{ g.item_name }}</option>
                             {% endfor %}
                         </select>
                     </div>
 
                     {# Birth Place #}
                     <div>
-                        <label for="birth_place" class="block text-sm font-medium text-gray-700">Tempat Lahir (Opsional)</label>
+                        <label for="birth_place" class="block text-sm font-medium text-gray-700">Birth Place (Optional)</label>
                         <input id="birth_place" name="birth_place" type="text"
                             value="{{ form_data.birth_place | default(value='') }}"
                             class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
@@ -116,7 +116,7 @@
 
                     {# Birth Date #}
                     <div>
-                        <label for="birth_date" class="block text-sm font-medium text-gray-700">Tanggal Lahir (Opsional)</label>
+                        <label for="birth_date" class="block text-sm font-medium text-gray-700">Birth Date (Optional)</label>
                         <input id="birth_date" name="birth_date" type="date"
                             value="{{ form_data.birth_date | default(value='') }}"
                             class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
@@ -124,47 +124,47 @@
 
                     {# Religion #}
                     <div>
-                        <label for="religion_type" class="block text-sm font-medium text-gray-700">Agama</label>
+                        <label for="religion_type" class="block text-sm font-medium text-gray-700">Religion</label>
                         <select id="religion_type" name="religion_type" 
                                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
-                            <option value="">-- Pilih Agama --</option>
+                            <option value="">-- Select Religion --</option>
                             {% for r in religion_types %}
-                                <option value="{{ r.item_id }}" {% if form_data.religion_type == r.item_id %} selected {% endif %}>{{ r.item_name }}</option>
+                                <option value="{{ r.item_id }}" {% if form_data.religion_type | default(value='') == r.item_id %} selected {% endif %}>{{ r.item_name }}</option>
                             {% endfor %}
                         </select>
                     </div>
 
                     {# Marital Status #}
                     <div>
-                        <label for="marital_status_type" class="block text-sm font-medium text-gray-700">Status Perkawinan</label>
+                        <label for="marital_status_type" class="block text-sm font-medium text-gray-700">Marital Status</label>
                         <select id="marital_status_type" name="marital_status_type" 
                                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
-                            <option value="">-- Pilih Status --</option>
+                            <option value="">-- Select Status --</option>
                             {% for m in marital_statuses %}
-                                <option value="{{ m.item_id }}" {% if form_data.marital_status_type == m.item_id %} selected {% endif %}>{{ m.item_name }}</option>
+                                <option value="{{ m.item_id }}" {% if form_data.marital_status_type | default(value='') == m.item_id %} selected {% endif %}>{{ m.item_name }}</option>
                             {% endfor %}
                         </select>
                     </div>
 
                     {# Blood Type #}
                     <div>
-                        <label for="blood_type" class="block text-sm font-medium text-gray-700">Golongan Darah</label>
+                        <label for="blood_type" class="block text-sm font-medium text-gray-700">Blood Type</label>
                         <select id="blood_type" name="blood_type" 
                                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
-                            <option value="">-- Pilih Gol. Darah --</option>
+                            <option value="">-- Select Blood Type --</option>
                             {% for b in blood_types %}
-                                <option value="{{ b.item_id }}" {% if form_data.blood_type == b.item_id %} selected {% endif %}>{{ b.item_name }}</option>
+                                <option value="{{ b.item_id }}" {% if form_data.blood_type | default(value='') == b.item_id %} selected {% endif %}>{{ b.item_name }}</option>
                             {% endfor %}
                         </select>
                     </div>
                 </div>
 
-                <h3 class="text-lg font-semibold border-b pb-2 mb-4 text-indigo-600 mt-6">Alamat & Identitas Resmi</h3>
+                <h3 class="text-lg font-semibold border-b pb-2 mb-4 text-indigo-600 mt-6">Address & Official IDs</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     
                     {# NIK #}
                     <div>
-                        <label for="nik" class="block text-sm font-medium text-gray-700">NIK (Nomor Induk Kependudukan)</label>
+                        <label for="nik" class="block text-sm font-medium text-gray-700">NIK (National ID Number)</label>
                         <input id="nik" name="nik" type="text"
                             value="{{ form_data.nik | default(value='') }}"
                             class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
@@ -172,7 +172,7 @@
 
                     {# NPWP #}
                     <div>
-                        <label for="npwp" class="block text-sm font-medium text-gray-700">NPWP (Nomor Pokok Wajib Pajak)</label>
+                        <label for="npwp" class="block text-sm font-medium text-gray-700">NPWP (Tax ID Number)</label>
                         <input id="npwp" name="npwp" type="text"
                             value="{{ form_data.npwp | default(value='') }}"
                             class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
@@ -180,7 +180,7 @@
 
                     {# Zip Code (Menggunakan komponen AJAX - INLINE) #}
                     <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700">Kode Pos & Lokasi</label>
+                        <label class="block text-sm font-medium text-gray-700">Zip Code & Location</label>
                         
                         {% set field_id = "zip_code_id" %}
                         {% set input_id = field_id ~ "_search_display" %}
@@ -195,7 +195,7 @@
                             
                             {# 1. INPUT DISPLAY (Tempat User Mengetik) #}
                             <input type="text" id="{{ input_id }}" 
-                                   placeholder="Ketik Kota, Distrik, atau Kode Pos..."
+                                   placeholder="Type City, District, or Zip Code..."
                                    value="{{ initial_display_val }}"
                                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
                                    autocomplete="off" {{ required_attr }}>
@@ -212,21 +212,21 @@
                                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                     </svg>
-                                    Mencari...
+                                    Searching...
                                 </div>
                             </div>
                             
                             {# Results Container #}
                             <div id="{{ field_id }}-results"
                                  class="absolute z-20 w-full bg-white border border-gray-300 rounded-b shadow-lg mt-1 max-h-48 overflow-y-auto hidden text-sm">
-                                <!-- Hasil AJAX muncul di sini -->
+                                <!-- AJAX results appear here -->
                             </div>
                         </div>
                     </div>
                     
                     {# Citizen ID Address #}
                     <div class="md:col-span-2">
-                        <label for="citizen_id_address" class="block text-sm font-medium text-gray-700">Alamat Sesuai KTP</label>
+                        <label for="citizen_id_address" class="block text-sm font-medium text-gray-700">Address (as per National ID)</label>
                         <textarea id="citizen_id_address" name="citizen_id_address" rows="2"
                             class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">{{ form_data.citizen_id_address | default(value='') }}</textarea>
                     </div>
@@ -240,13 +240,13 @@
                                    class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
                         </div>
                         <div class="ml-3 text-sm">
-                            <label for="is_same_address" class="font-medium text-gray-700">Alamat Tinggal Sama dengan KTP</label>
+                            <label for="is_same_address" class="font-medium text-gray-700">Residential Address is the same as National ID Address</label>
                         </div>
                     </div>
 
                     {# Residential Address (Hidden/Shown by JS) #}
                     <div id="residential_address_group" class="md:col-span-2 space-y-1" {% if form_data.is_same_address | default(value=true) %}style="display:none;"{% endif %}>
-                        <label for="residential_address" class="block text-sm font-medium text-gray-700">Alamat Tinggal Saat Ini</label>
+                        <label for="residential_address" class="block text-sm font-medium text-gray-700">Current Residential Address</label>
                         <textarea id="residential_address" name="residential_address" rows="2"
                             class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">{{ form_data.residential_address | default(value='') }}</textarea>
                     </div>
@@ -260,8 +260,8 @@
                                    class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
                         </div>
                         <div class="ml-3 text-sm">
-                            <label for="is_medical_staff" class="font-medium text-gray-700">Staf Medis?</label>
-                            <p class="text-gray-500">Centang jika karyawan ini termasuk staf medis (memengaruhi alur cuti/izin).</p>
+                            <label for="is_medical_staff" class="font-medium text-gray-700">Medical Staff?</label>
+                            <p class="text-gray-500">Check if this employee is considered medical staff (affects leave workflows).</p>
                         </div>
                     </div>
                 </div>
@@ -269,65 +269,67 @@
 
             {# --- TAB 2: EMPLOYMENT DATA --- #}
             <div id="tab-employment" class="tab-content space-y-6 hidden">
-                <h3 class="text-lg font-semibold border-b pb-2 mb-4 text-indigo-600">Organisasi & Posisi</h3>
+                <h3 class="text-lg font-semibold border-b pb-2 mb-4 text-indigo-600">Organization & Position</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
                     {# Organization #}
                     <div>
-                        <label for="organization_id" class="block text-sm font-medium text-gray-700">Organisasi / Departemen <span class="text-red-500">*</span></label>
+                        <label for="organization_id" class="block text-sm font-medium text-gray-700">Organization / Department <span class="text-red-500">*</span></label>
                         <select id="organization_id" name="organization_id" required
                                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
-                            <option value="">-- Pilih Organisasi --</option>
+                            <option value="">-- Select Organization --</option>
                             {% for org in organizations %}
-                                <option value="{{ org.organization_id }}" {% if form_data.organization_id == org.organization_id %} selected {% endif %}>{{ org.organization_name }}</option>
+                                <option value="{{ org.organization_id }}" {% if form_data.organization_id | default(value='') == org.organization_id %} selected {% endif %}>{{ org.organization_name }}</option>
                             {% endfor %}
                         </select>
                     </div>
 
                     {# Job Position #}
                     <div>
-                        <label for="job_position_id" class="block text-sm font-medium text-gray-700">Jabatan <span class="text-red-500">*</span></label>
+                        <label for="job_position_id" class="block text-sm font-medium text-gray-700">Job Position <span class="text-red-500">*</span></label>
                         <select id="job_position_id" name="job_position_id" required
                                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
-                            <option value="">-- Pilih Jabatan --</option>
+                            <option value="">-- Select Position --</option>
                             {% for pos in job_positions %}
-                                <option value="{{ pos.job_position_id }}" {% if form_data.job_position_id == pos.job_position_id %} selected {% endif %}>{{ pos.job_position_name }}</option>
+                                <option value="{{ pos.job_position_id }}" {% if form_data.job_position_id | default(value='') == pos.job_position_id %} selected {% endif %}>{{ pos.job_position_name }}</option>
                             {% endfor %}
                         </select>
                     </div>
 
                     {# Job Level #}
                     <div>
-                        <label for="job_level_id" class="block text-sm font-medium text-gray-700">Level Jabatan <span class="text-red-500">*</span></label>
+                        <label for="job_level_id" class="block text-sm font-medium text-gray-700">Job Level <span class="text-red-500">*</span></label>
                         <select id="job_level_id" name="job_level_id" required
                                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
-                            <option value="">-- Pilih Level Jabatan --</option>
+                            <option value="">-- Select Job Level --</option>
                             {% for level in job_levels %}
-                                <option value="{{ level.job_level_id }}" {% if form_data.job_level_id == level.job_level_id %} selected {% endif %}>{{ level.job_level_name }}</option>
+                                <option value="{{ level.job_level_id }}" {% if form_data.job_level_id | default(value='') == level.job_level_id %} selected {% endif %}>{{ level.job_level_name }}</option>
                             {% endfor %}
                         </select>
                     </div>
                     
                     {# Manager #}
                     <div>
-                        <label for="manager_id" class="block text-sm font-medium text-gray-700">Atasan Langsung (Manager)</label>
+                        <label for="manager_id" class="block text-sm font-medium text-gray-700">Direct Manager (Employee)</label>
                         <select id="manager_id" name="manager_id" 
                                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
-                            <option value="">-- Pilih Atasan --</option>
+                            <option value="">-- Select Manager --</option>
                             {% for manager in managers %}
-                                <option value="{{ manager.user_id }}" {% if form_data.manager_id == manager.user_id %} selected {% endif %}>{{ manager.username }}</option>
+                                <option value="{{ manager.employee_id }}" {% if form_data.manager_id | default(value='') == manager.employee_id %} selected {% endif %}>
+                                    {{ manager.first_name | default(value='') }} {{ manager.last_name | default(value='') }} ({{ manager.employee_number | default(value='N/A') }})
+                                </option>
                             {% endfor %}
                         </select>
                     </div>
                     
                     {# Latest Education Level #}
                     <div class="md:col-span-2">
-                        <label for="latest_education_level_type" class="block text-sm font-medium text-gray-700">Pendidikan Terakhir</label>
+                        <label for="latest_education_level_type" class="block text-sm font-medium text-gray-700">Latest Education Level</label>
                         <select id="latest_education_level_type" name="latest_education_level_type" 
                                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
-                            <option value="">-- Pilih Tingkat Pendidikan --</option>
+                            <option value="">-- Select Education Level --</option>
                             {% for edu in education_levels %}
-                                <option value="{{ edu.item_id }}" {% if form_data.latest_education_level_type == edu.item_id %} selected {% endif %}>{{ edu.item_name }}</option>
+                                <option value="{{ edu.item_id }}" {% if form_data.latest_education_level_type | default(value='') == edu.item_id %} selected {% endif %}>{{ edu.item_name }}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -335,36 +337,36 @@
 
                 </div>
 
-                <h3 class="text-lg font-semibold border-b pb-2 mb-4 text-indigo-600 mt-6">Status & Tanggal Bergabung</h3>
+                <h3 class="text-lg font-semibold border-b pb-2 mb-4 text-indigo-600 mt-6">Status & Join Dates</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
                     {# Branch #}
                     <div>
-                        <label for="branch_id" class="block text-sm font-medium text-gray-700">Lokasi Cabang <span class="text-red-500">*</span></label>
+                        <label for="branch_id" class="block text-sm font-medium text-gray-700">Branch Location <span class="text-red-500">*</span></label>
                         <select id="branch_id" name="branch_id" required
                                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
-                            <option value="">-- Pilih Cabang --</option>
+                            <option value="">-- Select Branch --</option>
                             {% for branch in branches %}
-                                <option value="{{ branch.branch_id }}" {% if form_data.branch_id == branch.branch_id %} selected {% endif %}>{{ branch.branch_name }}</option>
+                                <option value="{{ branch.branch_id }}" {% if form_data.branch_id | default(value='') == branch.branch_id %} selected {% endif %}>{{ branch.branch_name }}</option>
                             {% endfor %}
                         </select>
                     </div>
 
                     {# Employment Status #}
                     <div>
-                        <label for="employment_status_id" class="block text-sm font-medium text-gray-700">Status Karyawan <span class="text-red-500">*</span></label>
+                        <label for="employment_status_id" class="block text-sm font-medium text-gray-700">Employment Status <span class="text-red-500">*</span></label>
                         <select id="employment_status_id" name="employment_status_id" required
                                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
-                            <option value="">-- Pilih Status --</option>
+                            <option value="">-- Select Status --</option>
                             {% for status in employment_statuses %}
-                                <option value="{{ status.employment_status_id }}" {% if form_data.employment_status_id == status.employment_status_id %} selected {% endif %}>{{ status.employment_status_name }}</option>
+                                <option value="{{ status.employment_status_id }}" {% if form_data.employment_status_id | default(value='') == status.employment_status_id %} selected {% endif %}>{{ status.employment_status_name }}</option>
                             {% endfor %}
                         </select>
                     </div>
 
                     {# First Join Date #}
                     <div>
-                        <label for="first_join_date" class="block text-sm font-medium text-gray-700">Tanggal Gabung Pertama <span class="text-red-500">*</span></label>
+                        <label for="first_join_date" class="block text-sm font-medium text-gray-700">First Join Date <span class="text-red-500">*</span></label>
                         <input id="first_join_date" name="first_join_date" type="date" required
                             value="{{ form_data.first_join_date | default(value='') }}"
                             class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
@@ -372,7 +374,7 @@
 
                     {# Current Join Date #}
                     <div>
-                        <label for="join_date" class="block text-sm font-medium text-gray-700">Tanggal Gabung (Saat Ini) <span class="text-red-500">*</span></label>
+                        <label for="join_date" class="block text-sm font-medium text-gray-700">Current Join Date <span class="text-red-500">*</span></label>
                         <input id="join_date" name="join_date" type="date" required
                             value="{{ form_data.join_date | default(value='') }}"
                             class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
@@ -380,7 +382,7 @@
                     
                     {# End Date #}
                     <div>
-                        <label for="end_date" class="block text-sm font-medium text-gray-700">Tanggal Berakhir (Opsional)</label>
+                        <label for="end_date" class="block text-sm font-medium text-gray-700">End Date (Optional)</label>
                         <input id="end_date" name="end_date" type="date"
                             value="{{ form_data.end_date | default(value='') }}"
                             class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
@@ -388,36 +390,36 @@
 
                     {# Sign Date #}
                     <div>
-                        <label for="sign_date" class="block text-sm font-medium text-gray-700">Tanggal Tanda Tangan Kontrak (Opsional)</label>
+                        <label for="sign_date" class="block text-sm font-medium text-gray-700">Contract Sign Date (Optional)</label>
                         <input id="sign_date" name="sign_date" type="date"
                             value="{{ form_data.sign_date | default(value='') }}"
                             class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
                     </div>
                 </div>
 
-                <h3 class="text-lg font-semibold border-b pb-2 mb-4 text-indigo-600 mt-6">Absensi & Penugasan</h3>
+                <h3 class="text-lg font-semibold border-b pb-2 mb-4 text-indigo-600 mt-6">Attendance & Assignment</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     
                     {# Attendance Location #}
                     <div>
-                        <label for="employee_attendance_location_id" class="block text-sm font-medium text-gray-700">Lokasi Absensi Default</label>
+                        <label for="employee_attendance_location_id" class="block text-sm font-medium text-gray-700">Default Attendance Location</label>
                         <select id="employee_attendance_location_id" name="employee_attendance_location_id"
                                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
-                            <option value="">-- Pilih Lokasi Absensi --</option>
+                            <option value="">-- Select Location --</option>
                             {% for loc in attendance_locations %}
-                                <option value="{{ loc.attendance_location_id }}" {% if form_data.employee_attendance_location_id == loc.attendance_location_id %} selected {% endif %}>{{ loc.location_name }} ({{ loc.timezone_name }})</option>
+                                <option value="{{ loc.attendance_location_id }}" {% if form_data.employee_attendance_location_id | default(value='') == loc.attendance_location_id %} selected {% endif %}>{{ loc.location_name }} ({{ loc.timezone_name }})</option>
                             {% endfor %}
                         </select>
                     </div>
 
                     {# Overtime Setting #}
                     <div>
-                        <label for="overtime_setting_id" class="block text-sm font-medium text-gray-700">Pengaturan Lembur</label>
+                        <label for="overtime_setting_id" class="block text-sm font-medium text-gray-700">Overtime Setting</label>
                         <select id="overtime_setting_id" name="overtime_setting_id"
                                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
-                            <option value="">-- Pilih Pengaturan Lembur --</option>
+                            <option value="">-- Select Overtime Setting --</option>
                             {% for setting in overtime_settings %}
-                                <option value="{{ setting.overtime_setting_id }}" {% if form_data.overtime_setting_id == setting.overtime_setting_id %} selected {% endif %}>{{ setting.overtime_name }}</option>
+                                <option value="{{ setting.overtime_setting_id }}" {% if form_data.overtime_setting_id | default(value='') == setting.overtime_setting_id %} selected {% endif %}>{{ setting.overtime_name }}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -431,8 +433,8 @@
                                    class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
                         </div>
                         <div class="ml-3 text-sm">
-                            <label for="is_allowed_for_overtime" class="font-medium text-gray-700">Diizinkan untuk Lembur?</label>
-                            <p class="text-gray-500">Karyawan ini berhak dibayar untuk pekerjaan lembur.</p>
+                            <label for="is_allowed_for_overtime" class="font-medium text-gray-700">Allowed for Overtime?</label>
+                            <p class="text-gray-500">This employee is eligible for paid overtime work.</p>
                         </div>
                     </div>
                 </div>
@@ -440,36 +442,36 @@
             
             {# --- TAB 3: FINANCIAL & PAYROLL DATA --- #}
             <div id="tab-payroll" class="tab-content space-y-6 hidden">
-                <h3 class="text-lg font-semibold border-b pb-2 mb-4 text-indigo-600">Gaji & Tunjangan</h3>
+                <h3 class="text-lg font-semibold border-b pb-2 mb-4 text-indigo-600">Salary & Allowances</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
                     {# Grade #}
                     <div>
-                        <label for="grade_id" class="block text-sm font-medium text-gray-700">Grade Gaji</label>
+                        <label for="grade_id" class="block text-sm font-medium text-gray-700">Salary Grade</label>
                         <select id="grade_id" name="grade_id"
                                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
-                            <option value="">-- Pilih Grade Gaji --</option>
+                            <option value="">-- Select Salary Grade --</option>
                             {% for grade in grades %}
-                                <option value="{{ grade.grade_id }}" {% if form_data.grade_id == grade.grade_id %} selected {% endif %}>{{ grade.grade_code }} ({{ grade.grade_description }})</option>
+                                <option value="{{ grade.grade_id }}" {% if form_data.grade_id | default(value='') == grade.grade_id %} selected {% endif %}>{{ grade.grade_code }} ({{ grade.grade_description }})</option>
                             {% endfor %}
                         </select>
                     </div>
 
                     {# Ptkp Type #}
                     <div>
-                        <label for="ptkp_type_id" class="block text-sm font-medium text-gray-700">Tipe PTKP (Pajak Penghasilan)</label>
+                        <label for="ptkp_type_id" class="block text-sm font-medium text-gray-700">PTKP Type (Tax Allowance)</label>
                         <select id="ptkp_type_id" name="ptkp_type_id"
                                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
-                            <option value="">-- Pilih Tipe PTKP --</option>
+                            <option value="">-- Select PTKP Type --</option>
                             {% for ptkp in ptkp_types %}
-                                <option value="{{ ptkp.ptkp_type_id }}" {% if form_data.ptkp_type_id == ptkp.ptkp_type_id %} selected {% endif %}>{{ ptkp.ptkp_code }} - {{ ptkp.ptkp_amount | number_format(decimal_places=0, thousands_separator='.', decimal_separator=',') }}</option>
+                                <option value="{{ ptkp.ptkp_type_id }}" {% if form_data.ptkp_type_id | default(value='') == ptkp.ptkp_type_id %} selected {% endif %}>{{ ptkp.ptkp_code }} - {{ ptkp.ptkp_amount | number_format(decimal_places=0, thousands_separator='.', decimal_separator=',') }}</option>
                             {% endfor %}
                         </select>
                     </div>
                     
                     {# Gaji Pokok #}
                     <div>
-                        <label for="gaji_pokok" class="block text-sm font-medium text-gray-700">Gaji Pokok</label>
+                        <label for="gaji_pokok" class="block text-sm font-medium text-gray-700">Basic Salary</label>
                         <input id="gaji_pokok" name="gaji_pokok" type="number" step="0.01"
                             value="{{ form_data.gaji_pokok | default(value='') }}"
                             class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-right">
@@ -477,7 +479,7 @@
 
                     {# Tunjangan Jabatan #}
                     <div>
-                        <label for="tunjangan_jabatan" class="block text-sm font-medium text-gray-700">Tunjangan Jabatan</label>
+                        <label for="tunjangan_jabatan" class="block text-sm font-medium text-gray-700">Position Allowance</label>
                         <input id="tunjangan_jabatan" name="tunjangan_jabatan" type="number" step="0.01"
                             value="{{ form_data.tunjangan_jabatan | default(value='') }}"
                             class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-right">
@@ -485,7 +487,7 @@
                     
                     {# Uang Makan Per Hari #}
                     <div>
-                        <label for="uang_makan_per_hari" class="block text-sm font-medium text-gray-700">Uang Makan Per Hari</label>
+                        <label for="uang_makan_per_hari" class="block text-sm font-medium text-gray-700">Daily Meal Allowance</label>
                         <input id="uang_makan_per_hari" name="uang_makan_per_hari" type="number" step="0.01"
                             value="{{ form_data.uang_makan_per_hari | default(value='') }}"
                             class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-right">
@@ -493,7 +495,7 @@
 
                     {# Tunjangan Penugasan Penuh Waktu #}
                     <div>
-                        <label for="tunjangan_penugasan_penuh_waktu" class="block text-sm font-medium text-gray-700">Tunjangan Penugasan Penuh Waktu</label>
+                        <label for="tunjangan_penugasan_penuh_waktu" class="block text-sm font-medium text-gray-700">Full-Time Assignment Allowance</label>
                         <input id="tunjangan_penugasan_penuh_waktu" name="tunjangan_penugasan_penuh_waktu" type="number" step="0.01"
                             value="{{ form_data.tunjangan_penugasan_penuh_waktu | default(value='') }}"
                             class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-right">
@@ -501,7 +503,7 @@
 
                     {# Potongan Bahtera #}
                     <div>
-                        <label for="potongan_bahtera" class="block text-sm font-medium text-gray-700">Potongan Bahtera</label>
+                        <label for="potongan_bahtera" class="block text-sm font-medium text-gray-700">Bahtera Deduction</label>
                         <input id="potongan_bahtera" name="potongan_bahtera" type="number" step="0.01"
                             value="{{ form_data.potongan_bahtera | default(value='') }}"
                             class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-right">
@@ -516,30 +518,30 @@
                                    class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
                         </div>
                         <div class="ml-3 text-sm">
-                            <label for="has_right_cuti_tahunan" class="font-medium text-gray-700">Memiliki Hak Cuti Tahunan?</label>
-                            <p class="text-gray-500">Digunakan untuk perhitungan jatah cuti.</p>
+                            <label for="has_right_cuti_tahunan" class="font-medium text-gray-700">Has Annual Leave Rights?</label>
+                            <p class="text-gray-500">Used for calculating annual leave quotas.</p>
                         </div>
                     </div>
                 </div>
 
-                <h3 class="text-lg font-semibold border-b pb-2 mb-4 text-indigo-600 mt-6">Rekening Bank & BPJS</h3>
+                <h3 class="text-lg font-semibold border-b pb-2 mb-4 text-indigo-600 mt-6">Bank Account & BPJS</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     
                     {# Bank Account Type #}
                     <div>
-                        <label for="bank_account_type" class="block text-sm font-medium text-gray-700">Nama Bank</label>
+                        <label for="bank_account_type" class="block text-sm font-medium text-gray-700">Bank Name</label>
                         <select id="bank_account_type" name="bank_account_type"
                                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
-                            <option value="">-- Pilih Bank --</option>
+                            <option value="">-- Select Bank --</option>
                             {% for bank in bank_account_types %}
-                                <option value="{{ bank.item_id }}" {% if form_data.bank_account_type == bank.item_id %} selected {% endif %}>{{ bank.item_name }}</option>
+                                <option value="{{ bank.item_id }}" {% if form_data.bank_account_type | default(value='') == bank.item_id %} selected {% endif %}>{{ bank.item_name }}</option>
                             {% endfor %}
                         </select>
                     </div>
 
                     {# Bank Account Name #}
                     <div>
-                        <label for="bank_account_name" class="block text-sm font-medium text-gray-700">Nama Pemilik Rekening</label>
+                        <label for="bank_account_name" class="block text-sm font-medium text-gray-700">Account Holder Name</label>
                         <input id="bank_account_name" name="bank_account_name" type="text"
                             value="{{ form_data.bank_account_name | default(value='') }}"
                             class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
@@ -547,7 +549,7 @@
 
                     {# Bank Account Number #}
                     <div>
-                        <label for="bank_account_number" class="block text-sm font-medium text-gray-700">Nomor Rekening</label>
+                        <label for="bank_account_number" class="block text-sm font-medium text-gray-700">Account Number</label>
                         <input id="bank_account_number" name="bank_account_number" type="text"
                             value="{{ form_data.bank_account_number | default(value='') }}"
                             class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
@@ -555,7 +557,7 @@
 
                     {# BPJS Kesehatan #}
                     <div>
-                        <label for="bpjs_kesehatan" class="block text-sm font-medium text-gray-700">No. BPJS Kesehatan</label>
+                        <label for="bpjs_kesehatan" class="block text-sm font-medium text-gray-700">BPJS Kesehatan No.</label>
                         <input id="bpjs_kesehatan" name="bpjs_kesehatan" type="text"
                             value="{{ form_data.bpjs_kesehatan | default(value='') }}"
                             class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
@@ -563,7 +565,7 @@
 
                     {# BPJS Kesehatan Date #}
                     <div>
-                        <label for="bpjs_kesehatan_date" class="block text-sm font-medium text-gray-700">Tgl. Daftar BPJS Kesehatan</label>
+                        <label for="bpjs_kesehatan_date" class="block text-sm font-medium text-gray-700">BPJS Kesehatan Registration Date</label>
                         <input id="bpjs_kesehatan_date" name="bpjs_kesehatan_date" type="date"
                             value="{{ form_data.bpjs_kesehatan_date | default(value='') }}"
                             class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
@@ -571,7 +573,7 @@
 
                     {# BPJS Ketenagakerjaan #}
                     <div>
-                        <label for="bpjs_ketenagakerjaan" class="block text-sm font-medium text-gray-700">No. BPJS Ketenagakerjaan</label>
+                        <label for="bpjs_ketenagakerjaan" class="block text-sm font-medium text-gray-700">BPJS Ketenagakerjaan No.</label>
                         <input id="bpjs_ketenagakerjaan" name="bpjs_ketenagakerjaan" type="text"
                             value="{{ form_data.bpjs_ketenagakerjaan | default(value='') }}"
                             class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
@@ -579,7 +581,7 @@
 
                     {# BPJS Ketenagakerjaan Date #}
                     <div>
-                        <label for="bpjs_ketenagakerjaan_date" class="block text-sm font-medium text-gray-700">Tgl. Daftar BPJS Ketenagakerjaan</label>
+                        <label for="bpjs_ketenagakerjaan_date" class="block text-sm font-medium text-gray-700">BPJS Ketenagakerjaan Registration Date</label>
                         <input id="bpjs_ketenagakerjaan_date" name="bpjs_ketenagakerjaan_date" type="date"
                             value="{{ form_data.bpjs_ketenagakerjaan_date | default(value='') }}"
                             class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
@@ -587,7 +589,7 @@
 
                     {# Additional BPJS KS Dependents Count #}
                     <div>
-                        <label for="additional_bpjs_ks_dependents_count" class="block text-sm font-medium text-gray-700">Jml Tanggungan BPJS KS Tambahan</label>
+                        <label for="additional_bpjs_ks_dependents_count" class="block text-sm font-medium text-gray-700">Additional BPJS KS Dependents Count</label>
                         <input id="additional_bpjs_ks_dependents_count" name="additional_bpjs_ks_dependents_count" type="number" value="{{ form_data.additional_bpjs_ks_dependents_count | default(value=0) }}" min="0"
                             class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
                     </div>
@@ -597,18 +599,18 @@
             {# --- FORM ACTIONS (GLOBAL) --- #}
             <div class="flex justify-between space-x-4 pt-4 border-t mt-6">
                 <button type="button" id="prev-step" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition duration-150 hidden">
-                    <i class="fas fa-arrow-left mr-1"></i> Sebelumnya
+                    <i class="fas fa-arrow-left mr-1"></i> Previous
                 </button>
                 <div class="flex space-x-4 ml-auto">
                     <a href="/employees/list"
                         class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition duration-150">
-                        Batal
+                        Cancel
                     </a>
                     <button type="button" id="next-step" class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150">
-                        Selanjutnya <i class="fas fa-arrow-right ml-1"></i>
+                        Next <i class="fas fa-arrow-right ml-1"></i>
                     </button>
                     <button type="submit" id="save-button" class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150 hidden">
-                        Simpan Data Karyawan
+                        Save Employee Data
                     </button>
                 </div>
             </div>
@@ -735,7 +737,6 @@
         window.clearSelection = function(id) {
             const inp = document.getElementById(id + '_search_display');
             const hid = document.getElementById(id);
-            // For Employee Add form, there is no initial display indicator
             
             inp.value = ''; 
             hid.value = '';
@@ -772,45 +773,49 @@
                 fetchResults(inputDisplay.value.trim(), true);
             }
         }
-
-        resultsContainer.addEventListener('scroll', handleScroll);
-
-
-        inputDisplay.addEventListener('input', function() {
-            clearTimeout(debounceTimer);
-            const query = inputDisplay.value.trim();
-
-            hiddenInput.value = '';
-            
-            if (query.length < 2) {
-                resultsContainer.classList.add('hidden');
-                hideLoading();
-                return;
-            }
-
-            currentPage = 0;
-            hasMore = true;
-
-            debounceTimer = setTimeout(() => {
-                fetchResults(query, false);
-            }, 300);
-        });
         
-        resultsContainer.addEventListener('click', function(e) {
-            const resultItem = e.target.closest('.search-result-item');
-            if (resultItem) {
-                const selectedId = resultItem.dataset.id;
-                
-                const postalCodeText = resultItem.querySelector('.postal-code').textContent.trim();
-                const cityDistrictText = resultItem.querySelector('.city-district').textContent.trim();
-                const selectedText = `${postalCodeText} ${cityDistrictText}`;
+        if (resultsContainer) {
+             resultsContainer.addEventListener('scroll', handleScroll);
+             resultsContainer.addEventListener('click', function(e) {
+                const resultItem = e.target.closest('.search-result-item');
+                if (resultItem) {
+                    const selectedId = resultItem.dataset.id;
+                    
+                    const postalCodeText = resultItem.querySelector('.postal-code').textContent.trim();
+                    const cityDistrictText = resultItem.querySelector('.city-district').textContent.trim();
+                    const selectedText = `${postalCodeText} ${cityDistrictText}`;
 
-                inputDisplay.value = selectedText;
-                hiddenInput.value = selectedId;
-                resultsContainer.classList.add('hidden');
-                hideLoading();
-            }
-        });
+                    inputDisplay.value = selectedText;
+                    hiddenInput.value = selectedId;
+                    resultsContainer.classList.add('hidden');
+                    hideLoading();
+                }
+            });
+        }
+        
+
+        if (inputDisplay) {
+            inputDisplay.addEventListener('input', function() {
+                clearTimeout(debounceTimer);
+                const query = inputDisplay.value.trim();
+
+                hiddenInput.value = '';
+                
+                if (query.length < 2) {
+                    resultsContainer.classList.add('hidden');
+                    hideLoading();
+                    return;
+                }
+
+                currentPage = 0;
+                hasMore = true;
+
+                debounceTimer = setTimeout(() => {
+                    fetchResults(query, false);
+                }, 300);
+            });
+        }
+        
         
         document.addEventListener('click', function(e) {
             const container = document.getElementById(fieldId + '-container');

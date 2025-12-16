@@ -345,7 +345,6 @@
         syncRangeDisplay('clock_in_dispensation', 'disp-in-value');
         syncRangeDisplay('clock_out_dispensation', 'disp-out-value');
 
-        // Toggle control for sliders
         function controlRangeState(checkboxId, sliderIds) {
             const checkbox = document.getElementById(checkboxId);
             const sliders = sliderIds.map(id => document.getElementById(id));
@@ -371,7 +370,7 @@
 
             if (checkbox) {
                 checkbox.addEventListener('change', toggle);
-                toggle(); // initial state
+                toggle();
             }
         }
 

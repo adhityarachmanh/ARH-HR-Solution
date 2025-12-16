@@ -31,7 +31,6 @@ pub async fn count_attendance_locations(pool: &PgPool) -> Result<i64, AppError> 
     Ok(count)
 }
 
-// FUNGSI BARU: Mendapatkan semua lokasi absensi tanpa pagination
 pub async fn get_all_locations(
     pool: &PgPool,
 ) -> Result<Vec<AttendanceLocationDetail>, AppError> {

@@ -53,6 +53,17 @@ pub async fn count_employees(pool: &PgPool) -> Result<i64, AppError> {
     Ok(count)
 }
 
+pub async fn get_all_employees(pool: &PgPool) -> Result<Vec<Employee>, AppError> {
+    let rows = sqlx::query_as::<_, Employee>(&format!(
+        r#"SELECT {SELECT_FIELDS} FROM "Employees" ORDER BY "EmployeeNumber" ASC"#
+    ))
+    .fetch_all(pool)
+    .await
+    .map_err(AppError::DatabaseError)?;
+    Ok(rows)
+}
+
+
 pub async fn get_all_employees_paginated(pool: &PgPool, limit: i64, offset: i64) -> Result<Vec<Employee>, AppError> {
     let rows = sqlx::query_as::<_, Employee>(&format!(
         r#"SELECT {SELECT_FIELDS} FROM "Employees" ORDER BY "EmployeeNumber" ASC LIMIT $1 OFFSET $2"#

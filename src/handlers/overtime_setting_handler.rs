@@ -49,7 +49,7 @@ pub async fn list_overtime_settings(
     context.insert("limit", &limit);
     
     context.insert("title", "Master Overtime Settings");
-    context.insert("header_title", "Overtime Settings List"); // Translated
+    context.insert("header_title", "Overtime Settings List"); 
     
     let rendered = tera
         .render("overtime_settings/list.html", &context)
@@ -74,7 +74,7 @@ pub async fn show_add_overtime_setting_form(
     
     context.insert("username", &username);
     context.insert("title", "Add Overtime Setting");
-    context.insert("header_title", "Add New Overtime Setting"); // Translated
+    context.insert("header_title", "Add New Overtime Setting"); 
 
     let rendered = tera
         .render("overtime_settings/add.html", &context)
@@ -95,7 +95,6 @@ pub async fn add_overtime_setting_action(
             .finish());
     }
 
-    // No easy duplication check available since no unique code column exists in the schema
 
     overtime_setting_service::create_overtime_setting(pool.get_ref(), &form).await?;
 
@@ -124,7 +123,7 @@ pub async fn show_edit_overtime_setting_form(
     context.insert("setting", &setting);
     context.insert("username", &username);
     context.insert("title", &format!("Edit Overtime Setting: {}", setting.overtime_name.as_deref().unwrap_or("N/A")));
-    context.insert("header_title", "Edit Overtime Setting"); // Translated
+    context.insert("header_title", "Edit Overtime Setting"); 
 
     let rendered = tera
         .render("overtime_settings/edit.html", &context)
@@ -148,7 +147,6 @@ pub async fn edit_overtime_setting_action(
 
     let id = get_overtime_setting_id_from_path(path).await?;
     
-    // No duplication check
 
     overtime_setting_service::update_overtime_setting(pool.get_ref(), id, &form).await?;
 

@@ -91,6 +91,8 @@ pub struct EmployeeFormData {
     pub employee_number_barcode: Option<String>,
     pub first_name: String,
     pub last_name: String,
+    pub username: String,
+    pub password: Option<String>,
     pub email: Option<String>,
     pub gender: Option<String>, 
     pub birth_place: Option<String>,
