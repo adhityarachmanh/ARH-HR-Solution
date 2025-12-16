@@ -306,7 +306,7 @@ pub fn configure_routes(cfg: &mut web::ServiceConfig) {
             //     web::post().to(employee_handler::add_employee_action),
             // ),
             // -----------------------------------------------------------
-            // Rute Employment Status Master Data (BARU)
+            // Rute Employment Status Master Data
             // -----------------------------------------------------------
             .route(
                 "/employmentstatuses/list",
@@ -490,7 +490,7 @@ pub fn configure_routes(cfg: &mut web::ServiceConfig) {
                 web::post().to(shift_handler::delete_shift_action),
             )
             // -----------------------------------------------------------
-            // Rute Standard References Master Data (BARU)
+            // Rute Standard References Master Data
             // -----------------------------------------------------------
             .route(
                 "/standard_references/list",
