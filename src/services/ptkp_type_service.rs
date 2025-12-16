@@ -57,6 +57,17 @@ pub async fn get_all_ptkp_types_paginated(pool: &PgPool, limit: i64, offset: i64
     Ok(rows)
 }
 
+pub async fn get_all_ptkp_types(pool: &PgPool) -> Result<Vec<PtkpType>, AppError> {
+    let rows = sqlx::query_as::<_, PtkpType>(&format!(
+        r#"SELECT {SELECT_FIELDS} FROM "PtkpTypes" ORDER BY "PtkpCode" ASC"#
+    ))
+    .fetch_all(pool)
+    .await
+    .map_err(AppError::DatabaseError)?;
+
+    Ok(rows)
+}
+
 pub async fn get_ptkp_type_by_id(pool: &PgPool, id: i32) -> Result<PtkpType, AppError> {
     let row = sqlx::query_as::<_, PtkpType>(&format!(
         r#"SELECT {SELECT_FIELDS} FROM "PtkpTypes" WHERE "PtkpTypeId" = $1"#

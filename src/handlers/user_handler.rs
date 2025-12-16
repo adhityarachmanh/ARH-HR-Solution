@@ -1,12 +1,27 @@
 use crate::errors::AppError;
-use crate::handlers::permission_handler::get_username;
-use crate::models::{AddUserFormData, EditUserFormData, PaginationParams};
+use crate::models::{AddUserFormData, EditUserFormData, PaginationParams, User};
 use crate::services::{role_service, user_service};
 
 use actix_session::Session;
 use actix_web::{web, HttpResponse};
 use sqlx::PgPool;
 use tera::Tera;
+
+pub async fn get_username(pool: &PgPool, session: &Session) -> String {
+    if let Some(user_id) = session.get::<i64>("user_id").unwrap_or(None) {
+        let query_result = sqlx::query_as!(
+            User,
+            "SELECT id, username, email, password_hash, created_at, is_active, last_login FROM users WHERE id = $1",
+            user_id
+        )
+        .fetch_optional(pool).await;
+
+        if let Ok(Some(user)) = query_result {
+            return user.username;
+        }
+    }
+    "Guest".to_string()
+}
 
 pub async fn list_users(
     pool: web::Data<PgPool>,

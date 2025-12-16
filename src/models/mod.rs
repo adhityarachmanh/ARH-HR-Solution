@@ -1,8 +1,8 @@
 pub mod attendance_location;
 pub mod branch;
-pub mod company;
-// pub mod employee;
 pub mod class;
+pub mod company;
+pub mod employee;
 pub mod employment_status;
 pub mod grades;
 pub mod holiday;
@@ -25,9 +25,9 @@ pub use attendance_location::{
     AttendanceLocation, AttendanceLocationDetail, AttendanceLocationFormData,
 };
 pub use branch::{Branch, BranchDetail, BranchFormData};
-pub use company::{Company, CompanyFormData};
-// pub use employee::Employee;
 pub use class::{Class, ClassFormData};
+pub use company::{Company, CompanyFormData};
+pub use employee::{Employee, EmployeeFormData};
 pub use employment_status::{EmploymentStatus, EmploymentStatusFormData};
 pub use grades::{Grade, GradeFormData};
 pub use holiday::{ApiHoliday, Holiday, HolidayFormData};

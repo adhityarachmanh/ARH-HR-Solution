@@ -5,7 +5,7 @@ use tera::Tera;
 use time::OffsetDateTime;
 
 use crate::errors::AppError;
-use crate::handlers::permission_handler::get_username;
+use crate::handlers::user_handler::get_username;
 use crate::models::{Holiday, HolidayFormData, PaginationParams};
 use crate::services::holiday_service;
 

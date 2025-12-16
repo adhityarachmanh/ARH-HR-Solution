@@ -62,6 +62,17 @@ pub async fn get_all_grades_paginated(
     Ok(rows)
 }
 
+pub async fn get_all_grades(pool: &PgPool) -> Result<Vec<Grade>, AppError> {
+    let rows = sqlx::query_as::<_, Grade>(&format!(
+        r#"SELECT {SELECT_FIELDS} FROM "Grades" ORDER BY "GradeCode" ASC"#
+    ))
+    .fetch_all(pool)
+    .await
+    .map_err(AppError::DatabaseError)?;
+
+    Ok(rows)
+}
+
 pub async fn get_grade_by_id(pool: &PgPool, id: i32) -> Result<Grade, AppError> {
     let row = sqlx::query_as::<_, Grade>(&format!(
         r#"SELECT {SELECT_FIELDS} FROM "Grades" WHERE "GradeId" = $1"#

@@ -31,6 +31,36 @@ pub async fn count_attendance_locations(pool: &PgPool) -> Result<i64, AppError> 
     Ok(count)
 }
 
+// FUNGSI BARU: Mendapatkan semua lokasi absensi tanpa pagination
+pub async fn get_all_locations(
+    pool: &PgPool,
+) -> Result<Vec<AttendanceLocationDetail>, AppError> {
+    let sql_query = format!(
+        "{} ORDER BY T1.\"LocationName\" ASC",
+        SELECT_BASE_DETAIL_QUERY
+    );
+
+    let locations = sqlx::query(sql_query.as_str())
+        .map(|row: sqlx::postgres::PgRow| AttendanceLocationDetail {
+            attendance_location_id: row.get("attendance_location_id"),
+            time_zone_id: row.get("time_zone_id"),
+            location_name: row.get("location_name"),
+            is_flexible: row.get("is_flexible"),
+            latitude: row.get("latitude"),
+            longitude: row.get("longitude"),
+            radius_tolerance_in_meter: row.get("radius_tolerance_in_meter"),
+            timezone_name: row.get("timezone_name"),
+            created_date: row.get("created_date"),
+            updated_date: row.get("updated_date"),
+        })
+        .fetch_all(pool)
+        .await
+        .map_err(AppError::DatabaseError)?;
+
+    Ok(locations)
+}
+
+
 pub async fn get_all_locations_paginated(
     pool: &PgPool,
     limit: i64,

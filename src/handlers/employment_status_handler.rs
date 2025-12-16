@@ -6,7 +6,7 @@ use sqlx::PgPool;
 use tera::Tera;
 
 use crate::errors::AppError;
-use crate::handlers::permission_handler::get_username;
+use crate::handlers::user_handler::get_username;
 use crate::models::{EmploymentStatusFormData, PaginationParams};
 use crate::services::employment_status_service;
 

@@ -7,7 +7,7 @@ use std::str::FromStr;
 use tera::Tera;
 
 use crate::errors::AppError;
-use crate::handlers::permission_handler::get_username;
+use crate::handlers::user_handler::get_username;
 use crate::models::{PaginationParams, ZipCode, ZipCodeFormData};
 use crate::services::zip_code_service;
 

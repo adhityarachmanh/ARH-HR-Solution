@@ -7,7 +7,7 @@ use std::str::FromStr;
 use tera::Tera;
 
 use crate::errors::AppError;
-use crate::handlers::permission_handler::get_username;
+use crate::handlers::user_handler::get_username;
 use crate::models::{AttendanceLocation, AttendanceLocationFormData, PaginationParams};
 use crate::services::{attendance_location_service, timezone_service};
 

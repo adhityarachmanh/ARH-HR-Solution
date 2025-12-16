@@ -1,6 +1,6 @@
 use crate::handlers::{
     attendance_location_handler, auth_handler, branch_handler, class_handler, company_handler,
-    dashboard_handler, employment_status_handler, grade_handler, holiday_handler,
+    dashboard_handler, employee_handler, employment_status_handler, grade_handler, holiday_handler,
     job_level_handler, job_position_handler, organization_handler, overtime_setting_handler,
     permission_handler, ptkp_type_handler, role_handler, shift_handler, standard_reference_handler,
     timezone_handler, user_handler, zip_code_handler,
@@ -535,6 +535,33 @@ pub fn configure_routes(cfg: &mut web::ServiceConfig) {
             .route(
                 "/standard_references/items/delete/{sr_id}/{item_id}",
                 web::post().to(standard_reference_handler::delete_item_action),
+            )
+            // -----------------------------------------------------------
+            // Rute Employees Data
+            // -----------------------------------------------------------
+            .route(
+                "/employees/list",
+                web::get().to(employee_handler::list_employees),
+            )
+            .route(
+                "/employees/add",
+                web::get().to(employee_handler::show_add_employee_form),
+            )
+            .route(
+                "/employees/add",
+                web::post().to(employee_handler::add_employee_action),
+            )
+            .route(
+                "/employees/edit/{id}",
+                web::get().to(employee_handler::show_edit_employee_form),
+            )
+            .route(
+                "/employees/edit/{id}",
+                web::post().to(employee_handler::edit_employee_action),
+            )
+            .route(
+                "/employees/delete/{id}",
+                web::post().to(employee_handler::delete_employee_action),
             ),
     );
 }

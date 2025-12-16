@@ -5,7 +5,7 @@ use sqlx::PgPool;
 use tera::Tera;
 
 use crate::errors::AppError;
-use crate::handlers::permission_handler::get_username;
+use crate::handlers::user_handler::get_username;
 use crate::models::{BranchFormData, PaginationParams};
 use crate::services::{branch_service, company_service, timezone_service};
 

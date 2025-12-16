@@ -19,4 +19,4 @@ pub mod ptkp_type_handler;
 pub mod overtime_setting_handler;
 pub mod shift_handler;
 pub mod standard_reference_handler;
-// pub mod employee_handler;
+pub mod employee_handler;

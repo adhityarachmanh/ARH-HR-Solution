@@ -55,6 +55,17 @@ pub async fn get_all_overtime_settings_paginated(pool: &PgPool, limit: i64, offs
     Ok(rows)
 }
 
+pub async fn get_all_overtime_settings(pool: &PgPool) -> Result<Vec<OvertimeSetting>, AppError> {
+    let rows = sqlx::query_as::<_, OvertimeSetting>(&format!(
+        r#"SELECT {SELECT_FIELDS} FROM "OvertimeSettings" ORDER BY "OvertimeName" ASC"#
+    ))
+    .fetch_all(pool)
+    .await
+    .map_err(AppError::DatabaseError)?;
+
+    Ok(rows)
+}
+
 pub async fn get_overtime_setting_by_id(pool: &PgPool, id: i32) -> Result<OvertimeSetting, AppError> {
     let row = sqlx::query_as::<_, OvertimeSetting>(&format!(
         r#"SELECT {SELECT_FIELDS} FROM "OvertimeSettings" WHERE "OvertimeSettingId" = $1"#

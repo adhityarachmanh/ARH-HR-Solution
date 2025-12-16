@@ -4,7 +4,7 @@ use sqlx::PgPool;
 use tera::Tera;
 
 use crate::errors::AppError;
-use crate::handlers::permission_handler::get_username;
+use crate::handlers::user_handler::get_username;
 use crate::models::{AddRoleFormData, PaginationParams};
 use crate::services::role_service;
 

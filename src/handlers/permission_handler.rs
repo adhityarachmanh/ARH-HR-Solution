@@ -4,24 +4,9 @@ use sqlx::PgPool;
 use tera::Tera;
 
 use crate::errors::AppError;
+use crate::handlers::user_handler::get_username;
 use crate::models::{HardcodedPermission, ManagePermissionFormData, Role, User};
 use crate::services::{permission_service, role_service};
-
-pub async fn get_username(pool: &PgPool, session: &Session) -> String {
-    if let Some(user_id) = session.get::<i64>("user_id").unwrap_or(None) {
-        let query_result = sqlx::query_as!(
-            User,
-            "SELECT id, username, email, password_hash, created_at, is_active, last_login FROM users WHERE id = $1",
-            user_id
-        )
-        .fetch_optional(pool).await;
-
-        if let Ok(Some(user)) = query_result {
-            return user.username;
-        }
-    }
-    "Guest".to_string()
-}
 
 pub async fn list_master_permissions(
     pool: web::Data<PgPool>,
