@@ -2,8 +2,8 @@ use crate::handlers::{
     attendance_location_handler, auth_handler, branch_handler, class_handler, company_handler,
     dashboard_handler, employment_status_handler, grade_handler, holiday_handler,
     job_level_handler, job_position_handler, organization_handler, overtime_setting_handler,
-    permission_handler, ptkp_type_handler, role_handler, shift_handler, timezone_handler,
-    user_handler, zip_code_handler,standard_reference_handler
+    permission_handler, ptkp_type_handler, role_handler, shift_handler, standard_reference_handler,
+    timezone_handler, user_handler, zip_code_handler,
 };
 use actix_web::web;
 
@@ -490,7 +490,7 @@ pub fn configure_routes(cfg: &mut web::ServiceConfig) {
                 web::post().to(shift_handler::delete_shift_action),
             )
             // -----------------------------------------------------------
-            // Rute Standard References Master Data
+            // Rute Standard References Master Data (BARU)
             // -----------------------------------------------------------
             .route(
                 "/standard_references/list",
@@ -503,6 +503,14 @@ pub fn configure_routes(cfg: &mut web::ServiceConfig) {
             .route(
                 "/standard_references/add",
                 web::post().to(standard_reference_handler::create_reference_action),
+            )
+            .route(
+                "/standard_references/edit/{sr_id}",
+                web::get().to(standard_reference_handler::show_edit_reference_form),
+            )
+            .route(
+                "/standard_references/edit/{sr_id}",
+                web::post().to(standard_reference_handler::edit_reference_action),
             )
             .route(
                 "/standard_references/items/{sr_id}",

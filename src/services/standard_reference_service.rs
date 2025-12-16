@@ -100,6 +100,37 @@ pub async fn create_reference(
     Ok(row)
 }
 
+pub async fn update_reference(
+    pool: &PgPool,
+    id: &str,
+    data: &StandardReferenceFormData,
+    updated_by: &str,
+) -> Result<StandardReference, AppError> {
+    let row = sqlx::query_as::<_, StandardReference>(&format!(
+        r#"
+        UPDATE "StandardReferences"
+        SET "StandardReferenceName" = $2, "IsActive" = $3, "UpdatedDate" = NOW(), "UpdatedBy" = $4
+        WHERE "StandardReferenceId" = $1
+        RETURNING {SR_FIELDS}
+        "#
+    ))
+    .bind(id)
+    .bind(&data.standard_reference_name)
+    .bind(data.is_active)
+    .bind(updated_by)
+    .fetch_optional(pool)
+    .await
+    .map_err(AppError::DatabaseError)?;
+    
+    let row = row.ok_or(AppError::NotFound(format!(
+        "Reference ID {} not found for update.",
+        id
+    )))?;
+    info!("Standard Reference '{}' updated by {}", row.standard_reference_id, updated_by);
+    Ok(row)
+}
+
+
 pub async fn count_items_by_reference(pool: &PgPool, sr_id: &str) -> Result<i64, AppError> {
     let count = sqlx::query_scalar!(
         r#"SELECT COUNT("ItemId") FROM "StandardReferenceItems" WHERE "StandardReferenceId" = $1"#,

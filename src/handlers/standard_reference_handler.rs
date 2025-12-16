@@ -120,6 +120,58 @@ pub async fn create_reference_action(
         .finish())
 }
 
+pub async fn show_edit_reference_form(
+    pool: web::Data<PgPool>,
+    tera: web::Data<Tera>,
+    session: Session,
+    path: web::Path<String>,
+) -> Result<HttpResponse, AppError> {
+    if session.get::<i64>("user_id").unwrap_or(None).is_none() {
+        return Ok(HttpResponse::Found()
+            .append_header(("Location", "/login"))
+            .finish());
+    }
+
+    let sr_id = path.into_inner();
+    let reference = standard_reference_service::get_reference_by_id(pool.get_ref(), &sr_id).await?;
+    let username = get_username(pool.get_ref(), &session).await;
+    let mut context = tera::Context::new();
+
+    context.insert("reference", &reference);
+    context.insert("username", &username);
+    context.insert("title", &format!("Edit Master: {}", reference.standard_reference_name));
+    context.insert("header_title", &format!("Edit Master Reference: {}", reference.standard_reference_id));
+
+    let rendered = tera
+        .render("standard_references/edit.html", &context)
+        .map_err(AppError::TeraError)?;
+    Ok(HttpResponse::Ok().body(rendered))
+}
+
+pub async fn edit_reference_action(
+    pool: web::Data<PgPool>,
+    tera: web::Data<Tera>,
+    path: web::Path<String>,
+    form: web::Form<StandardReferenceFormData>,
+    session: Session,
+) -> Result<HttpResponse, AppError> {
+    if session.get::<i64>("user_id").unwrap_or(None).is_none() {
+        return Ok(HttpResponse::Found()
+            .append_header(("Location", "/login"))
+            .finish());
+    }
+    let sr_id = path.into_inner();
+    let updated_by = get_username(pool.get_ref(), &session).await;
+
+    
+    standard_reference_service::update_reference(pool.get_ref(), &sr_id, &form, &updated_by).await?;
+
+    Ok(HttpResponse::Found()
+        .append_header(("Location", "/standard_references/list"))
+        .finish())
+}
+
+
 pub async fn list_items_by_reference(
     pool: web::Data<PgPool>,
     tera: web::Data<Tera>,
