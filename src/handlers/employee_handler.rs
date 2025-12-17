@@ -13,6 +13,13 @@ use crate::services::{
     organization_service, overtime_setting_service, ptkp_type_service, standard_reference_service,
 };
 
+#[derive(Deserialize)]
+pub struct SearchQuery {
+    pub q: String,
+    pub limit: Option<i64>,
+    pub offset: Option<i64>,
+}
+
 async fn get_employee_id_from_path(path: web::Path<i32>) -> Result<i32, AppError> {
     let id = path.into_inner();
     if id <= 0 {
@@ -61,11 +68,6 @@ async fn fetch_master_data(pool: &PgPool) -> Result<tera::Context, AppError> {
     context.insert("classes", &class_service::get_all_classes(pool).await?);
 
     context.insert(
-        "managers",
-        &employee_service::get_all_employees(pool).await?,
-    );
-
-    context.insert(
         "blood_types",
         &standard_reference_service::get_items_by_reference_id(pool, "BloodType").await?,
     );
@@ -91,6 +93,19 @@ async fn fetch_master_data(pool: &PgPool) -> Result<tera::Context, AppError> {
     );
 
     Ok(context)
+}
+
+pub async fn search_employees_json(
+    pool: web::Data<PgPool>,
+    query: web::Query<SearchQuery>,
+) -> Result<HttpResponse, AppError> {
+    let q = &query.q;
+    let limit = query.limit.unwrap_or(30);
+    let offset = query.offset.unwrap_or(0);
+
+    let results = employee_service::search_employees(pool.get_ref(), q, limit, offset).await?;
+
+    Ok(HttpResponse::Ok().json(results))
 }
 
 pub async fn list_employees(
@@ -210,6 +225,31 @@ pub async fn show_edit_employee_form(
         &format!("Edit Employee: {}", employee.employee_number),
     );
     context.insert("header_title", "Edit Data Karyawan");
+
+    let mut initial_manager_display: Option<String> = None;
+
+    if let Some(manager_id) = employee.manager_id {
+        match employee_service::get_employee_by_id(pool.get_ref(), manager_id).await {
+            Ok(manager) => {
+                let name = format!(
+                    "{} {}",
+                    manager.first_name.as_deref().unwrap_or(""),
+                    manager.last_name.as_deref().unwrap_or("")
+                );
+                let number = manager.employee_number;
+                initial_manager_display = Some(format!("{} ({})", name.trim(), number));
+            }
+            Err(e) => {
+                tracing::error!(
+                    "Failed to fetch manager details for ID {}: {:?}",
+                    manager_id,
+                    e
+                );
+            }
+        }
+    }
+    context.insert("initial_manager_id", &employee.manager_id.unwrap_or(0));
+    context.insert("initial_manager_display", &initial_manager_display);
 
     let rendered = tera
         .render("employees/edit.html", &context)

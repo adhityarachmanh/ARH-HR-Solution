@@ -1,8 +1,9 @@
 use crate::errors::AppError;
 use crate::models::{Employee, EmployeeFormData};
-use sqlx::{PgPool, Postgres, query};
+use sqlx::{PgPool, Postgres, query, Row};
 use tracing::info;
 use time::{Date, OffsetDateTime, PrimitiveDateTime, Time};
+use bcrypt;
 
 const SELECT_FIELDS: &str = r#"
     "EmployeeId" as employee_id, "BranchId" as branch_id, "OrganizationId" as organization_id, 
@@ -44,6 +45,56 @@ fn parse_date_from_string(date_str: Option<&String>) -> Result<Option<OffsetDate
     }
 }
 
+async fn create_user_and_get_id(pool: &PgPool, email: &str, username: &str, password: &str, is_active: bool) -> Result<i64, AppError> {
+    
+    let hashed_password = bcrypt::hash(password, bcrypt::DEFAULT_COST)
+        .map_err(|e| AppError::InternalError(format!("Failed to hash password: {}", e)))?;
+    
+    let username_exists = sqlx::query_scalar!(
+        "SELECT EXISTS(SELECT 1 FROM users WHERE username = $1)",
+        username
+    )
+    .fetch_one(pool)
+    .await
+    .map_err(AppError::DatabaseError)?;
+
+    if username_exists.unwrap_or(false) {
+        return Err(AppError::InternalError(format!("Username '{}' already exists.", username)));
+    }
+    
+    let email_exists = sqlx::query_scalar!(
+        "SELECT EXISTS(SELECT 1 FROM users WHERE email = $1)",
+        email
+    )
+    .fetch_one(pool)
+    .await
+    .map_err(AppError::DatabaseError)?;
+
+    if email_exists.unwrap_or(false) {
+        return Err(AppError::InternalError(format!("Email '{}' already exists.", email)));
+    }
+    
+    let user_id = sqlx::query_scalar!(
+        r#"
+        INSERT INTO users (username, email, password_hash, is_active)
+        VALUES ($1, $2, $3, $4)
+        RETURNING id
+        "#,
+        username,
+        email,
+        hashed_password,
+        is_active
+    )
+    .fetch_one(pool)
+    .await
+    .map_err(|e| {
+        AppError::DatabaseError(e)
+    })?;
+    
+    info!("User '{}' created with ID: {}", username, user_id);
+    Ok(user_id as i64)
+}
+
 pub async fn count_employees(pool: &PgPool) -> Result<i64, AppError> {
     let count = sqlx::query_scalar!(r#"SELECT COUNT("EmployeeId") FROM "Employees""#)
         .fetch_one(pool)
@@ -60,6 +111,30 @@ pub async fn get_all_employees(pool: &PgPool) -> Result<Vec<Employee>, AppError>
     .fetch_all(pool)
     .await
     .map_err(AppError::DatabaseError)?;
+    Ok(rows)
+}
+
+pub async fn search_employees(pool: &PgPool, query: &str, limit: i64, offset: i64) -> Result<Vec<Employee>, AppError> {
+    let q = format!("%{}%", query.to_lowercase());
+    
+    let rows = sqlx::query_as::<_, Employee>(&format!(
+        r#"
+        SELECT {SELECT_FIELDS}
+        FROM "Employees"
+        WHERE LOWER("FirstName") LIKE $1 
+           OR LOWER("LastName") LIKE $1 
+           OR LOWER("EmployeeNumber") LIKE $1
+        ORDER BY "FirstName" ASC
+        LIMIT $2 OFFSET $3
+        "#
+    ))
+    .bind(&q)
+    .bind(limit)
+    .bind(offset)
+    .fetch_all(pool)
+    .await
+    .map_err(AppError::DatabaseError)?;
+
     Ok(rows)
 }
 
@@ -90,12 +165,19 @@ pub async fn get_employee_by_id(pool: &PgPool, id: i32) -> Result<Employee, AppE
 
 pub async fn create_employee(pool: &PgPool, data: &EmployeeFormData, created_by: &str) -> Result<Employee, AppError> {
     let job_title = data.job_position_id.to_string();
-
+    
+    let user_id: Option<i64> = match create_user_and_get_id(pool, &data.email, &data.username, &data.password, data.is_active).await {
+        Ok(id) => Some(id),
+        Err(e) => {
+            return Err(e);
+        }
+    };
+    
     let first_join_date = parse_date_from_string(Some(&data.first_join_date))?;
     let join_date = parse_date_from_string(Some(&data.join_date))?;
     let end_date = parse_date_from_string(data.end_date.as_ref())?;
     let sign_date = parse_date_from_string(data.sign_date.as_ref())?;
-    let birth_date = parse_date_from_string(data.birth_date.as_ref())?;
+    let birth_date = parse_date_from_string(Some(&data.birth_date))?;
     let bpjs_kesehatan_date = parse_date_from_string(data.bpjs_kesehatan_date.as_ref())?;
     let bpjs_ketenagakerjaan_date = parse_date_from_string(data.bpjs_ketenagakerjaan_date.as_ref())?;
     
@@ -114,66 +196,69 @@ pub async fn create_employee(pool: &PgPool, data: &EmployeeFormData, created_by:
             "AdditionalBpjsKsDependentsCount", 
             "GajiPokok", "TunjanganJabatan", "UangMakanPerHari", "TunjanganPenugasanPenuhWaktu", "PotonganBahtera", 
             "IsAllowedForOvertime", "HasRightCutiTahunan", 
+            "UserId", "TunjanganKhususYayasan",
             "CreatedBy"
         )
         VALUES (
             $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22,
             $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42,
-            $43, $44, $45, $46, $47, $48, $49, $50
+            $43, $44, $45, $46, $47, $48, $49, $50, $51, $52, $53
         )
         RETURNING {SELECT_FIELDS}
         "#
     ))
-    .bind(&data.employee_number)
-    .bind(&data.employee_number_barcode)
-    .bind(&data.first_name)
-    .bind(&data.last_name)
-    .bind(&data.email)
-    .bind(job_title)
-    .bind(data.branch_id)
-    .bind(data.organization_id)
-    .bind(data.job_level_id)
-    .bind(data.job_position_id)
-    .bind(data.employment_status_id)
-    .bind(data.manager_id)
-    .bind(data.grade_id)
-    .bind(data.class_id)
-    .bind(data.ptkp_type_id)
-    .bind(data.overtime_setting_id)
-    .bind(data.employee_attendance_location_id)
-    .bind(first_join_date)
-    .bind(join_date)
-    .bind(end_date)
-    .bind(sign_date)
-    .bind(birth_date)
-    .bind(&data.work_phone)
-    .bind(&data.work_mobile)
-    .bind(&data.birth_place)
-    .bind(&data.citizen_id_address)
-    .bind(&data.residential_address)
-    .bind(data.is_same_address)
-    .bind(&data.gender)
-    .bind(&data.blood_type)
-    .bind(&data.marital_status_type)
-    .bind(&data.religion_type)
-    .bind(&data.nik)
-    .bind(&data.npwp)
-    .bind(data.is_medical_staff)
-    .bind(&data.bank_account_type)
-    .bind(&data.bank_account_name)
-    .bind(&data.bank_account_number)
-    .bind(&data.bpjs_kesehatan)
-    .bind(bpjs_kesehatan_date)
-    .bind(&data.bpjs_ketenagakerjaan)
-    .bind(bpjs_ketenagakerjaan_date)
-    .bind(data.additional_bpjs_ks_dependents_count)
-    .bind(data.gaji_pokok)
-    .bind(data.tunjangan_jabatan)
-    .bind(data.uang_makan_per_hari)
-    .bind(data.tunjangan_penugasan_penuh_waktu)
-    .bind(data.potongan_bahtera)
-    .bind(data.is_allowed_for_overtime)
-    .bind(data.has_right_cuti_tahunan)
+    .bind(&data.employee_number) 
+    .bind(&data.employee_number_barcode) 
+    .bind(&data.first_name) 
+    .bind(&data.last_name) 
+    .bind(&data.email) 
+    .bind(job_title) 
+    .bind(data.branch_id) 
+    .bind(data.organization_id) 
+    .bind(data.job_level_id) 
+    .bind(data.job_position_id) 
+    .bind(data.employment_status_id) 
+    .bind(data.manager_id) 
+    .bind(data.grade_id) 
+    .bind(data.class_id) 
+    .bind(data.ptkp_type_id) 
+    .bind(data.overtime_setting_id) 
+    .bind(data.employee_attendance_location_id) 
+    .bind(first_join_date) 
+    .bind(join_date) 
+    .bind(end_date) 
+    .bind(sign_date) 
+    .bind(birth_date) 
+    .bind(&data.work_phone) 
+    .bind(&data.work_mobile) 
+    .bind(&data.birth_place) 
+    .bind(&data.citizen_id_address) 
+    .bind(&data.residential_address) 
+    .bind(data.is_same_address) 
+    .bind(&data.gender) 
+    .bind(&data.blood_type) 
+    .bind(&data.marital_status_type) 
+    .bind(&data.religion_type) 
+    .bind(&data.nik) 
+    .bind(&data.npwp) 
+    .bind(data.is_medical_staff) 
+    .bind(&data.bank_account_type) 
+    .bind(&data.bank_account_name) 
+    .bind(&data.bank_account_number) 
+    .bind(&data.bpjs_kesehatan) 
+    .bind(bpjs_kesehatan_date) 
+    .bind(&data.bpjs_ketenagakerjaan) 
+    .bind(bpjs_ketenagakerjaan_date) 
+    .bind(data.additional_bpjs_ks_dependents_count) 
+    .bind(data.gaji_pokok) 
+    .bind(data.tunjangan_jabatan) 
+    .bind(data.uang_makan_per_hari) 
+    .bind(data.tunjangan_penugasan_penuh_waktu) 
+    .bind(data.potongan_bahtera) 
+    .bind(data.is_allowed_for_overtime) 
+    .bind(data.has_right_cuti_tahunan) 
+    .bind(user_id) 
+    .bind(data.tunjangan_khusus_yayasan) 
     .bind(created_by)
     .fetch_one(pool)
     .await

@@ -562,6 +562,10 @@ pub fn configure_routes(cfg: &mut web::ServiceConfig) {
             .route(
                 "/employees/delete/{id}",
                 web::post().to(employee_handler::delete_employee_action),
+            )
+            .route(
+                "/api/employees/search",
+                web::get().to(employee_handler::search_employees_json),
             ),
     );
 }
